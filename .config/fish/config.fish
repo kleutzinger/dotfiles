@@ -40,7 +40,6 @@ end
 function e -d "open a file in a text editor"
     $EDITOR $argv
 end
-
 function fish_user_key_bindings
 	bind \cH backward-kill-path-component
 end

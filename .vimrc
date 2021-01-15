@@ -10,7 +10,20 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'gioele/vim-autoswap'
 Plug 'dag/vim-fish'
+" https://github.com/preservim/nerdtree
+Plug 'preservim/nerdtree'
 call plug#end()
+
+" Exit Vim if NERDTree is the only window left.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
+    \ quit | endif
+
+nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeCWD<CR>" : "\:NERDTreeCWD<CR>"
+let NERDTreeShowHidden=0
+
+"show spaces
+set list
+set lcs+=space:·
 
 colorscheme embark
 let g:embark_terminal_italics = 1
@@ -26,6 +39,12 @@ map F <Plug>Sneak_F
 map t <Plug>Sneak_t
 map T <Plug>Sneak_T
 let g:sneak#use_ic_scs = 1
+
+set incsearch
+" Use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+endif
 
 " Run current file
 nnoremap <F9> :!clear && %:p<Enter>
