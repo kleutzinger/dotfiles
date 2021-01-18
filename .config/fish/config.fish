@@ -7,7 +7,6 @@ set fish_greeting
 set pipenv_fish_fancy yes 
 set -Ux FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
 set -Ux DOKKU_HOST kevbot.xyz
-set -Ux LEKTOR_DEV 1
 set -Ux MYVIMRC ~/.vimrc
 abbr advent "source /home/kevin/gits/advent-of-code-2020/new_day.fish"
 abbr remove_orphans "sudo pacman -Qtdq | sudo pacman -Rns -"

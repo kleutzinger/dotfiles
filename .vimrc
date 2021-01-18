@@ -12,7 +12,12 @@ Plug 'gioele/vim-autoswap'
 Plug 'dag/vim-fish'
 " https://github.com/preservim/nerdtree
 Plug 'preservim/nerdtree'
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
 call plug#end()
+
+" vim-markdown has weird folding
+let g:vim_markdown_folding_disabled = 1
 
 " Exit Vim if NERDTree is the only window left.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
