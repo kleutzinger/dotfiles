@@ -1,4 +1,4 @@
 function restart_plasma
-    kquitapp5 plasmashell
+    killall plasmashell
     kstart5 plasmashell
 end

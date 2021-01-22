@@ -1,5 +1,5 @@
 "Kevin's vimrc
-
+let mapleader = ','
 call plug#begin()
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
@@ -14,10 +14,17 @@ Plug 'dag/vim-fish'
 Plug 'preservim/nerdtree'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
+Plug 'preservim/nerdcommenter'
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(1) } }
+Plug 'sbdchd/neoformat'
+Plug 'Raimondi/delimitMate'
+Plug 'tpope/vim-sleuth'
+Plug 'posva/vim-vue'
 call plug#end()
 
 " vim-markdown has weird folding
 let g:vim_markdown_folding_disabled = 1
+set omnifunc=syntaxcomplete#Complete
 
 " Exit Vim if NERDTree is the only window left.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
@@ -25,6 +32,8 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
 
 nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeCWD<CR>" : "\:NERDTreeCWD<CR>"
 let NERDTreeShowHidden=0
+
+"set clipboard=unnamedplus
 
 "show spaces
 set list
@@ -67,7 +76,8 @@ noremap <up> <C-w><up>
 noremap <down> <C-w><down>
 noremap <left> <C-w><left>
 noremap <right> <C-w><right> 
-set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab
+set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab smartindent
+set autoindent
 set mouse=a
 set wrapscan
 " Ctrl + Y to redo (u to undo)
@@ -98,7 +108,6 @@ nnoremap <expr> gb '`[' . strpart(getregtype(), 0, 1) . '`]'
 " COLEMAK BINDINGS
 noremap K J
 noremap J K
-inoremap jj <ESC>
 noremap h k
 noremap j h
 noremap k j

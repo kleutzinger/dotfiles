@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+super + shift + less
+    notify-send "hi"
+super + alt + o
+    notify-send "yo"
+alt + a
+    notify-send "a"
+
+# https://github.com/RaitaroH/sxhkd_plasma
+super + alt + {Right,Left}
+    {qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window to Next Desktop',\
+    qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window to Previous Desktop'}
+
+# https://web.archive.org/web/20200816032902/https://my-take-on.tech/2020/07/03/some-tricks-for-sxhkd-and-bspwm/#reloading-sxhkdrc
+
+super + shift + r
+    pkill -usr1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
+

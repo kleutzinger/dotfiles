@@ -858,7 +858,7 @@ Type=GESTURE
 
 [Data_4]
 Comment=Comment
-DataCount=5
+DataCount=6
 Enabled=true
 Name=Custom Kev
 SystemGroup=0
@@ -975,7 +975,7 @@ Uuid={5a234b41-db80-4faa-a98a-814cefa94863}
 [Data_4_5]
 Comment=Comment
 Enabled=true
-Name=New Action
+Name=dmenu_run
 Type=SIMPLE_ACTION_DATA
 
 [Data_4_5Actions]
@@ -997,6 +997,32 @@ TriggersCount=1
 Key=Meta+Space
 Type=SHORTCUT
 Uuid={0d2cd283-e345-4a39-941b-cbe8d093c5bc}
+
+[Data_4_6]
+Comment=Comment
+Enabled=true
+Name=New Action
+Type=SIMPLE_ACTION_DATA
+
+[Data_4_6Actions]
+ActionsCount=1
+
+[Data_4_6Actions0]
+CommandURL=flameshot gui
+Type=COMMAND_URL
+
+[Data_4_6Conditions]
+Comment=
+ConditionsCount=0
+
+[Data_4_6Triggers]
+Comment=Simple_action
+TriggersCount=1
+
+[Data_4_6Triggers0]
+Key=Print
+Type=SHORTCUT
+Uuid={9ef25d68-3598-40bc-af0a-64767c4c4e72}
 
 [Data_5]
 Comment=Comment
