@@ -1,0 +1,68 @@
+[
+	{
+		"group" : "Chill",
+		"stations" : 
+		[
+			{
+				"name" : "Lounge Radio",
+				"url" : "http://www.lounge-radio.com/listen128.m3u"
+			},
+			{
+				"name" : "Beat Blender",
+				"url" : "http://somafm.com/beatblender.pls"
+			},
+			{
+				"name" : "Secret Agent",
+				"url" : "http://somafm.com/secretagent.pls"
+			},
+			{
+				"name" : "Groove Salad",
+				"url" : "http://somafm.com/groovesalad.pls"
+			},
+			{
+				"name" : "Illinois Street Lounge",
+				"url" : "http://somafm.com/illstreet.pls"
+			}
+		]
+	},
+	{
+		"group" : "Techno / Electronic",
+		"stations" : 
+		[
+			{
+				"name" : "Drone Zone",
+				"url" : "http://somafm.com/dronezone.pls"
+			},
+			{
+				"name" : "Space Station Soma",
+				"url" : "http://somafm.com/spacestation.pls"
+			},
+			{
+				"name" : "cliqhop idm",
+				"url" : "http://somafm.com/cliqhop.pls"
+			},
+			{
+				"name" : "Black Rock FM",
+				"url" : "http://somafm.com/brfm.pls"
+			},
+			{
+				"name" : "New Dance Radio",
+				"url" : "http://jbstream.net/tunein.php/blackoutworm/playlist.asx"
+			},
+			{
+				"name" : "DubStep Beyond",
+				"url" : "http://somafm.com/play/dubstep32"
+			}
+		]
+	},
+	{
+		"group" : "root",
+		"stations" : 
+		[
+			{
+				"name" : "rainwave game",
+				"url" : "https://relay.rainwave.cc:443/game.mp3"
+			}
+		]
+	}
+]

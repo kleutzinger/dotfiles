@@ -20,8 +20,10 @@ Plug 'sbdchd/neoformat'
 Plug 'Raimondi/delimitMate'
 Plug 'tpope/vim-sleuth'
 Plug 'posva/vim-vue'
+Plug 'tpope/vim-eunuch'
 call plug#end()
 
+" autocmd BufNewFile * if !empty(&filetype) | execute 'silent! 1s/.*/#!\/usr\/bin\/env ' . &filetype . '\r\r'| :startinsert | endif
 " vim-markdown has weird folding
 let g:vim_markdown_folding_disabled = 1
 set omnifunc=syntaxcomplete#Complete
@@ -71,11 +73,6 @@ filetype plugin on
 set path+=**
 set wildmenu
 set showcmd
-"Disable arrow keys (temporary)
-noremap <up> <C-w><up>
-noremap <down> <C-w><down>
-noremap <left> <C-w><left>
-noremap <right> <C-w><right> 
 set tabstop=4 softtabstop=0 expandtab shiftwidth=4 smarttab smartindent
 set autoindent
 set mouse=a

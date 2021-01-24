@@ -1,14 +1,15 @@
 set -gx SCRIPTS_DIR /home/kevin/scripts/
 set -gx PATH $PATH $SCRIPTS_DIR /home/kevin/.yarn/bin/ /home/kevin/.deno/bin
 #xmodmap /home/kevin/.Xmodmap
-set -Ux NOTE_DIR /home/kevin/notes
-set -Ux EDITOR /usr/bin/nvim
+set -gx NOTE_DIR /home/kevin/notes
+set -gx EDITOR nvim
 set fish_greeting
 set pipenv_fish_fancy yes 
-set -Ux FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
-set -Ux DOKKU_HOST kevbot.xyz
-set -Ux MYVIMRC ~/.vimrc
+set -gx FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
+set -gx DOKKU_HOST kevbot.xyz
+set -gx MYVIMRC ~/.vimrc
 set -g -x SXHKD_SHELL '/usr/bin/sh'
+set -gx BROWSER google-chrome-stable
 abbr advent "source /home/kevin/gits/advent-of-code-2020/new_day.fish"
 abbr remove_orphans "sudo pacman -Qtdq | sudo pacman -Rns -"
 abbr eel "eel_server_run"
@@ -22,8 +23,11 @@ abbr vim "nvim"
 abbr nv "nvim"
 abbr nano "nvim"
 abbr vi "nvim"
+abbr EE "$EDITOR"
 alias p="xclip -o"
-
+function chromium
+    google-chrome-stable $argv
+end
 complete --command indent_function --arguments '(functions)'
 complete -c ytpp -w youtube-dlc
 

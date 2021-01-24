@@ -897,14 +897,14 @@ Uuid={d88364fd-1839-4496-97ee-305d5e61baaf}
 [Data_4_2]
 Comment=Comment
 Enabled=true
-Name=chromium
+Name=browser super-w
 Type=SIMPLE_ACTION_DATA
 
 [Data_4_2Actions]
 ActionsCount=1
 
 [Data_4_2Actions0]
-CommandURL=chromium
+CommandURL=google-chrome-stable
 Type=COMMAND_URL
 
 [Data_4_2Conditions]
