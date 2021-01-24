@@ -19,3 +19,22 @@ super + shift + r
 super + k
     terminator -e 'nvim "+normal G\$" /home/kevin/.config/sxhkd/sxhkdrc' && \
     pkill -usr1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
+
+super + w
+    /home/kevin/scripts/launch-browser.sh
+
+super + Return
+    terminator
+
+super + space
+    dmenu_run -fn "-xos4-terminus-medium-r-*-*-14-*"
+
+super + q
+    wmctrl -c :ACTIVE:
+
+Print
+    flameshot
+
+F1
+    /home/kevin/scripts/toggle-term.sh
+
