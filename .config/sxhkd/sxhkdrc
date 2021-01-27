@@ -1,10 +1,4 @@
 #!/usr/bin/env sh
-super + shift + less
-    notify-send "hi"
-super + alt + o
-    notify-send "yo"
-alt + a
-    notify-send "a"
 
 # https://github.com/RaitaroH/sxhkd_plasma
 super + alt + {Right,Left}
@@ -17,14 +11,13 @@ super + shift + r
     pkill -usr1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
 
 super + k
-    terminator -e 'nvim "+normal G\$" /home/kevin/.config/sxhkd/sxhkdrc' && \
-    pkill -usr1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
+    /home/kevin/scripts/edit-hotkeys.sh
 
 super + w
-    /home/kevin/scripts/launch-browser.sh
+    firefox
 
 super + Return
-    terminator
+    mini-kitty.sh
 
 super + space
     dmenu_run -fn "-xos4-terminus-medium-r-*-*-14-*"
@@ -33,8 +26,13 @@ super + q
     wmctrl -c :ACTIVE:
 
 Print
-    flameshot
+    flameshot gui
 
 F1
     /home/kevin/scripts/toggle-term.sh
 
+super + n
+    terminator --title newsboat -e "newsboat"
+
+super + e
+    nautilus

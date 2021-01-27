@@ -8,8 +8,8 @@ set pipenv_fish_fancy yes
 set -gx FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
 set -gx DOKKU_HOST kevbot.xyz
 set -gx MYVIMRC ~/.vimrc
-set -g -x SXHKD_SHELL '/usr/bin/sh'
-set -gx BROWSER /home/kevin/scripts/launch-browser.sh
+set -gx SXHKD_SHELL '/usr/bin/sh'
+set -gx BROWSER firefox 
 abbr advent "source /home/kevin/gits/advent-of-code-2020/new_day.fish"
 abbr remove_orphans "sudo pacman -Qtdq | sudo pacman -Rns -"
 abbr eel "eel_server_run"
@@ -31,7 +31,8 @@ function chromium
 end
 complete --command indent_function --arguments '(functions)'
 complete -c ytpp -w youtube-dlc
-
+# complete -c yadm -w git
+complete -c yadm -e
 
 function fed
 	$EDITOR ~/.config/fish/config.fish

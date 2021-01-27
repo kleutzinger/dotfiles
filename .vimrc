@@ -15,7 +15,7 @@ Plug 'preservim/nerdtree'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
 Plug 'preservim/nerdcommenter'
-Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(1) } }
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 Plug 'sbdchd/neoformat'
 Plug 'Raimondi/delimitMate'
 Plug 'tpope/vim-sleuth'
@@ -23,6 +23,8 @@ Plug 'posva/vim-vue'
 Plug 'tpope/vim-eunuch'
 call plug#end()
 
+
+au BufReadPost *.lr set syntax=markdow
 " autocmd BufNewFile * if !empty(&filetype) | execute 'silent! 1s/.*/#!\/usr\/bin\/env ' . &filetype . '\r\r'| :startinsert | endif
 " vim-markdown has weird folding
 let g:vim_markdown_folding_disabled = 1
@@ -135,3 +137,18 @@ noremap <C-w><S-Space> <C-w>L
 noremap <C-w><S-BS> <C-w>H
 
 highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+
+let g:firenvim_config = { 
+    \ 'globalSettings': {
+        \ 'alt': 'all',
+    \  },
+    \ 'localSettings': {
+        \ '.*': {
+            \ 'cmdline': 'neovim',
+            \ 'content': 'text',
+            \ 'priority': 0,
+            \ 'selector': 'textarea',
+            \ 'takeover': 'never',
+        \ },
+    \ }
+\ }
