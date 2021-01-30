@@ -10,6 +10,7 @@ set -gx DOKKU_HOST kevbot.xyz
 set -gx MYVIMRC ~/.vimrc
 set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx BROWSER firefox 
+abbr lg lazygit
 abbr advent "source /home/kevin/gits/advent-of-code-2020/new_day.fish"
 abbr remove_orphans "sudo pacman -Qtdq | sudo pacman -Rns -"
 abbr eel "eel_server_run"
@@ -17,20 +18,20 @@ abbr r "python run.py"
 # abbr v "source .venv/bin/activate.fish"
 abbr v "nvim"
 abbr m "micro"
-abbr ytp "youtube-dlc (xclip -o)"
+abbr ytp "youtube-dl (xclip -o)"
 abbr note note.sh
 abbr vim "nvim"
 abbr nv "nvim"
 abbr nano "nvim"
 abbr vi "nvim"
-abbr EE "$EDITOR"
+abbr :q exit
 alias p="xclip -o"
 
 function chromium
     google-chrome-stable $argv
 end
 complete --command indent_function --arguments '(functions)'
-complete -c ytpp -w youtube-dlc
+complete -c ytpp -w youtube-dl
 # complete -c yadm -w git
 complete -c yadm -e
 

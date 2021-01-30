@@ -1,3 +1,3 @@
 function ytpp
-    youtube-dlc $argv (p)
+    youtube-dl $argv (p)
 end

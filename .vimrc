@@ -10,7 +10,6 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'gioele/vim-autoswap'
 Plug 'dag/vim-fish'
-" https://github.com/preservim/nerdtree
 Plug 'preservim/nerdtree'
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
@@ -21,8 +20,29 @@ Plug 'Raimondi/delimitMate'
 Plug 'tpope/vim-sleuth'
 Plug 'posva/vim-vue'
 Plug 'tpope/vim-eunuch'
+" yay -S vim-syntastic vim-youcompleteme-git
 call plug#end()
 
+augroup highlight_yank
+  autocmd!
+  au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=300}
+augroup END
+
+"syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_python_checkers = ['pylint']
+let g:syntastic_python_pylint_args = '-E'
+
+" YCM stuff. leader g to go to definition
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
+let g:ycm_key_list_stop_completion = [ '<C-y>', '<Enter>' ]
 
 au BufReadPost *.lr set syntax=markdow
 " autocmd BufNewFile * if !empty(&filetype) | execute 'silent! 1s/.*/#!\/usr\/bin\/env ' . &filetype . '\r\r'| :startinsert | endif

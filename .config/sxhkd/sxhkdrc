@@ -36,3 +36,6 @@ super + n
 
 super + e
     nautilus
+
+super + b
+    $BROWSER 127.0.0.1:9001/admin/
