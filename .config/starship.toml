@@ -1,0 +1,22 @@
+add_newline = false
+
+
+[username]
+style_user = "bold dimmed blue"
+show_always = false
+
+# configure directory
+[directory]
+truncation_length = 10
+truncate_to_repo = true # truncates directory to root folder if in github repo
+style = "bold italic #87A752"
+
+[cmd_duration]
+min_time = 4000
+format = "· [$duration]($style) "
+show_milliseconds = false
+disabled = false
+style = "italic #87A752"
+
+[python]
+scan_for_pyfiles = false

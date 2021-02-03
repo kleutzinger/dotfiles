@@ -62,6 +62,10 @@
 			{
 				"name" : "rainwave game",
 				"url" : "https://relay.rainwave.cc:443/game.mp3"
+			},
+			{
+				"name" : "rainwave chiptune",
+				"url" : "https://relay.rainwave.cc:443/chiptune.mp3"
 			}
 		]
 	}
