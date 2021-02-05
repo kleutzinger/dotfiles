@@ -19,10 +19,14 @@ Hi, this is my computer's config. I use the <a href="https://colemak.com/">colem
                                            CPU: Intel i7-6600U (4) @ 3.400G 
                                            GPU: Intel Skylake GT2 [HD Graph 
                                            Memory: 19745MiB
-                                           Editor: neovim```
+                                           Editor: neovim
+```
 
 ## Keybindings (OS)
-* `F1`: open terminal (kitty)
+All keybindings are defined in [config/sxhkd/sxhkdrc](.config/sxhkd/sxhkdrc)
+* `F1`: dropdown terminal
+* `super + enter`: floating terminal
+* `super + space`: dmenu_run
 * `super + w`: open browser
 * `super + m`: maximize
 * `super + q`: quit application
