@@ -26,6 +26,7 @@ abbr nv "nvim"
 abbr nano "nvim"
 abbr vi "nvim"
 abbr :q exit
+abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
 alias p="xclip -o"
 
 function chromium

@@ -24,22 +24,26 @@ Plug 'tpope/vim-sleuth'
 Plug 'posva/vim-vue'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-dispatch'
+Plug 'junegunn/goyo.vim'
 call plug#end()
 " General colors
 
+let &t_ut=''
 
 augroup highlight_yank
   autocmd!
   au TextYankPost * silent! lua vim.highlight.on_yank{higroup="IncSearch", timeout=300}
 augroup END
-let g:lightline = {'colorscheme': 'embark'}
+let g:lightline = {'colorscheme': 'nord'}
 
 au BufReadPost *.lr set syntax=markdow
 " autocmd BufNewFile * if !empty(&filetype) | execute 'silent! 1s/.*/#!\/usr\/bin\/env ' . &filetype . '\r\r'| :startinsert | endif
 " vim-markdown has weird folding
 let g:vim_markdown_folding_disabled = 1
 set omnifunc=syntaxcomplete#Complete
-
+"run in python
+imap <F5> <Esc>:w<CR>:!clear;python %<CR>
+nmap <F5> <Esc>:w<CR>:!clear;python %<CR>
 " Exit Vim if NERDTree is the only window left.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
@@ -114,8 +118,8 @@ nnoremap <expr> gb '`[' . strpart(getregtype(), 0, 1) . '`]'
 
 " https://forum.colemak.com/topic/50-colemak-vim/#p184
 " COLEMAK BINDINGS
-noremap K J
-noremap J K
+"noremap K J
+"noremap J K
 noremap h k
 noremap j h
 noremap k j
@@ -160,3 +164,5 @@ let g:firenvim_config = {
         \ },
     \ }
 \ }
+
+au FileType markdown let b:delimitMate_nesting_quotes = ['`']
