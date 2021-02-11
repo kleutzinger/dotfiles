@@ -29,9 +29,6 @@ abbr :q exit
 abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
 alias p="xclip -o"
 
-function chromium
-    google-chrome-stable $argv
-end
 complete --command indent_function --arguments '(functions)'
 complete -c ytpp -w youtube-dl
 # complete -c yadm -w git
