@@ -42,3 +42,10 @@ super + b
 
 super + o
     terminator -m -e "game.sh"
+
+super + shift + o
+    cool-retro-term -e game.sh d
+
+super + c
+    qdbus org.kde.KWin /Compositor suspend; notify-send "disable compositor"
+
