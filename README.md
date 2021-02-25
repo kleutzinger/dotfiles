@@ -1,4 +1,5 @@
 Hi, this is my computer's config. I use the <a href="https://colemak.com/">colemak</a> keyboard layout  
+I'm using [yadm](https://yadm.io/) to manage my dotfiles. It's okay and doesn't make you do a bunch of symlinks.
 
 ```
                      ./o.                  kevin@kb-think 

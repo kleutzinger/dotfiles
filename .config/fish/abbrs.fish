@@ -1,4 +1,4 @@
-abbr q quit
+abbr q exit
 abbr lg lazygit
 abbr advent "source /home/kevin/gits/advent-of-code-2020/new_day.fish"
 abbr remove_orphans "sudo pacman -Qtdq | sudo pacman -Rns -"

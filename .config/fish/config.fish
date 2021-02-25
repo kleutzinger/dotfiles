@@ -10,6 +10,7 @@ set -gx DOKKU_HOST kevbot.xyz
 set -gx MYVIMRC ~/.vimrc
 set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx BROWSER firefox 
+set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
 alias p="xclip -o"
 source /home/kevin/.config/fish/abbrs.fish
 

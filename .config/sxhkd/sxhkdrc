@@ -8,7 +8,7 @@ super + alt + {Right,Left}
 # https://web.archive.org/web/20200816032902/https://my-take-on.tech/2020/07/03/some-tricks-for-sxhkd-and-bspwm/#reloading-sxhkdrc
 
 super + shift + r
-    pkill -usr1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
+    pkill -usr1 -x sxhkd; notify-send -t 15000 'sxhkd' 'Reloaded config'
 
 super + k
     /home/kevin/scripts/edit-hotkeys.sh
@@ -47,5 +47,18 @@ super + shift + o
     cool-retro-term -e game.sh d
 
 super + c
-    qdbus org.kde.KWin /Compositor suspend; notify-send "disable compositor"
+    qdbus org.kde.KWin /Compositor suspend; notify-send "suspend compositor"
 
+super + shift + c
+    qdbus org.kde.KWin /Compositor resume; notify-send "resume compositor"
+
+# Disconnect from PS4 controller
+super + shift + b
+    bluetoothctl -- disconnect 1C:66:6D:C4:DD:FA && notify-send -t 1000 "Disconnected from Dualshock 4"
+
+# Put computer to sleep
+super + shift + s
+    systemctl suspend
+
+super + shift + f
+    ~/scripts/clip-fmt-py.sh && notify-send -t 1000 "Fmt Python"
