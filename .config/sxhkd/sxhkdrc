@@ -28,8 +28,14 @@ super + q
 Print
     flameshot gui
 
+shift + Print
+    flameshot full -p /home/kevin/Pictures/scrots
+
 F1
     /home/kevin/scripts/toggle-term.sh
+
+shift + F1
+    tdrop firefox
 
 super + n
     terminator --title newsboat -e "newsboat"

@@ -5,6 +5,8 @@
 # wildcard letsencrypt certs require manual .txt challenges
 # so this script is not fully automated
 
+# command to check if .TXT records are set:
+#    nslookup -q=txt _acme-challenge.kevbot.xyz.
 if test (id -u) -eq 0
     echo "running as root"
 else

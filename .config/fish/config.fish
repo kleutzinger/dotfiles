@@ -1,5 +1,6 @@
+set -gx GEM_HOME /home/kevin/.local/share/gem/ruby/2.7.0
 set -gx SCRIPTS_DIR /home/kevin/scripts/
-set -gx PATH $PATH $SCRIPTS_DIR /home/kevin/.yarn/bin/ /home/kevin/.deno/bin /home/kevin/.npm/bin/
+set -gx PATH $PATH $SCRIPTS_DIR $PATH $GEM_HOME/bin /home/kevin/.yarn/bin/ /home/kevin/.deno/bin /home/kevin/.npm/bin/
 #xmodmap /home/kevin/.Xmodmap
 set -gx NOTE_DIR /home/kevin/notes
 set -gx EDITOR nvim
@@ -21,6 +22,7 @@ complete -c yadm -e
 
 function fed
 	$EDITOR ~/.config/fish/config.fish
+	$EDITOR ~/.config/fish/abbrs.fish
 	source ~/.config/fish/config.fish
 end
 
