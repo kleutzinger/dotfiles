@@ -48,7 +48,7 @@ cd /etc/letsencrypt/live/kevbot.xyz
 
 certbot certonly --manual --preferred-challenges=dns --domain "kevbot.xyz,*.kevbot.xyz"
 echo "Combining certs to certs.tar"
-cp privkey.pm server.key; cp fullchain.pem server.crt
+cp privkey.pem server.key; cp fullchain.pem server.crt
 tar cvf certs.tar server.crt server.key
 
 echo "Overwrite certificates with certs.tar?"
