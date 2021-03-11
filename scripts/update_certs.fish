@@ -63,9 +63,11 @@ set SSL_DIR /etc/nginx/sll
 mkdir -p SSL_DIR
 cp server.crt server.key $SSL_DIR
 
+echo "$DOKKU_CMD global-cert:set < certs.tar"
 DOKKU_CMD global-cert:set < certs.tar
 
 for APP in $APPS
+    echo "DOKKU_CMD certs:add $APP < certs.tar"
     DOKKU_CMD certs:add $APP < certs.tar
 end
 
