@@ -57,6 +57,9 @@ nnoremap <leader>nf :Neoformat<Enter>
 set list
 set lcs+=space:·
 
+"wrap around
+set whichwrap+=<,>,[,]
+
 colorscheme embark
 let g:embark_terminal_italics = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)

@@ -66,5 +66,13 @@ super + shift + b
 super + shift + s
     systemctl suspend
 
+# turn off screen
+super + s
+    xset dpms force off
+
 super + shift + f
     ~/scripts/clip-fmt-py.sh && notify-send -t 1000 "Fmt Python"
+
+super + y
+    vlc $(xsel -ob)
+

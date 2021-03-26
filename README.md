@@ -6,19 +6,18 @@ kevin@kb-think
 --------------
 OS: EndeavourOS Linux x86_64
 Host: 20FAS4EG00 ThinkPad T460s
-Kernel: 5.10.11-arch1-1
-Uptime: 4 days, 3 hours, 12 mins
-Packages: 1854 (pacman)
-Shell: fish 3.1.2
+Kernel: 5.11.8-arch1-1
+Packages: 1974 (pacman)
+Shell: fish 3.2.1
 Resolution: 2560x1440
-DE: Plasma 5.20.5
+DE: Plasma 5.21.3
 WM: KWin
 WM Theme: Ant-Dark
-Theme: Breeze Dark [Plasma], Adw
-Icons: Arc-X-D [Plasma], Arc-X-D
+Theme: Breeze Dark [Plasma], Adwaita-dark [GTK2/3]
+Icons: Arc-X-D [Plasma], Arc-X-D [GTK2/3]
 Terminal: kitty
-CPU: Intel i7-6600U (4) @ 3.400G
-GPU: Intel Skylake GT2 [HD Graph
+CPU: Intel i7-6600U (4) @ 3.400GHz
+GPU: Intel Skylake GT2 [HD Graphics 520]
 Memory: 19745MiB
 Editor: neovim
 ```
