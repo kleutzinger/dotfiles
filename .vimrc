@@ -5,17 +5,18 @@ so ~/.config/coc/config.vim
 call plug#begin()
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
+Plug 'skywind3000/vim-terminal-help'
 Plug 'easymotion/vim-easymotion'
 Plug 'embark-theme/vim', { 'as': 'embark' }
 Plug 'liuchengxu/vim-which-key'
 "Plug 'vim-airline/vim-airline'
 "Plug 'vim-airline/vim-airline-themes'
 Plug 'itchyny/lightline.vim'
+Plug 'tpope/vim-markdown'
 Plug 'gioele/vim-autoswap'
 Plug 'dag/vim-fish'
 Plug 'preservim/nerdtree'
 Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
 Plug 'preservim/nerdcommenter'
 Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 Plug 'sbdchd/neoformat'
@@ -51,7 +52,13 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
 nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeCWD<CR>" : "\:NERDTreeCWD<CR>"
 let NERDTreeShowHidden=0
 nnoremap <leader>nf :Neoformat<Enter>
+nnoremap <leader>p :w<Enter>:!python %<Enter>
+nnoremap <leader>P :w<Enter>:!terminator -e "python %"<Enter>
+" try to figure out below command:
+" format, save, run
+"nnoremap <leader>P :Neoformat<Enter> && :w && !python %<Enter>
 "set clipboard=unnamedplus
+
 
 "show spaces
 set list
@@ -111,7 +118,6 @@ set number relativenumber
 :  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
 :  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 :augroup END
-
 " exit insert mode with `hk`, but you only have 1 second
 " https://forum.colemak.com/topic/1477-i-need-a-rarely-used-twokey-combination-of-home-row-keys-for-vim-esc/#p10747
 inoremap hk <ESC>
