@@ -49,6 +49,7 @@ nmap <F5> <Esc>:w<CR>:!clear;python %<CR>
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
 
+"leader commands
 nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeCWD<CR>" : "\:NERDTreeCWD<CR>"
 let NERDTreeShowHidden=0
 nnoremap <leader>nf :Neoformat<Enter>
@@ -59,16 +60,17 @@ nnoremap <leader>P :w<Enter>:!terminator -e "python %"<Enter>
 "nnoremap <leader>P :Neoformat<Enter> && :w && !python %<Enter>
 "set clipboard=unnamedplus
 
-
+let g:neoformat_enabled_markdown = ['prettier']
 "show spaces
 set list
 set lcs+=space:·
 
+tnoremap <Esc> <C-\><C-n>:q!<CR>
 "wrap around
 set whichwrap+=<,>,[,]
 
 colorscheme embark
-let g:embark_terminal_italics = 1
+let g:embark_tkittyerminal_italics = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
 set termguicolors
 ":hi! Normal ctermbg=NONE guibg=NONE

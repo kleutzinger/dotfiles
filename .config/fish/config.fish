@@ -8,6 +8,7 @@ set fish_greeting
 set pipenv_fish_fancy yes 
 set -gx FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
 set -gx DOKKU_HOST kevbot.xyz
+set -gx PYTHONBREAKPOINT ipdb.set_trace
 set -gx MYVIMRC ~/.vimrc
 set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx BROWSER firefox 

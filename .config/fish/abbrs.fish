@@ -9,7 +9,7 @@ abbr pdb "python -m pdb"
 abbr v "nvim"
 abbr m "micro"
 abbr ytp "youtube-dl (xclip -o)"
-abbr note note.sh
+abbr note note.py
 abbr vim "nvim"
 abbr nv "nvim"
 abbr nano "nvim"

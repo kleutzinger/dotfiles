@@ -71,4 +71,5 @@ for APP in $APPS
     DOKKU_CMD certs:add $APP < certs.tar
 end
 
-echo "done"
+sudo service nginx reload
+echo 'done'
