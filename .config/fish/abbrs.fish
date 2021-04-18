@@ -6,7 +6,6 @@ abbr eel "eel_server_run"
 abbr r "python run.py"
 # abbr v "source .venv/bin/activate.fish"
 abbr pdb "python -m pdb"
-abbr v "nvim"
 abbr m "micro"
 abbr ytp "youtube-dl (xclip -o)"
 abbr note note.py

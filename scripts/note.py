@@ -5,29 +5,37 @@ porting note.sh to python.
 USAGE:
     ./note.py or python note.py
 
-1. check env NOTE_DIR
-2. `mkdir -p "$NOTE_DIR"`
-3. $EDITOR "$NOTE_DIR/$(date --date="5 hours ago" +'%Y-%m-%d').md"
+ARGS:
+    [e]dit # edit this python script
+    [m]ovie # insert movie template
 
-4. go to minus day
-    - python note.py -2
-        - two days ago
-5. select by content? search headers?
-6. launch check_notes.fish
-7. movie template
-    - themes, who should watch it,
-    - access tmdb api? movies.kevbot.xyz api?
-8. upload
-    - note u or note s (upload / synchronize)
-9. titles?
-10. named notes. like `note.py vim`
+TODO:
+    [x] check env NOTE_DIR
+    [x] `mkdir -p "$NOTE_DIR"`
+
+    [x] go to minus day
+        - [ ] add cli arg for this
+    [x] select by content? search headers?
+    [ ] launch check_notes.fish
+    [ ] search headers (# HEADER)
+        [ ] select notes containing header
+    [x] movie template
+        - themes, who should watch it,
+        - access tmdb api? movies.kevbot.xyz api?
+    [ ] upload
+        - note u or note s (upload / synchronize)
+    [ ] titles?
+    [ ] named notes. like `note.py vim`
+    [ ] fish shell completion generation
+        [ ] move templates to dict?
+
+https://stackoverflow.com/questions/26216875/how-to-handle-cli-subcommands-with-argparse
 """
 import argparse
 import datetime
 import getpass
 import glob
 import os
-import shlex
 import shutil
 import subprocess
 import sys
@@ -44,7 +52,7 @@ NOTE_DIR = os.getenv("NOTE_DIR")
 NOTE_STRFTIME = "%Y-%m-%d"
 NOTE_EXT = ".md"
 MOVIE_TEMPLATE = (
-    "\n## Themes\n\n## Characters\n\n##Memorable Parts\n\n## Reminded Me of\n\n"
+    "\n## Themes\n\n## Characters\n\n## Memorable Parts\n\n## Reminded Me of\n\n"
 )
 
 
@@ -52,6 +60,7 @@ def main():
     verify_env()
     os.chdir(NOTE_DIR)
     if len(sys.argv) == 1:
+        # no additional arguments
         filename = get_note_path()
         print(f"opening {filename}")
         open_note(filename)
@@ -59,10 +68,17 @@ def main():
         argcmd = sys.argv[1]
         if argcmd == "e":
             # edit this source code
-            os.system(f"{EDITOR} {__file__}")
+            subprocess.run(f"{EDITOR} {__file__}", shell=True)
+        if argcmd.startswith("m"):
+            # edit this source code
+            open_note(get_note_path(), MOVIE_TEMPLATE)
+        if argcmd == ("p"):
+            # print today's note path
+            print(os.path.abspath(get_note_path()))
 
 
 def verify_env():
+    "verify env vars are set. create certain directories as well"
     if not NOTE_DIR:
         print("please set NOTE_DIR environment variable, exiting")
         exit(1)
@@ -78,34 +94,31 @@ def verify_env():
 
 
 def open_note(path, append_template=""):
+    "open note in editor. creates file on open if not existing"
     with open(path, "a+") as f:
         if append_template:
             f.write(append_template)
-    os.system(f"{EDITOR} {path}")
+    subprocess.run(f"{EDITOR} {path}", shell=True)
 
 
 def get_note_path(days_ago=0):
-    # find if note exists
-    # create if not
-    # notes_ago ?
+    "get today's note path. or get it from X days ago"
     timestamp = time.time() - (3600 * MIDNIGHT_HOUR_SHIFT) - (days_ago * 3600 * 24)
     at_date = datetime.date.fromtimestamp(timestamp)
     filename = at_date.strftime(NOTE_STRFTIME) + NOTE_EXT
     return filename
 
-    # note_list = sorted(glob.glob("*.md"))
-    # edit_note(note_list[-1])
-    # pass
+
+def get_note_list():
+    "return all note filenames [ 1.md, 2.md, ... ]"
+    note_list = list(sorted(glob.glob("*.md")))
+    return note_list
 
 
 def new_movie(note_path):
     "add movie template to a note"
     # note should already exist?
     # call api?
-    pass
-
-
-def get_notes():
     pass
 
 

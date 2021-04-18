@@ -13,5 +13,5 @@ end
 # start up server
 cd $BLOG_DIR
 source ../.venv/bin/activate.fish
-contains "p" $argv && lektor deploy && exit 0
+contains "deploy" $argv && lektor deploy && exit 0
 lektor server -p $LEKTOR_PORT --browse

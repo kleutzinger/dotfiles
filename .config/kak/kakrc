@@ -1,0 +1,19 @@
+set global ui_options ncurses_assistant=none
+add-highlighter global/ number-lines
+colorscheme desertex
+hook global InsertChar k %{ try %{
+  exec -draft hH <a-k>hk<ret> d
+  exec <esc>
+}}
+
+evaluate-commands %sh{
+    plugins="$kak_config/plugins"
+    mkdir -p "$plugins"
+    [ ! -e "$plugins/plug.kak" ] && \
+        git clone -q https://github.com/andreyorst/plug.kak.git "$plugins/plug.kak"
+    printf "%s\n" "source '$plugins/plug.kak/rc/plug.kak'"
+}
+plug "andreyorst/plug.kak" noload
+plug "alexherbo2/volatile-highlighter.kak"
+
+

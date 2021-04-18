@@ -25,6 +25,7 @@ Plug 'tpope/vim-sleuth'
 Plug 'posva/vim-vue'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-dispatch'
+Plug 'machakann/vim-swap'
 Plug 'junegunn/goyo.vim'
 call plug#end()
 " General colors
@@ -49,16 +50,27 @@ nmap <F5> <Esc>:w<CR>:!clear;python %<CR>
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
 
+function! s:DiffWithSaved()
+  let filetype=&ft
+  diffthis
+  vnew | r # | normal! 1Gdd
+  diffthis
+  exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+endfunction
+com! DiffSaved call s:DiffWithSaved()
+
 "leader commands
 nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeCWD<CR>" : "\:NERDTreeCWD<CR>"
 let NERDTreeShowHidden=0
 nnoremap <leader>nf :Neoformat<Enter>
 nnoremap <leader>p :w<Enter>:!python %<Enter>
 nnoremap <leader>P :w<Enter>:!terminator -e "python %"<Enter>
+nnoremap <leader>0 :!magic.py % 0<CR>
 " try to figure out below command:
 " format, save, run
 "nnoremap <leader>P :Neoformat<Enter> && :w && !python %<Enter>
 "set clipboard=unnamedplus
+"
 
 let g:neoformat_enabled_markdown = ['prettier']
 "show spaces
