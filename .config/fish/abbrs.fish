@@ -15,3 +15,5 @@ abbr nano "nvim"
 abbr vi "nvim"
 abbr :q exit
 abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
+abbr hm 'history --merge'
+abbr yg 'lazygit -ucd ~/.local/share/yadm/lazygit -w ~ -g ~/.local/share/yadm/repo.git'

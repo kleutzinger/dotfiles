@@ -9,9 +9,12 @@ Plug 'skywind3000/vim-terminal-help'
 Plug 'easymotion/vim-easymotion'
 Plug 'embark-theme/vim', { 'as': 'embark' }
 Plug 'liuchengxu/vim-which-key'
+Plug 'junegunn/fzf.vim'
+Plug 'chengzeyi/fzf-preview.vim'
 "Plug 'vim-airline/vim-airline'
 "Plug 'vim-airline/vim-airline-themes'
 Plug 'itchyny/lightline.vim'
+Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-markdown'
 Plug 'gioele/vim-autoswap'
 Plug 'dag/vim-fish'
@@ -31,6 +34,8 @@ call plug#end()
 " General colors
 
 let &t_ut=''
+
+set updatetime=300
 
 augroup highlight_yank
   autocmd!
@@ -65,6 +70,7 @@ let NERDTreeShowHidden=0
 nnoremap <leader>nf :Neoformat<Enter>
 nnoremap <leader>p :w<Enter>:!python %<Enter>
 nnoremap <leader>P :w<Enter>:!terminator -e "python %"<Enter>
+nnoremap <leader>w :w<Enter>
 nnoremap <leader>0 :!magic.py % 0<CR>
 " try to figure out below command:
 " format, save, run

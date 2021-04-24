@@ -4,11 +4,12 @@ set -gx PATH $PATH /home/kevin/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin /home
 #xmodmap /home/kevin/.Xmodmap
 set -gx NOTE_DIR /home/kevin/notes
 set -gx EDITOR nvim
+set -gx MOZ_X11_EGL 1
 set fish_greeting
 set pipenv_fish_fancy yes 
 set -gx FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
 set -gx DOKKU_HOST kevbot.xyz
-set -gx PYTHONBREAKPOINT ipdb.set_trace
+#set -gx PYTHONBREAKPOINT ipdb.set_trace
 set -gx MYVIMRC ~/.vimrc
 set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx BROWSER firefox 

@@ -63,11 +63,11 @@ super + shift + b
     bluetoothctl -- disconnect 1C:66:6D:C4:DD:FA && notify-send -t 1000 "Disconnected from Dualshock 4"
 
 # Put computer to sleep
-super + shift + s
+super + s
     systemctl suspend
 
 # turn off screen
-super + s
+super + shift +  s
     xset dpms force off
 
 super + shift + f

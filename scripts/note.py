@@ -3,11 +3,15 @@
 porting note.sh to python. 
 
 USAGE:
-    ./note.py or python note.py
+    ./note.py
+    python note.py
 
 ARGS:
-    [e]dit # edit this python script
-    [m]ovie # insert movie template
+    e   # (edit)  edit this python script
+    m   # (movie) append MOVIE_TEMPLATE to todays note before opening
+    p   # (print) print absolute filepath to today's note
+    i   # (interactive) choose a note from many previewed options
+
 
 TODO:
     [x] check env NOTE_DIR
@@ -28,6 +32,8 @@ TODO:
     [ ] named notes. like `note.py vim`
     [ ] fish shell completion generation
         [ ] move templates to dict?
+    [ ] note.py c # paste clipboard contents to note
+    [ ] edit multiple day's notes at once (append together and re-split/write?)
 
 https://stackoverflow.com/questions/26216875/how-to-handle-cli-subcommands-with-argparse
 """
@@ -40,6 +46,7 @@ import shutil
 import subprocess
 import sys
 import time
+from iterfzf import iterfzf
 
 EDITOR = os.getenv("EDITOR") or "gedit"
 if getpass.getuser() == "kevin":
@@ -72,9 +79,16 @@ def main():
         if argcmd.startswith("m"):
             # edit this source code
             open_note(get_note_path(), MOVIE_TEMPLATE)
-        if argcmd == ("p"):
+        if argcmd == "p":
             # print today's note path
             print(os.path.abspath(get_note_path()))
+        if argcmd == "i":
+            # get a fzf all notes in dir and choose one to edit
+            all_mds = []
+            for note_filename in glob.glob(os.path.join(NOTE_DIR, f"*{NOTE_EXT}")):
+                all_mds.append(note_filename)
+            to_edit_filename = iterfzf(sorted(all_mds, reverse=True), preview="bat {}")
+            open_note(to_edit_filename)
 
 
 def verify_env():
@@ -95,9 +109,10 @@ def verify_env():
 
 def open_note(path, append_template=""):
     "open note in editor. creates file on open if not existing"
-    with open(path, "a+") as f:
-        if append_template:
-            f.write(append_template)
+    if not os.path.isdir(path):
+        with open(path, "a+") as f:
+            if append_template:
+                f.write(append_template)
     subprocess.run(f"{EDITOR} {path}", shell=True)
 
 
@@ -113,13 +128,6 @@ def get_note_list():
     "return all note filenames [ 1.md, 2.md, ... ]"
     note_list = list(sorted(glob.glob("*.md")))
     return note_list
-
-
-def new_movie(note_path):
-    "add movie template to a note"
-    # note should already exist?
-    # call api?
-    pass
 
 
 def parse_arguments():
