@@ -46,7 +46,6 @@ import shutil
 import subprocess
 import sys
 import time
-from iterfzf import iterfzf
 
 EDITOR = os.getenv("EDITOR") or "gedit"
 if getpass.getuser() == "kevin":
@@ -83,6 +82,8 @@ def main():
             # print today's note path
             print(os.path.abspath(get_note_path()))
         if argcmd == "i":
+            from iterfzf import iterfzf
+
             # get a fzf all notes in dir and choose one to edit
             all_mds = []
             for note_filename in glob.glob(os.path.join(NOTE_DIR, f"*{NOTE_EXT}")):
