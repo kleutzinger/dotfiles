@@ -88,7 +88,7 @@ def main():
             all_mds = []
             for note_filename in glob.glob(os.path.join(NOTE_DIR, f"*{NOTE_EXT}")):
                 all_mds.append(note_filename)
-            to_edit_filename = iterfzf(sorted(all_mds, reverse=True), preview="bat {}")
+            to_edit_filename = iterfzf(sorted(all_mds, reverse=True), preview="cat {}")
             open_note(to_edit_filename)
 
 
