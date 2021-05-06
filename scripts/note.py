@@ -76,8 +76,11 @@ def main():
             # edit this source code
             subprocess.run(f"{EDITOR} {__file__}", shell=True)
         if argcmd.startswith("m"):
-            # edit this source code
-            open_note(get_note_path(), MOVIE_TEMPLATE)
+            import movie_api
+
+            search_query = input("what movie title?\n")
+            template = movie_api.search_to_template(search_query)
+            open_note(get_note_path(), template)
         if argcmd == "p":
             # print today's note path
             print(os.path.abspath(get_note_path()))
