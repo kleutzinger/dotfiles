@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 # concat all `note.md`s to a single `tmp.html`
 # open in $BROWSER
-cd /home/kevin/notes/
+cd $HOME/notes/
 set OUT (mktemp --suffix ".html")
 
 for i in (ls *.md | sort -r)

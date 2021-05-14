@@ -11,7 +11,7 @@ super + shift + r
     pkill -usr1 -x sxhkd; notify-send -t 15000 'sxhkd' 'Reloaded config'
 
 super + k
-    /home/kevin/scripts/edit-hotkeys.sh
+    $HOME/scripts/edit-hotkeys.sh
 
 super + w
     firefox
@@ -29,10 +29,10 @@ Print
     flameshot gui
 
 shift + Print
-    flameshot full -p /home/kevin/Pictures/scrots
+    flameshot full -p $HOME/Pictures/scrots
 
 F1
-    /home/kevin/scripts/toggle-term.sh
+    $HOME/scripts/toggle-term.sh
 
 shift + F1
     tdrop firefox
@@ -74,5 +74,5 @@ super + shift + f
     ~/scripts/clip-fmt-py.sh && notify-send -t 1000 "Fmt Python"
 
 super + y
-    vlc $(xsel -ob)
+    notify-send "$(xsel -ob)"; mpv $(xsel -ob)
 

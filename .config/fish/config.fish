@@ -1,8 +1,8 @@
-set -gx GEM_HOME /home/kevin/.local/share/gem/ruby/2.7.0
-set -gx SCRIPTS_DIR /home/kevin/scripts/
-set -gx PATH $PATH /home/kevin/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin /home/kevin/.yarn/bin/ /home/kevin/.deno/bin /home/kevin/.npm/bin/
-#xmodmap /home/kevin/.Xmodmap
-set -gx NOTE_DIR /home/kevin/notes
+set -gx GEM_HOME $HOME/.local/share/gem/ruby/2.7.0
+set -gx SCRIPTS_DIR $HOME/scripts/
+set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/
+#xmodmap $HOME/.Xmodmap
+set -gx NOTE_DIR $HOME/notes
 set -gx EDITOR nvim
 set -gx MOZ_X11_EGL 1
 set fish_greeting
@@ -15,7 +15,7 @@ set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx BROWSER firefox 
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
 alias p="xclip -o"
-source /home/kevin/.config/fish/abbrs.fish
+source $HOME/.config/fish/abbrs.fish
 
 complete --command indent_function --arguments '(functions)'
 complete -c ytpp -w youtube-dl
