@@ -10,7 +10,7 @@ set pipenv_fish_fancy yes
 set -gx FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
 set -gx DOKKU_HOST kevbot.xyz
 # set -gx PYTHONBREAKPOINT pdb.set_trace
-set -gx MYVIMRC ~/.vimrc
+set -gx MYVIMRC $HOME/.config/nvim/init.vim
 set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx BROWSER firefox 
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
@@ -29,7 +29,7 @@ function fed
 end
 
 function ved
-	$EDITOR ~/.vimrc
+	$EDITOR ~/.config/nvim/init.vim
 end
 
 function e -d "open a file in a text editor"

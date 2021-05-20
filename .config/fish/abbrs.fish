@@ -9,10 +9,7 @@ abbr pdb "python -m pdb"
 abbr m "micro"
 abbr ytp "youtube-dl (xclip -o)"
 abbr note note.py
-abbr vim "nvim"
 abbr nv "nvim"
-abbr nano "nvim"
-abbr vi "nvim"
 abbr :q exit
 abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
 abbr hm 'history --merge'

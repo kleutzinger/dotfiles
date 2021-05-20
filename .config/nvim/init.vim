@@ -3,6 +3,7 @@ let mapleader = ','
 so ~/.config/coc/config.vim
 
 call plug#begin()
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
 Plug 'skywind3000/vim-terminal-help'
