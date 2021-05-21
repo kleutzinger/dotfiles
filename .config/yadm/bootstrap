@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
+# This is built for arch linux distros with yay preinstalled
 cd $HOME
-git clone https://github.com/kleutzinger/scripts.git
-
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-
-ln -s ~/.vimrc ~/.config/nvim/init.vim
+yay -Syy
+yay -S (cat arch_packages.txt)
+fish -c "fisher update"
+nvim +'PlugInstall --sync' +qa

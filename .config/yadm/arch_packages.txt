@@ -1,0 +1,11 @@
+fish
+kitty
+neovim-nightly-bin
+neovim-plug
+nodejs
+fisher
+fzf
+lazygit
+sxhkd
+mosh
+micro
