@@ -13,7 +13,7 @@ abbr nv "nvim"
 abbr :q exit
 abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
 abbr hm 'history --merge'
-abbr yg 'lazygit -ucd ~/.local/share/yadm/lazygit -w ~ -g ~/.local/share/yadm/repo.git'
+abbr yg 'lazygit -w ~ -g ~/.local/share/yadm/repo.git'
 abbr wb 'wallabag'
 abbr arstarst 'setxkbmap us'
 abbr asdfasdf 'setxkbmap us -variant colemak'

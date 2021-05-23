@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 # This is built for arch linux distros with yay preinstalled
-cd $HOME
 yay -Syy
-yay -S (cat arch_packages.txt)
-fish -c "fisher update"
-nvim +'PlugInstall --sync' +qa
+yay -S fish
+chsh -s /usr/bin/fish
+fish bootstrap.fish

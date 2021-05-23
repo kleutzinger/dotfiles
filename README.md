@@ -28,10 +28,16 @@ All keybindings are defined in [config/sxhkd/sxhkdrc](.config/sxhkd/sxhkdrc)
 
 - `F1`: dropdown terminal
 - `super + enter`: floating terminal
-- `super + space`: dmenu_run
+- `super + space`: dmenu\_run
 - `super + w`: open browser
 - `super + m`: maximize
 - `super + q`: quit application
 - `shift + super + b`: disconnect bluetooth controller
 - `super + b`: edit [blog](https://blog.kevbot.xyz)
 - `super + o`: video game launcher
+
+
+## TODO:
+
+[] separate commands on different window managers
+[] auto run CocInstall

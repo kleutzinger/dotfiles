@@ -1,0 +1,5 @@
+coc-jedi
+coc-tsserver
+coc-json
+coc-css
+coc-emmet

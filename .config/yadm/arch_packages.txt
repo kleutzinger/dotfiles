@@ -9,3 +9,6 @@ lazygit
 sxhkd
 mosh
 micro
+npm
+yarn
+tdrop
