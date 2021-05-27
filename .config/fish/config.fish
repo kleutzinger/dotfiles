@@ -16,6 +16,10 @@ set -gx BROWSER firefox
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
 alias p="xclip -o"
 source $HOME/.config/fish/abbrs.fish
+if test -e $HOME/rescale/env.fish
+    source $HOME/rescale/env.fish
+end
+
 
 complete --command indent_function --arguments '(functions)'
 complete -c ytpp -w youtube-dl
@@ -40,3 +44,6 @@ function fish_user_key_bindings
 end
 
 starship init fish | source
+if test -e /opt/asdf-vm/asdf.fish
+    source /opt/asdf-vm/asdf.fish
+end

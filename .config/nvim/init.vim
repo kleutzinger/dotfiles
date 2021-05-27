@@ -132,13 +132,14 @@ set wrapscan
 set lazyredraw
 set ignorecase
 set smartcase
-set number relativenumber
+"set number relativenumber
+set number lines
 " change numbers look in insert mode
-:augroup numbertoggle
-:  autocmd!
-:  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-:  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-:augroup END
+":augroup numbertoggle
+":  autocmd!
+":  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+":  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+":augroup END
 " exit insert mode with `hk`, but you only have 1 second
 " https://forum.colemak.com/topic/1477-i-need-a-rarely-used-twokey-combination-of-home-row-keys-for-vim-esc/#p10747
 inoremap hk <ESC>

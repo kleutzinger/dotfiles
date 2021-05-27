@@ -17,3 +17,4 @@ abbr yg 'lazygit -w ~ -g ~/.local/share/yadm/repo.git'
 abbr wb 'wallabag'
 abbr arstarst 'setxkbmap us'
 abbr asdfasdf 'setxkbmap us -variant colemak'
+abbr rv "source $HOME/rescale/venv/bin/activate.fish"

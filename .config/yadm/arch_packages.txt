@@ -12,3 +12,5 @@ micro
 npm
 yarn
 tdrop
+nautilus-terminal
+wmctrl
