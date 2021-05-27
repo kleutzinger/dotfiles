@@ -1,25 +1,16 @@
 #!/usr/bin/env fish
 # concat all `note.md`s to a single `tmp.html`
 # open in $BROWSER
-cd $HOME/notes/
+cd $NOTE_DIR
+# I use asciidoc rather than markdown now
+set NOTE_EXT adoc
 set OUT (mktemp --suffix ".html")
 
-for i in (ls *.md | sort -r)
+for i in (ls *.$NOTE_EXT | sort -r)
+    # FP is filepath to note file
     set FP (readlink -f $i)
     set FP "<a href='$FP'>$i</a>"
-    echo "</br><hr></br><h1>$FP</h1>"
+    echo -e "\n\n'''\n\n"
     cat $i
-end | marked >> $OUT
-echo "
-<style>
-* { font-family: monospace; }
-a { 
-    color: blue;
-    text-decoration:none;
-}
-body {
-  margin: 0 auto;
-  width: 500px;
-}
-</style>" >> $OUT
+end | asciidoctor - >> $OUT
 $BROWSER $OUT > /dev/null

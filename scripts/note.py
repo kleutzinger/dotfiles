@@ -48,18 +48,17 @@ import sys
 import time
 
 EDITOR = os.getenv("EDITOR") or "gedit"
-if getpass.getuser() == "kevin":
-    EDITOR = "nvim '+normal G\$'"
-
 # how many hours after midnight do days roll over (5 am default)
 MIDNIGHT_HOUR_SHIFT = 5
 # note path = NOTE_DIR/NOTE_STRFTIME.NOTE_EXT
 NOTE_DIR = os.getenv("NOTE_DIR")
 NOTE_STRFTIME = "%Y-%m-%d"
 NOTE_EXT = ".md"
-MOVIE_TEMPLATE = (
-    "\n## Themes\n\n## Characters\n\n## Memorable Parts\n\n## Reminded Me of\n\n"
-)
+
+if getpass.getuser() == "kevin":
+    # this is for my own stuff
+    EDITOR = "nvim '+normal G\$'"
+    NOTE_EXT = ".adoc"
 
 
 def main():

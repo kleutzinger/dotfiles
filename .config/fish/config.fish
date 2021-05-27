@@ -1,4 +1,4 @@
-set -gx GEM_HOME $HOME/.local/share/gem/ruby/2.7.0
+set -gx GEM_HOME $HOME/.local/share/gem/ruby/3.0.0
 set -gx SCRIPTS_DIR $HOME/scripts/
 set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/
 #xmodmap $HOME/.Xmodmap
