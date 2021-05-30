@@ -13,4 +13,4 @@ for i in (ls *.$NOTE_EXT | sort -r)
     echo -e "\n\n'''\n\n"
     cat $i
 end | asciidoctor - >> $OUT
-$BROWSER $OUT > /dev/null
+xdg-open $OUT > /dev/null

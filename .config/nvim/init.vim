@@ -1,7 +1,6 @@
 "Kevin's vimrc
 let mapleader = ','
 so ~/.config/coc/config.vim
-
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'justinmk/vim-sneak'
@@ -82,7 +81,7 @@ nnoremap <leader>0 :!magic.py % 0<CR>
 let g:neoformat_enabled_markdown = ['prettier']
 "show spaces
 set list
-set lcs+=space:·
+"set lcs+=space:·
 
 tnoremap <Esc> <C-\><C-n>:q!<CR>
 "wrap around

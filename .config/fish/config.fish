@@ -12,12 +12,13 @@ set -gx DOKKU_HOST kevbot.xyz
 # set -gx PYTHONBREAKPOINT pdb.set_trace
 set -gx MYVIMRC $HOME/.config/nvim/init.vim
 set -gx SXHKD_SHELL '/usr/bin/sh'
-set -gx BROWSER firefox 
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
 alias p="xclip -o"
 source $HOME/.config/fish/abbrs.fish
 if test -e $HOME/rescale/env.fish
     source $HOME/rescale/env.fish
+else
+    set -gx BROWSER firefox
 end
 
 

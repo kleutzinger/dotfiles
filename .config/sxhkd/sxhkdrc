@@ -14,7 +14,7 @@ super + k
     $HOME/scripts/edit-hotkeys.sh
 
 super + w
-    firefox
+    $BROWSER
 
 super + Return
     mini-kitty.sh
