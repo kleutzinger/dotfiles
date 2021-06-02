@@ -59,7 +59,7 @@ else
     echo "Do not overwrite. Exiting"
     exit 0
 end
-set SSL_DIR /etc/nginx/sll
+set SSL_DIR /etc/nginx/ssl
 mkdir -p SSL_DIR
 cp server.crt server.key $SSL_DIR
 
