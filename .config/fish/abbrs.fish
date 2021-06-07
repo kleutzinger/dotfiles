@@ -18,3 +18,4 @@ abbr wb 'wallabag'
 abbr arstarst 'setxkbmap us'
 abbr asdfasdf 'setxkbmap us -variant colemak'
 abbr rv "source $HOME/rescale/venv/bin/activate.fish"
+abbr pp pm2

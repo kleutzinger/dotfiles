@@ -16,3 +16,4 @@ nautilus-terminal
 wmctrl
 asciidoctor
 asciidoc
+unarchiver

@@ -66,6 +66,10 @@
 			{
 				"name" : "rainwave chiptune",
 				"url" : "https://relay.rainwave.cc:443/chiptune.mp3"
+			},
+			{
+				"name" : "rainwave all",
+				"url" : "https://relay.rainwave.cc:443/all.mp3"
 			}
 		]
 	}

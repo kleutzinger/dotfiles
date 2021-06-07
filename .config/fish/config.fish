@@ -21,6 +21,11 @@ else
     set -gx BROWSER firefox
 end
 
+# https://github.com/decors/fish-colored-man settings
+set -g man_blink -o red
+set -g man_bold -o green
+set -g man_standout -b white 586e75
+set -g man_underline -u 93a1a1
 
 complete --command indent_function --arguments '(functions)'
 complete -c ytpp -w youtube-dl
