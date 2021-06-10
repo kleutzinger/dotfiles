@@ -9,8 +9,9 @@ set OUT (mktemp --suffix ".html")
 for i in (ls *.$NOTE_EXT | sort -r)
     # FP is filepath to note file
     set FP (readlink -f $i)
-    set FP "<a href='$FP'>$i</a>"
-    echo -e "\n\n'''\n\n"
+    set FP "<a href='$FP'><h2>$i</h2></a>"
+    echo -e "++++\n$FP\n++++\n"
     cat $i
+    echo -e "\n\n'''\n\n"
 end | asciidoctor - >> $OUT
 xdg-open $OUT > /dev/null
