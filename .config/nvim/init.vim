@@ -35,6 +35,8 @@ call plug#end()
 
 let &t_ut=''
 
+set clipboard=unnamedplus
+set nrformats+=alpha
 set updatetime=300
 
 augroup highlight_yank

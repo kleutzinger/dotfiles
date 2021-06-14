@@ -7,6 +7,6 @@ function yay
         echo "cannot run yay inside virtual env $VIRTUAL_ENV"
         return 1
     end
-    command yay $argv
+    command paru $argv
 end
 
