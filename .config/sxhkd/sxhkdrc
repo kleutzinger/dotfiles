@@ -76,3 +76,5 @@ super + shift + f
 super + y
     notify-send "$(xsel -ob)"; mpv $(xsel -ob)
 
+super + l
+    slock
