@@ -44,12 +44,12 @@ def search_to_template(query, num_actors=5):
     movie = get_tmdb_json(t_id)
     movie_str = movie2trim(movie, add_kevbot_link=True)
     cast_str = movie2cast(movie, num_actors)
-    out = f"# {movie_str}\n\n"
-    out += f"## Themes\n\n"
-    out += f"## Characters\n\n"
+    out = f"== {movie_str}\n\n"
+    out += f"=== Themes\n\n"
+    out += f"=== Characters\n\n"
     out += f"{cast_str}\n\n"
-    out += f"## Memorable Parts\n\n"
-    out += f"## Reminded of personal story\n\n"
+    out += f"=== Memorable Parts\n\n"
+    out += f"=== Reminded of personal story\n\n"
     return out
 
 
@@ -71,7 +71,7 @@ def movie2cast(movie, num_actors=5):
     actor_titles = []
     for cast_member in movie["credits"]["cast"][:num_actors]:
         # name, character
-        out = f"{cast_member.get('name')} as {cast_member.get('character')}:  "
+        out = f".{cast_member.get('name')} as {cast_member.get('character')}"
         actor_titles.append(out)
     return "\n\n".join(actor_titles)
 
