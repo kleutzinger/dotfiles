@@ -70,6 +70,10 @@
 			{
 				"name" : "rainwave all",
 				"url" : "https://relay.rainwave.cc:443/all.mp3"
+			},
+			{
+				"name" : "rainwave OC remix",
+				"url" : "https://relay.rainwave.cc:443/ocremix.mp3"
 			}
 		]
 	}

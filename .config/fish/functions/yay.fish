@@ -1,12 +1,14 @@
 function yay
-    if string match -r 'rescale' (pwd) > /dev/null
-        echo "cannot run yay inside $HOME/rescale/ subfolder"
-        return 1
-    end
+    pushd $HOME
     if test -n "$VIRTUAL_ENV"
-        echo "cannot run yay inside virtual env $VIRTUAL_ENV"
-        return 1
+        echo "temporarily disabling venv $VIRTUAL_ENV"
+        set TEMP_VENV $VIRTUAL_ENV
+        deactivate
     end
     command paru $argv
+    if test -n $TEMP_VENV
+        source $TEMP_VENV/bin/activate.fish
+    end
+    popd
 end
 
