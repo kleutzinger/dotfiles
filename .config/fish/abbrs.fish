@@ -15,6 +15,7 @@ abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
 abbr hm 'history --merge'
 abbr yg 'lazygit -w ~ -g ~/.local/share/yadm/repo.git'
 abbr wb 'wallabag'
-abbr arstarst 'setxkbmap us'
-abbr asdfasdf 'setxkbmap us -variant colemak'
+abbr arstarst 'setxkbmap us -option ctrl:swap_lalt_lctl'
+abbr asdfasdf 'setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl'
 abbr pp pm2
+abbr d deactivate

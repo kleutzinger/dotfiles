@@ -57,9 +57,9 @@ def movie2trim(movie, add_kevbot_link=False):
     "return a string like `The Dark Knight (2008)`"
     title = movie.get('title', '')
     release_year = movie.get('release_date', '0000').split('-')[0]
-    out = f"{title} ({release_year})  "
+    out = f"{title} ({release_year})"
     if add_kevbot_link:
-        out += f"\nhttps://movies.kevbot.xyz/?m={movie['id']}  "
+        out += f"\nhttps://movies.kevbot.xyz/?m={movie['id']}"
     return out
 
 

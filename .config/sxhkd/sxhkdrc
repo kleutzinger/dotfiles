@@ -10,11 +10,12 @@ super + alt + {Right,Left}
 super + shift + r
     pkill -usr1 -x sxhkd; notify-send -t 15000 'sxhkd' 'Reloaded config'
 
-super + shift + k
+super + k
     $HOME/scripts/edit-hotkeys.sh
 
 super + w
     $BROWSER
+    #tdrop -h '100%' $BROWSER "file:///home/kevin/rescale/kevdocs/joey-new-tab.html"
 
 super + Return
     mini-kitty.sh
@@ -35,7 +36,7 @@ F1
     $HOME/scripts/toggle-term.sh
 
 shift + F1
-    tdrop firefox
+    tdrop $BROWSER
 
 super + n
     terminator --title newsboat -e "newsboat"
@@ -43,7 +44,7 @@ super + n
 super + e
     nautilus
 
-super + b
+super + shift + b
     $BROWSER 127.0.0.1:9001/admin/
 
 super + o
@@ -59,7 +60,7 @@ super + shift + c
     qdbus org.kde.KWin /Compositor resume; notify-send "resume compositor"
 
 # Disconnect from PS4 controller
-super + shift + b
+super + b
     bluetoothctl -- disconnect 1C:66:6D:C4:DD:FA && notify-send -t 1000 "Disconnected from Dualshock 4"
 
 # Put computer to sleep
