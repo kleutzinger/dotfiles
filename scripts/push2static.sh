@@ -1,6 +1,6 @@
 #!/bin/bash
 # push static file to vps /
-VPS_STATIC_FOLDER="root@kevbot.xyz:/home/kevin/pushed/"
+VPS_STATIC_FOLDER="kevin@kevbot.xyz:/home/kevin/pushed/"
 
 DEST=""
 # if [ $1 = "live" ]; then
