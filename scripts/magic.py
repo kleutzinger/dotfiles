@@ -30,7 +30,7 @@ import sys
 import subprocess
 
 MAGIC_REGEX = re.compile(r"\s*#\s*__([A-Z0-9_]+)__#\s*(\S.*)")
-CAST_EMOJI = "(๑•ᴗ•)⊃━☆ﾟ.*･｡ﾟ"
+CAST_EMOJI = "(๑•ᴗ•)⊃━☆.*･｡ﾟ"
 
 
 def main():
@@ -66,7 +66,7 @@ def with_arg(filename):
         spell_idx = choose_spell_idx(spells)
     name, command = spells[spell_idx]
 
-    print(f"{name}")
+    print(f"{CAST_EMOJI}{name}")
     process = subprocess.call(command, shell=True)
 
 

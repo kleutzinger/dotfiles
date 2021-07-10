@@ -7,7 +7,7 @@ abbr r "python run.py"
 # abbr v "source .venv/bin/activate.fish"
 abbr pdb "python -m pdb"
 abbr m "micro"
-abbr ytp "youtube-dl (xclip -o)"
+abbr ytp "mpv (xclip -o)"
 abbr note note.py
 abbr nv "nvim"
 abbr :q exit
