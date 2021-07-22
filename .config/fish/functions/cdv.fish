@@ -3,13 +3,13 @@ function cdv -d "change directory, and activate virtualenvs, if available"
     builtin cd $argv
 
     # find a parent git directory
-    if git rev-parse --show-toplevel >/dev/null ^/dev/null
+    if git rev-parse --show-toplevel
         set gitdir (realpath (git rev-parse --show-toplevel))
     else
         set gitdir ""
     end
 
-    # if that directory contains a virtualenv in a ".env" directory, activate it
+    # if that directory contains a virtualenv in a ".venv" directory, activate it
     if test \( -z "$VIRTUAL_ENV" -o "$VIRTUAL_ENV" != "$gitdir/.venv" \) -a -f "$gitdir/.venv/bin/activate.fish"
         source $gitdir/.venv/bin/activate.fish
     end

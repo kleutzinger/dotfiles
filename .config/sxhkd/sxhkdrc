@@ -14,7 +14,7 @@ super + k
     $HOME/scripts/edit-hotkeys.sh
 
 super + w
-    $BROWSER
+    firefox
     #tdrop -h '100%' $BROWSER "file:///home/kevin/rescale/kevdocs/joey-new-tab.html"
 
 super + Return
@@ -79,3 +79,6 @@ super + y
 
 super + l
     slock
+
+super + g
+    ~/scripts/gym-busy.fish
