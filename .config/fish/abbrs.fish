@@ -19,3 +19,6 @@ abbr arstarst 'setxkbmap us -option ctrl:swap_lalt_lctl'
 abbr asdfasdf 'setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl'
 abbr pp pm2
 abbr d deactivate
+abbr gs 'git switch -'
+abbr gsm 'git switch master'
+abbr xt 'TERM=xterm'

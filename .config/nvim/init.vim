@@ -74,6 +74,7 @@ nnoremap <leader>p :w<Enter>:!python %<Enter>
 nnoremap <leader>P :w<Enter>:!terminator -e "python %"<Enter>
 nnoremap <leader>w :w<Enter>
 nnoremap <leader>0 :!magic.py % 0<CR>
+nnoremap <leader>y ^y$
 " try to figure out below command:
 " format, save, run
 "nnoremap <leader>P :Neoformat<Enter> && :w && !python %<Enter>

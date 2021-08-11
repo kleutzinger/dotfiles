@@ -49,7 +49,7 @@ def search_to_template(query, num_actors=5):
     out += f"=== Characters\n\n"
     out += f"{cast_str}\n\n"
     out += f"=== Memorable Parts\n\n"
-    out += f"=== Reminded of personal story\n\n"
+    out += f"=== Reminded of\n\n"
     return out
 
 

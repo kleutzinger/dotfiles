@@ -65,7 +65,7 @@ super + b
 
 # Put computer to sleep
 super + s
-    systemctl suspend
+    notify-send "sleeping"; systemctl suspend
 
 # turn off screen
 super + shift +  s
