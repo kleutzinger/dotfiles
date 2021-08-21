@@ -3,6 +3,9 @@ import http.server
 import socketserver
 import sys
 
+# usage:
+# http-server-silent.py 1234
+
 if len(sys.argv) > 1:
     PORT = int(sys.argv[1])
 else:
