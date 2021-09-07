@@ -39,7 +39,7 @@ shift + F1
     tdrop $BROWSER
 
 super + n
-    terminator --title newsboat -e "newsboat"
+    fish -c "check-notes.fish"
 
 super + e
     nautilus
@@ -54,7 +54,7 @@ super + shift + o
     cool-retro-term -e game.sh d
 
 super + c
-    qdbus org.kde.KWin /Compositor suspend; notify-send "suspend compositor"
+    fish -c "check-notes.fish"
 
 super + shift + c
     qdbus org.kde.KWin /Compositor resume; notify-send "resume compositor"
@@ -82,3 +82,6 @@ super + l
 
 super + g
     ~/scripts/gym-busy.fish
+
+super + u
+    cd ~/Music; ~/scripts/bandcamp-downloader.sh $(xsel -ob)

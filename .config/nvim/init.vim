@@ -35,7 +35,6 @@ call plug#end()
 
 let &t_ut=''
 
-set clipboard=unnamedplus
 set nrformats+=alpha
 set updatetime=300
 
@@ -71,7 +70,7 @@ nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" 
 let NERDTreeShowHidden=0
 nnoremap <leader>nf :Neoformat<Enter>
 nnoremap <leader>p :w<Enter>:!python %<Enter>
-nnoremap <leader>P :w<Enter>:!terminator -e "python %"<Enter>
+nnoremap <leader>P :w<Enter>:!terminator -e "python %; sleep 10"<Enter>
 nnoremap <leader>w :w<Enter>
 nnoremap <leader>0 :!magic.py % 0<CR>
 nnoremap <leader>y ^y$
