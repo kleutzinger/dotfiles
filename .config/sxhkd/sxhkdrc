@@ -10,7 +10,7 @@ super + alt + {Right,Left}
 super + shift + r
     pkill -usr1 -x sxhkd; notify-send -t 15000 'sxhkd' 'Reloaded config'
 
-super + k
+super + shift + k
     $HOME/scripts/edit-hotkeys.sh
 
 super + w

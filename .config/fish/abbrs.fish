@@ -22,3 +22,4 @@ abbr d deactivate
 abbr gs 'git switch -'
 abbr gsm 'git switch master'
 abbr xt 'TERM=xterm'
+abbr kt 'kitty @ set-tab-title'

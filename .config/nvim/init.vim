@@ -134,7 +134,7 @@ set lazyredraw
 set ignorecase
 set smartcase
 "set number relativenumber
-set number lines
+"set number lines
 " change numbers look in insert mode
 ":augroup numbertoggle
 ":  autocmd!
