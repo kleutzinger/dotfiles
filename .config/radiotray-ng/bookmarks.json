@@ -31,26 +31,32 @@
 		[
 			{
 				"name" : "Drone Zone",
+				"notifications" : false,
 				"url" : "http://somafm.com/dronezone.pls"
 			},
 			{
 				"name" : "Space Station Soma",
+				"notifications" : false,
 				"url" : "http://somafm.com/spacestation.pls"
 			},
 			{
 				"name" : "cliqhop idm",
+				"notifications" : false,
 				"url" : "http://somafm.com/cliqhop.pls"
 			},
 			{
 				"name" : "Black Rock FM",
+				"notifications" : false,
 				"url" : "http://somafm.com/brfm.pls"
 			},
 			{
 				"name" : "New Dance Radio",
+				"notifications" : false,
 				"url" : "http://jbstream.net/tunein.php/blackoutworm/playlist.asx"
 			},
 			{
 				"name" : "DubStep Beyond",
+				"notifications" : false,
 				"url" : "http://somafm.com/play/dubstep32"
 			}
 		]
@@ -61,18 +67,22 @@
 		[
 			{
 				"name" : "rainwave game",
+				"notifications" : false,
 				"url" : "https://relay.rainwave.cc:443/game.mp3"
 			},
 			{
 				"name" : "rainwave chiptune",
+				"notifications" : false,
 				"url" : "https://relay.rainwave.cc:443/chiptune.mp3"
 			},
 			{
 				"name" : "rainwave all",
+				"notifications" : false,
 				"url" : "https://relay.rainwave.cc:443/all.mp3"
 			},
 			{
 				"name" : "rainwave OC remix",
+				"notifications" : false,
 				"url" : "https://relay.rainwave.cc:443/ocremix.mp3"
 			}
 		]
