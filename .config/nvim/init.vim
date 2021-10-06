@@ -77,7 +77,7 @@ nnoremap <leader>y ^y$
 " try to figure out below command:
 " format, save, run
 "nnoremap <leader>P :Neoformat<Enter> && :w && !python %<Enter>
-"set clipboard=unnamedplus
+set clipboard=unnamedplus
 "
 
 let g:neoformat_enabled_markdown = ['prettier']
