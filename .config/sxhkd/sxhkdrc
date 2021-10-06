@@ -64,8 +64,9 @@ super + b
     bluetoothctl -- disconnect 1C:66:6D:C4:DD:FA && notify-send -t 1000 "Disconnected from Dualshock 4"
 
 # Put computer to sleep
+
 super + s
-    notify-send "sleeping"; systemctl suspend
+    python $HOME/scripts/going-to-sleep.py
 
 # turn off screen
 super + shift +  s
