@@ -29,6 +29,7 @@ set -g man_underline -u 93a1a1
 
 complete --command indent_function --arguments '(functions)'
 complete -c ytpp -w youtube-dl
+complete -c yay -w yay
 # complete -c yadm -w git
 complete -c yadm -e
 
@@ -47,6 +48,14 @@ function e -d "open a file in a text editor"
 end
 function fish_user_key_bindings
 	bind \cH backward-kill-path-component
+end
+
+function rr
+    set PREV_CMD (history | head -1)
+    set PREV_OUTPUT (eval $PREV_CMD)
+    set CMD $argv[1]
+    echo "Running '$CMD $PREV_OUTPUT'"
+    eval "$CMD $PREV_OUTPUT"
 end
 
 starship init fish | source
