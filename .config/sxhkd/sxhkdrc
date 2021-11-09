@@ -89,3 +89,6 @@ super + u
 
 ## Some commnad to switch directly to VS Code Screen (super + 1)
 # not using super keys anywhere and i might as well
+
+super + p
+    lxrandr
