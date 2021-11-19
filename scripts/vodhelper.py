@@ -150,7 +150,7 @@ def convert(ts_paths=get_ts_paths(), append_to_filename=''):  # makes file.mp4 i
         outputPath = os.path.join(ts_dirname, 'mp4', mp4name)
         outputMP4s.append(outputPath)
         subprocess.call(
-            f'ffmpeg -i "{ts_path}" -preset veryfast -vf scale=1280:-2 "{outputPath}"', shell=True)
+            f'ffmpeg -y -i "{ts_path}" -preset veryfast -vf scale=1280:-2 "{outputPath}"', shell=True)
     return outputMP4s
 
 
