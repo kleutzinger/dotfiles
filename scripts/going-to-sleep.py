@@ -6,6 +6,7 @@ import time
 HOME = str(Path.home())
 SLEEPFILE = os.path.join(HOME, ".sleep-lock")
 SLEEP_WAIT_SEC = 5
+DISABLED = False
 
 
 def notif(msg):
@@ -57,6 +58,9 @@ def sleep_file_exists():
 
 
 def main():
+    if DISABLED:
+        notif('sleep was clicked!? disabled')
+        exit()
     if sleep_file_exists():
         remove_sleep_file()
     else:

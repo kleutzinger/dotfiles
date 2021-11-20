@@ -68,12 +68,12 @@ super + b
 
 # Put computer to sleep
 
-super + s
+super + shift + s
     python $HOME/scripts/going-to-sleep.py
 
 # turn off screen
-super + shift +  s
-    xset dpms force off
+#super + shift +  s
+    #xset dpms force off
 
 super + shift + f
     ~/scripts/clip-fmt-py.sh && notify-send -t 1000 "Fmt Python"
