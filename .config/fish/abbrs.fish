@@ -1,6 +1,6 @@
 abbr q exit
 abbr lg lazygit
-abbr advent "source /home/kevin/gits/advent-of-code-2020/new_day.fish"
+abbr advent "source /home/kevin/gits/advent-of-code-2021/new_day.fish"
 abbr remove_orphans "sudo pacman -Qtdq | sudo pacman -Rns -"
 abbr eel "eel_server_run"
 abbr r "python run.py"
@@ -25,3 +25,5 @@ abbr gsm 'git switch master'
 abbr xt 'TERM=xterm'
 abbr kt 'kitty @ set-tab-title'
 abbr gpm 'git switch master && git pull && git switch -'
+abbr xi 'xsel -ib'
+abbr xo 'xsel -ob'
