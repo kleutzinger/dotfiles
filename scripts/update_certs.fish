@@ -6,7 +6,6 @@
 # so this script is not fully automated
 
 # command to check if .TXT records are set:
-#    nslookup -q=txt _acme-challenge.kevbot.xyz.
 if test (id -u) -eq 0
     echo "running as root"
 else
@@ -46,7 +45,20 @@ cd /etc/letsencrypt/live/kevbot.xyz
 # dokku global-cert:set < certs.tar
 # dokku certs:add movies < certs.tar
 
-certbot certonly --manual --preferred-challenges=dns --preferred-chain 'ISRG Root X1' --domain "kevbot.xyz,*.kevbot.xyz"
+# certbot certonly --manual --preferred-challenges=dns --preferred-chain 'ISRG Root X1' --domain "kevbot.xyz,*.kevbot.xyz"
+
+echo "please run to check deployed .txt records:"
+echo "nslookup -q=txt _acme-challenge.kevbot.xyz."
+certbot certonly --manual --preferred-challenges=dns --domain "kevbot.xyz,*.kevbot.xyz"
+
+ if test $status -eq 0
+     echo "certbot OK"
+ else
+     echo "certbot Error!"
+     exit 1
+ end
+
+# command worked?
 echo "Combining certs to certs.tar"
 cp privkey.pem server.key; cp fullchain.pem server.crt
 tar cvf certs.tar server.crt server.key
