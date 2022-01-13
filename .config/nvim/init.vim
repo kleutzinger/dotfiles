@@ -3,6 +3,7 @@ let mapleader = ','
 so ~/.config/coc/config.vim
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'Mofiqul/vscode.nvim'
 Plug 'justinmk/vim-sneak'
 Plug 'tpope/vim-surround'
 Plug 'skywind3000/vim-terminal-help'
@@ -89,7 +90,16 @@ tnoremap <Esc> <C-\><C-n>:q!<CR>
 "wrap around
 set whichwrap+=<,>,[,]
 
-colorscheme embark
+" Vim-Script:
+" For dark theme
+let g:vscode_style = "dark"
+" Enable transparent background.
+let g:vscode_transparency = 1
+" Enable italic comment
+" let g:vscode_italic_comment = 1
+colorscheme vscode
+
+
 let g:embark_tkittyerminal_italics = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
 set termguicolors
