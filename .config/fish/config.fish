@@ -57,6 +57,11 @@ function rr
     eval "$CMD $PREV_OUTPUT"
 end
 
+function bh -d "bat history"
+    bat ~/.local/share/fish/fish_history
+end
+
+
 starship init fish | source
 if test -e /opt/asdf-vm/asdf.fish
     source /opt/asdf-vm/asdf.fish
