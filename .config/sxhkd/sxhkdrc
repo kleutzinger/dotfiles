@@ -95,3 +95,6 @@ super + u
 
 super + p
     lxrandr
+
+super + v
+    xfce4-clipman-history
