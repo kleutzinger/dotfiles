@@ -98,3 +98,6 @@ super + p
 
 super + v
     xfce4-clipman-history
+
+super + h
+    $HOME/scripts/google-doc-insert-today-header.sh
