@@ -3,20 +3,25 @@ I solve New York Times' game called Spelling Bee
 
 play here: https://www.nytimes.com/puzzles/spelling-bee
 """
-from pprint import pprint
+import json
 
-
-allowed_alphabet = set("mheladp")
-required_letter = "p"
+allowed_alphabet = set("ayleihv")
+required_letter = "v"
 valid_words = []
+pangrams = []
 
 
 def verify(word):
+    sword = set(word)
     if len(word) < 4:
         return False
-    if required_letter not in word:
+    if required_letter not in sword:
         return False
-    return set(word).issubset(allowed_alphabet)
+    if not sword.issubset(allowed_alphabet):
+        return False
+    if allowed_alphabet == sword:
+        pangrams.append(word)
+    return True
 
 
 with open("/usr/share/dict/words", "r") as f:
@@ -26,4 +31,8 @@ with open("/usr/share/dict/words", "r") as f:
             valid_words.append(word)
 
 
-pprint(sorted(valid_words, key=len))
+print(
+    json.dumps(
+        dict(valid_words=sorted(valid_words, key=len), pangrams=pangrams), indent=2
+    )
+)
