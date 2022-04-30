@@ -101,3 +101,6 @@ super + v
 
 super + h
     $HOME/scripts/google-doc-insert-today-header.sh
+
+super + shift + h
+   python3 /home/kevin/scripts/grid_overlay.py
