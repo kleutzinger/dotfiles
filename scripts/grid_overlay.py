@@ -26,6 +26,11 @@ import subprocess
 import os
 from PIL import Image, ImageDraw, ImageFont
 
+
+# how many pixels apart should the gridlines be?
+# smaller numbers may affect performance
+GRID_STEP_SIZE = 100
+
 FONT_PATH = "/usr/share/fonts/TTF/FiraCode-Bold.ttf"
 
 if not (os.path.exists(FONT_PATH)):
@@ -39,24 +44,21 @@ def grid_on_img(img: Image.Image) -> str:
     "returns path to new img with labeled grid overlaid"
     out_path = "/tmp/screenshot_grid.png"
     draw = ImageDraw.Draw(img)
-    # how many pixels apart should the gridlines be?
-    # smaller numbers affect performance
-    step_size = 100
     font = ImageFont.truetype(FONT_PATH, size=20)
 
     # screen resolution
     W, H = img.size
 
     # draw grid
-    for x in range(0, W, step_size):
+    for x in range(0, W, GRID_STEP_SIZE):
         draw.line((x, 0, x, H), fill=128)
-    for y in range(0, H, step_size):
+    for y in range(0, H, GRID_STEP_SIZE):
         draw.line((0, y, W, y), fill=128, width=4)
 
     # draw grid labels
-    for y in range(0, H, step_size):
-        for x in range(0, W, step_size):
-            coord_str = f"{x//step_size},{y//step_size}"
+    for y in range(0, H, GRID_STEP_SIZE):
+        for x in range(0, W, GRID_STEP_SIZE):
+            coord_str = f"{x//GRID_STEP_SIZE},{y//GRID_STEP_SIZE}"
             ts = font.getsize(coord_str)
             draw.rectangle((x, y, x + ts[0], y + ts[1]), fill=128)
             draw.text((x, y), coord_str, font=font)
