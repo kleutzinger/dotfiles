@@ -5,6 +5,7 @@ call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Mofiqul/vscode.nvim'
 Plug 'justinmk/vim-sneak'
+Plug 'google/vim-jsonnet'
 Plug 'tpope/vim-surround'
 Plug 'skywind3000/vim-terminal-help'
 Plug 'easymotion/vim-easymotion'

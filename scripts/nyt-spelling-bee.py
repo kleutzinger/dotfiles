@@ -5,8 +5,9 @@ play here: https://www.nytimes.com/puzzles/spelling-bee
 """
 import json
 
-allowed_alphabet = set("ayleihv")
-required_letter = "v"
+inp = input("what letters? (required letter first):")
+allowed_alphabet = set(inp)
+required_letter = inp[0]
 valid_words = []
 pangrams = []
 
