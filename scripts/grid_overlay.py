@@ -20,6 +20,7 @@ Mine is super + shift + h
 must have these pre-installed
     PIL: https://pillow.readthedocs.io/en/stable/index.html
     feh: https://feh.finalrewind.org/
+    scrot: https://github.com/resurrecting-open-source-projects/scrot
 """
 
 import subprocess
