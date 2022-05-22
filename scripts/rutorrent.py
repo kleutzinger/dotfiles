@@ -82,7 +82,7 @@ def download_magnet(
     print(f"downloading to {directory}")
     resp = requests.request(
         method="POST",
-        url=f"{RUTORRENT_URL}/php/addtorrent.php?dir_edit={directory}&?label={label}",
+        url=f"{RUTORRENT_URL}/php/addtorrent.php?dir_edit={directory}&label={label}",
         data={"url": magnet},
         verify=True,
     )
