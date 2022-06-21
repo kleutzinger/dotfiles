@@ -52,9 +52,9 @@ def grid_on_img(img: Image.Image) -> str:
 
     # draw grid
     for x in range(0, W, GRID_STEP_SIZE):
-        draw.line((x, 0, x, H), fill=128)
+        draw.line((x, 0, x, H), fill=128, width=2)
     for y in range(0, H, GRID_STEP_SIZE):
-        draw.line((0, y, W, y), fill=128, width=4)
+        draw.line((0, y, W, y), fill=128, width=2)
 
     # draw grid labels
     for y in range(0, H, GRID_STEP_SIZE):

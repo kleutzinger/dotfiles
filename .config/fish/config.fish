@@ -61,6 +61,9 @@ function bh -d "bat history"
     bat ~/.local/share/fish/fish_history
 end
 
+if test -e /usr/bin/zoxide
+    zoxide init fish | source
+end
 
 starship init fish | source
 if test -e /opt/asdf-vm/asdf.fish
