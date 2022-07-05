@@ -17,3 +17,5 @@ wmctrl
 asciidoctor
 asciidoc
 unarchiver
+zoxide
+asdf

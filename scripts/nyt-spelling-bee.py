@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 I solve New York Times' game called Spelling Bee
 
