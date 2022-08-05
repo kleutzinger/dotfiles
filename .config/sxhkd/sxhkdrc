@@ -104,3 +104,6 @@ super + h
 
 super + shift + h
    python3 /home/kevin/scripts/grid_overlay.py
+
+super + shift + t
+    notify-send "trying to get torrent $(xsel -ob)"; python3 ~/scripts/rutorrent.py $(xsel -ob) | ~/scripts/notify-pipe

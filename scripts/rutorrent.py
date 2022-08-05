@@ -50,6 +50,7 @@ RUTORRENT_URL = os.environ.get("RUTORRENT_URL")
 
 DEFAULT_TORRENT_LABEL = "kevin"
 DEFAULT_DOWNLOAD_DIR = "/mnt/shared/media/movies"
+LOGFILE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "torrents.txt")
 
 
 def dir_prompt() -> str:
@@ -109,7 +110,7 @@ def main() -> None:
         magnet = pyperclip.paste()
     # prompt
     else:
-        while True:
+        while True and sys.stdin.isatty():
             magnet = input("input magnet link: ").strip()
             if is_magnet(magnet):
                 break
@@ -120,6 +121,8 @@ def main() -> None:
         dl_dir = dir_prompt()
     out = download_magnet(magnet, dl_dir)
     print(out)
+    with open(LOGFILE, "a+") as f:
+        f.write(f"{magnet=} {out=}\n\n")
 
 
 if __name__ == "__main__":
