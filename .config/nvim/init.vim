@@ -209,3 +209,5 @@ let g:firenvim_config = {
 \ }
 
 au FileType markdown let b:delimitMate_nesting_quotes = ['`']
+
+vnoremap p pgvy
