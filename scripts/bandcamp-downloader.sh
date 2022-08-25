@@ -16,5 +16,5 @@ yt-dlp -f bestaudio[ext=mp3] --embed-thumbnail -o  "%(artist)s - %(playlist_titl
 LARGEST_FOLDER="$(find . -type d | cut -d/ -f 2 | uniq -c | sort -g | tail -n 1 | awk '{$1=""}1' | awk '{$1=$1}1')"
 popd
 mkdir "$LARGEST_FOLDER"
-fd . --extension mp3 $TMP/ | xargs -I files cp files "$LARGEST_FOLDER"
+find $TMP/ -name '*.mp3' -print0 | xargs -0 -I files cp files "$LARGEST_FOLDER"
 echo "$DLS" >> $HOME/Music/bandcamps.txt
