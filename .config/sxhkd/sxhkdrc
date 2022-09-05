@@ -14,7 +14,8 @@ super + shift + k
     $HOME/scripts/edit-hotkeys.sh
 
 super + w
-    firefox
+    xdotool search "Mozilla Firefox" windowactivate || firefox
+    # firefox
     #tdrop -h '100%' $BROWSER "file:///home/kevin/rescale/kevdocs/joey-new-tab.html"
 
 super + shift + w
