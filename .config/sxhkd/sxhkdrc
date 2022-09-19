@@ -108,3 +108,6 @@ super + shift + h
 
 super + shift + t
     notify-send "trying to get torrent $(xsel -ob)"; python3 ~/scripts/rutorrent.py $(xsel -ob) | ~/scripts/notify-pipe
+
+super + shift + u
+    $HOME/scripts/window-select.sh
