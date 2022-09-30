@@ -2,6 +2,7 @@ function __auto_venv --on-variable PWD --description "Automatically activate pyt
     set -l venv_name (basename $PWD | tr . -)
 
     if test -d $HOME/.virtualenvs/$venv_name
+        echo "+ ~/.virtualenvs/$venv_name/" 1>&2
         source $HOME/.virtualenvs/$venv_name/bin/activate.fish
     end
 end

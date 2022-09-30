@@ -35,7 +35,7 @@ complete -c yadm -e
 function fed
 	$EDITOR ~/.config/fish/config.fish
 	$EDITOR ~/.config/fish/abbrs.fish
-	source ~/.config/fish/config.fish
+	exec fish
 end
 
 function ved

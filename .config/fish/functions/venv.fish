@@ -1,4 +1,10 @@
 function venv --argument-names python_version --description 'Create virtualenv named the same as current directory'
+    # it would be cool to add -e flag to make a symlink
+    # z worker
+    # venv -e
+    #    does fzf for existing venvs
+    #    finds existing venvs
+    #    symlinks cur dir to existing venv
     set -l python_bin
 
     if not test -n "$python_version"
