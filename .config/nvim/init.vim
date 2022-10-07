@@ -103,10 +103,10 @@ colorscheme vscode
 
 let g:embark_tkittyerminal_italics = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
-set termguicolors
+" set termguicolors
 ":hi! Normal ctermbg=NONE guibg=NONE
 ":hi! CursorLineNr guibg=NONE
-":set notermguicolors
+:set notermguicolors
 ":set termguicolors
 " allow quit via single keypress (Q)
 map Q :qa<CR>

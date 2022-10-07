@@ -111,3 +111,6 @@ super + shift + t
 
 super + shift + u
     $HOME/scripts/window-select.sh
+
+super + shift + e
+    sleep 0.5; xdotool type 'thedookmaster@gmail.com'
