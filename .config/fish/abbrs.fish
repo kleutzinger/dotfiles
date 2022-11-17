@@ -31,3 +31,5 @@ abbr bbb 'bandcamp-downloader.sh'
 abbr gam 'git commit -am'
 abbr cdr 'cd (git rev-parse --show-toplevel)'
 abbr s 'kitty +kitten ssh'
+abbr ayy 'yay'
+abbr ped sudoedit /etc/pacman.conf

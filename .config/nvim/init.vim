@@ -3,7 +3,7 @@ let mapleader = ','
 so ~/.config/coc/config.vim
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'Mofiqul/vscode.nvim'
+Plug 'projekt0n/github-nvim-theme'
 Plug 'justinmk/vim-sneak'
 Plug 'google/vim-jsonnet'
 Plug 'tpope/vim-surround'
@@ -91,14 +91,8 @@ tnoremap <Esc> <C-\><C-n>:q!<CR>
 "wrap around
 set whichwrap+=<,>,[,]
 
-" Vim-Script:
-" For dark theme
-let g:vscode_style = "dark"
-" Enable transparent background.
-let g:vscode_transparency = 1
-" Enable italic comment
-" let g:vscode_italic_comment = 1
-colorscheme vscode
+" COLORSCHEME:
+colorscheme github_dimmed
 
 
 let g:embark_tkittyerminal_italics = 1

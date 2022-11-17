@@ -5,15 +5,17 @@
 # I'll give back a REDIS_URL you can connect to from any computer
 # and a shell command to get into the redis-cli
 
-if not count $argv >/dev/null
-    echo -e "supply db_name from" "\t dokku_ redis:list"
-    exit 1
-end
 
 if not type -q dokku
     function dokku
         dokku_ $argv
     end
+end
+
+if not count $argv >/dev/null
+    echo -e "supply db_name from" "\t dokku_ redis:list"
+    dokku redis:list
+    exit 1
 end
 
 set outfile (mktemp)

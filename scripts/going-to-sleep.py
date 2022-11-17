@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from pathlib import Path
 import os
 from subprocess import call
@@ -5,7 +6,7 @@ import time
 
 HOME = str(Path.home())
 SLEEPFILE = os.path.join(HOME, ".sleep-lock")
-SLEEP_WAIT_SEC = 5
+SLEEP_WAIT_SEC = 3
 DISABLED = False
 
 
@@ -41,7 +42,7 @@ def write_sleep_file():
 
 
 def try_to_sleep():
-    "we write the file and go to sleep in 5 seconds then check again"
+    "we write the file and go to sleep in X seconds then check again"
     write_sleep_file()
     time.sleep(SLEEP_WAIT_SEC)
     if sleep_file_exists():
