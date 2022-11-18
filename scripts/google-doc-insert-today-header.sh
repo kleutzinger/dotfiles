@@ -10,7 +10,7 @@ sleep 0.3
 # mousing over the `@` popup disrupts the selection
 xdotool mousemove 0 0
 xdotool type '@today'
-sleep 0.3
+sleep 1
 xdotool key Return
 sleep 0.3
 xdotool type " ($WEEKDAY)"
