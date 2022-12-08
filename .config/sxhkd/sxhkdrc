@@ -100,6 +100,9 @@ super + p
 super + v
     xfce4-clipman-history
 
+super + shift + v
+    terminator -e "~/scripts/edit-clipboard.sh"
+
 super + h
     $HOME/scripts/google-doc-insert-today-header.sh
 

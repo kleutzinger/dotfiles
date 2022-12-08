@@ -71,10 +71,16 @@ com! DiffSaved call s:DiffWithSaved()
 nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeCWD<CR>" : "\:NERDTreeCWD<CR>"
 let NERDTreeShowHidden=0
 nnoremap <leader>nf :Neoformat<Enter>
+
+" run file as executable
+nnoremap <leader>r :w<Enter>:!%<Enter>
+" run non-interactive python
 nnoremap <leader>p :w<Enter>:!python %<Enter>
+" run python in dedicated terminal
 nnoremap <leader>P :w<Enter>:!terminator -e "python %; sleep 10"<Enter>
 nnoremap <leader>w :w<Enter>
 nnoremap <leader>0 :!magic.py % 0<CR>
+" yank line contents without leading whitespace (or newline)
 nnoremap <leader>y ^y$
 " try to figure out below command:
 " format, save, run
@@ -97,8 +103,9 @@ colorscheme github_dimmed
 
 let g:embark_tkittyerminal_italics = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
+nmap s <Plug>(easymotion-s2)
 " set termguicolors
-":hi! Normal ctermbg=NONE guibg=NONE
+:hi! Normal ctermbg=BLACK guibg=NONE
 ":hi! CursorLineNr guibg=NONE
 :set notermguicolors
 ":set termguicolors
@@ -118,6 +125,8 @@ set incsearch
 if maparg('<C-L>', 'n') ==# ''
   nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
+
+set invhlsearch
 
 " Run current file
 nnoremap <F9> :!clear && %:p<Enter>
