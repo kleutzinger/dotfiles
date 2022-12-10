@@ -92,27 +92,27 @@ def download_magnet(
     return resp.status_code, resp.text
 
 
-def is_magnet(text: str) -> bool:
+def is_magnet_or_link(text: str) -> bool:
     "approximately check if a link is a magnet link"
-    return text.startswith("magnet:")
+    return text.startswith("magnet:") or text.startswith("http")
 
 
 def main() -> None:
     # arg
-    if any([is_magnet(a) for a in sys.argv]):
+    if any([is_magnet_or_link(a) for a in sys.argv]):
         for a in sys.argv:
-            if is_magnet(a):
+            if is_magnet_or_link(a):
                 magnet = a.strip()
                 break
     # clipboard
-    elif clipboard_support and is_magnet(pyperclip.paste()):
+    elif clipboard_support and is_magnet_or_link(pyperclip.paste()):
         print("magnet link found in clipboard")
         magnet = pyperclip.paste()
     # prompt
     else:
         while True and sys.stdin.isatty():
             magnet = input("input magnet link: ").strip()
-            if is_magnet(magnet):
+            if is_magnet_or_link(magnet):
                 break
             else:
                 print("bad input")

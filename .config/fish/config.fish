@@ -12,7 +12,7 @@ set -gx DOKKU_HOST kevbot.xyz
 set -gx MYVIMRC $HOME/.config/nvim/init.vim
 set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
-alias p="xclip -o"
+alias p="xsel -ob"
 source $HOME/.config/fish/abbrs.fish
 if test -e $HOME/rescale/env.fish
     source $HOME/rescale/env.fish

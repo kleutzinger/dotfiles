@@ -117,3 +117,6 @@ super + shift + u
 
 super + shift + e
     sleep 0.5; xdotool type 'thedookmaster@gmail.com'
+
+super + shift + m
+    terminator -m -e "~/scripts/movie_api.py"
