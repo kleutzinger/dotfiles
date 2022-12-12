@@ -74,7 +74,7 @@ def choose_torrent(yts_movie: dict) -> str:
     movie = yts_movie
     torrent_url = fzf_choose(
         movie["torrents"],
-        lambda t: f"{t['quality']=} {t['seeds']=} {t['size']=}",
+        lambda t: f"{t['quality']=} {t['seeds']=} {t['size']=} {t['type']}",
         lambda t: t["url"],
     )
     return torrent_url
