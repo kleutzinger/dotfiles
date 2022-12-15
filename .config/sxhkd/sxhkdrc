@@ -19,7 +19,7 @@ super + w
     #tdrop -h '100%' $BROWSER "file:///home/kevin/rescale/kevdocs/joey-new-tab.html"
 
 super + shift + w
-    firefox 'https://www.google.com/search?client=firefox-b-1-d&q=wheres+my+phone'
+    firefox 'https://www.google.com/android/find?u=0'
 
 super + Return
     mini-kitty.sh
