@@ -22,14 +22,14 @@ def notif(msg):
 
 def suspend():
     # call(["xset", "dpms", "force", "off"])
-    call(["systemctl", "suspend"])
+    call(["slock", "systemctl", "suspend"])
 
 
 def remove_sleep_file():
     try:
         os.remove(SLEEPFILE)
         notif("removed sleepfile")
-    except:
+    except FileNotFoundError:
         notif("no sleepfile to remove")
         pass
 

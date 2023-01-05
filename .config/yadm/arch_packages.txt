@@ -1,6 +1,6 @@
 fish
 kitty
-neovim-nightly-bin
+neovim
 neovim-plug
 nodejs
 fisher
@@ -19,3 +19,13 @@ asciidoc
 unarchiver
 zoxide
 asdf
+tdrop-git
+tealdeer
+terminator
+yt-dlp
+fd
+flameshot
+python-black
+nautilus-terminal
+tree
+moar

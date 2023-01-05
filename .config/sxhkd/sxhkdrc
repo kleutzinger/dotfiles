@@ -120,3 +120,6 @@ super + shift + e
 
 super + shift + m
     terminator -m -e "~/scripts/movie_api.py"
+
+#super + m
+#    $HOME/scripts/window-control.fish max
