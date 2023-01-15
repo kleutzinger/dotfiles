@@ -1,10 +1,46 @@
 #!/usr/bin/python3
+"""
+#__RUN0__# pushd ~/scripts/vods; vodhelper.py; popd
+#__RUN1__# pushd ~/scripts/vods/vods2; vodhelper.py; popd
 
+This is for super smash bros melee replay vod collection. see
+
+
+
+usage:
+    cd <directory of vods (mp4 or ts assumed)>
+    vodhelper.py
+
+run me in a directory containg vods and i'll help you get them annotated
+and perspective corrected
+
+TODOs:
+[x] init yamls
+    [x] tournament
+    [x] each vod
+[x] choose perspective for each vod
+[] execute yaml command
+    [] create perspective-corrected vids
+    [] concat all vids into one big 720p video
+[] automate youtube upload
+    [] generate youtube description
+    [] use youtubeuploader script
+"""
+
+from copy import deepcopy
+from pprint import pprint
 import shutil
-import datetime
+
 import os
-import sys
+from datetime import date
+from subprocess import run
+from shlex import split
 import subprocess
+from typing import Any, Optional
+
+import yaml
+
+TRNY_YAML_NAME = "tournament.yml"
 
 
 def replaceExtension(filename, new_ext):
@@ -42,7 +78,8 @@ def get_ts_mp4_paths(_dir="./"):
         filter(lambda x: x[-3:] == ".ts" or x[-4:] == ".mp4", os.listdir(_dir))
     )
     video_paths = sorted(video_paths)
-    return [os.path.join(_dir, v) for v in video_paths]
+    return list(video_paths)
+    # return [os.path.join(_dir, v) for v in video_paths]
 
 
 def promptTsFiles(ts_paths):
@@ -196,32 +233,194 @@ def uploadVideo(videoPath, title="", desc="", vis=""):
 
 
 def getGlobalFlags():
-    flags = dict()
-    flags["doOneThing"] = False
-    # flags['doOneThing'] = input('justDo [N/A]rompt [u]pload: ')
-    flags["tournament_name"] = input("Tournament Name?: ")
-    # flags['bracketURL'] = input('Bracket URL?: ')
-    # flags['visibility'] = input('[p]ublic [u]nlisted: ')
-    return flags
+    pass
 
 
-if __name__ == "__main__":
-    print("\n".join(os.listdir()))
+def get_vod_duration_ms(vodpath: str) -> float:
+    "get length of video in miliseconds"
 
-    flags = getGlobalFlags()
-    if flags["doOneThing"] == "u":
-        uploadFolder("./", desc=flags["bracketURL"], vis=flags["visibility"])
-        exit(0)
-    ts_paths = get_ts_files()  # current folder ts paths
-    renamed_ts_paths = promptTsFiles(ts_paths)
-    copied_output_folder = copyTS(renamed_ts_paths)
-    output_mp4_paths = convert(
-        get_ts_paths(copied_output_folder), flags["tournament_name"]
-    )
-    subprocess.call(
-        f'notify-send -u critical "conversion complete {copied_output_folder}/mp4"',
-        shell=True,
-    )
+    cmd = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        vodpath,
+    ]
+
+    ret = subprocess.check_output(cmd)
+    # example: b'515.367400\n'
+    return int(float(ret.decode().strip()) * 1000)
+    # example: 515367
+
+
+def init_tourney_yaml() -> None:
+    today = str(date.today())
+    print("assuming trny date today", today)
+    trny_url = input("start.gg url:")
+    base_yaml = dict(tournament_url=trny_url, date=today)
+    write_yaml(base_yaml, TRNY_YAML_NAME)
+
+
+def get_yaml(y_path: str) -> Any:
+    with open(y_path, "r") as f:
+        vod = yaml.load(f, Loader=yaml.Loader)
+    return vod
+
+
+def make_or_get_vod_yaml(vidpath: str) -> dict:
+    abspath = os.path.abspath(vidpath)
+    print(abspath)
+    vid_yaml = abspath + ".yml"
+    if os.path.exists(vid_yaml):
+        return get_yaml(vid_yaml)
+    else:
+        # file doesn't exist
+        vod = dict(
+            abspath=abspath,
+            path=vidpath,
+            ignore=False,
+            duration_ms=get_vod_duration_ms(vidpath),
+            pers_pts=None,
+            frame_pic=None,
+            p1="Kevbot (Fox)",
+            p2=None,
+            note="",
+            start_offset_ms=0,
+            end_offset_ms=0,
+            filesize=file_size(abspath),
+        )
+        write_vod_yaml(vod)
+
+    return vod
+
+
+def write_yaml(obj, path):
+    with open(path, "w") as f:
+        yaml.dump(obj, f)
+    print("wrote obj to", path)
+
+
+def write_vod_yaml(vod: dict, prev: Optional[dict] = None):
+    yaml_path = vod["abspath"] + ".yml"
+    print(f"i want to write: {yaml_path=}")
+    pprint(vod)
+    # if os.path.exists(yaml_path) and prev == get_yaml(yaml_path):
+    #     print("no changes, no writing yaml")
+    #     return
+    if "y" not in input("y to write").lower():
+        print("not writing")
+        return
+    write_yaml()
+
+
+def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
+    """correct perspective of video"""
+    from get_img_coords import get_perspective_points
+
+    # y  = rf".\bin\ffmpeg.exe -i .\vid\src-10.mp4 -vf perspective={x},scale=960:720,setdar=4/3 43.mp4"
+    points = get_perspective_points(vidpath)
+    ppoints = ""
+    for a, b in points:
+        ppoints += f":{a}:{b}"
+    # remove first colon
+    ppoints = ppoints[1:]
+
+    # ffplay perspective is broken on normal pixel video files, not sure why
+    # probably some pixel ratio thing idk
+    # cmd = f"ffplay -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4/3"
+
+    # workaround is to render a short preview and ask for confirmation on that
+    def gen_cmd(preview_only: bool = False) -> str:
+        cmd = (
+            f"ffmpeg{' -y -t 3' if preview_only else ''} "
+            f"-i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4/3 {outputpath}"
+        )
+        return cmd
+
+    cmd = gen_cmd(preview_only=True)
+    print(cmd)
+    # cmd = f"ffmpeg -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4u3 out.mp4"
+
+    run(split(cmd))
+    run(["mpv", outputpath])
+    return points
+
+
+def extract_vid_frame_to_file(
+    input_path: str, output_path: str, seek_sec: int = 0, overwrite: bool = False
+) -> str:
+    """
+    output: a frame as a jpg
+    """
+    ibasename, iext = os.path.splitext(input_path)
+    obasename, oext = os.path.splitext(output_path)
+    if oext not in [".png", ".jpg"]:
+        # ensure output is an image
+        # lets go with .jpg
+        output_path = output_path + ".png"
+
+    cmd = [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-ss",
+        f"{seek_sec}",
+        "-i",
+        f"{input_path}",
+        "-frames:v",
+        "1",
+        "-q:v",
+        "2",
+        f"{output_path}",
+    ]
+    if overwrite:
+        cmd = cmd[0:1] + ["-y"] + cmd[1:]
+    subprocess.run(cmd)
+    return output_path
+
+
+def execute_ymls():
+    raise NotImplementedError
+
+
+def main():
+    if not os.path.exists(TRNY_YAML_NAME):
+        print(f"no {TRNY_YAML_NAME} found, creating")
+        init_tourney_yaml()
+    vid_paths = get_ts_mp4_paths()
+    os.makedirs("tmp", exist_ok=True)
+    for vid_path in vid_paths:
+        vod = make_or_get_vod_yaml(vid_path)
+        prev_vod = deepcopy(vod)
+        print(f"{vid_path=}")
+        if vod.get("pers_pts") is None:
+            while True:
+                points = correctPerspective(vid_path, os.path.join("tmp", "out.mp4"))
+                if len(points) != 4:
+                    print(f"bad {len(points)=}. should be 4")
+                    continue
+                if "r" not in input("r to retry").lower():
+                    break
+            vod["pers_pts"] = points
+        if vod.get("p2") is None:
+            vod["p2"] = input("player 2?: ")
+        write_vod_yaml(vod, prev=prev_vod)
+
+    # init_yaml(vid_paths)
+    # ts_paths = get_ts_files()  # current folder ts paths
+    # renamed_ts_paths = promptTsFiles(ts_paths)
+    # copied_output_folder = copyTS(renamed_ts_paths)
+    # output_mp4_paths = convert(
+    #     get_ts_paths(copied_output_folder), flags["tournament_name"]
+    # )
+    # subprocess.call(
+    #     f'notify-send -u critical "conversion complete {copied_output_folder}/mp4"',
+    #     shell=True,
+    # )
 
     # Disable uploads (api rate-limited too heavily)
     """
@@ -229,3 +428,7 @@ if __name__ == "__main__":
         uploadVideo(
             mp4_path, desc=flags['bracketURL'], vis=flags['visibility'])
     """
+
+
+if __name__ == "__main__":
+    main()
