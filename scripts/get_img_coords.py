@@ -94,7 +94,7 @@ def test_order_pts():
 
 
 def main(num_points: int, path: str) -> PointList:
-    center_second = get_vod_duration_ms(path) / 2 // 1000
+    center_second = int(get_vod_duration_ms(path) / 2 / 1000)
     framepath = extract_vid_frame_to_file(
         path, path + ".png", seek_sec=center_second, overwrite=True
     )
@@ -107,5 +107,5 @@ def get_perspective_points(path: str) -> PointList:
     return order_pts(pts)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

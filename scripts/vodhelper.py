@@ -3,13 +3,23 @@
 #__RUN0__# pushd ~/scripts/vods; vodhelper.py; popd
 #__RUN1__# pushd ~/scripts/vods/vods2; vodhelper.py; popd
 
-This is for super smash bros melee replay vod collection. see
+This is for super smash bros melee replay vod collection to get onto youtube. 
 
-
+see my side streams here:
+https://www.youtube.com/watch?v=GE6oQ_OQUjc&list=PL6XKQrv4qTdM8IZMSjCJXn5AXFo601x3J
 
 usage:
     cd <directory of vods (mp4 or ts assumed)>
+    # initialize directory
     vodhelper.py
+
+    # once all yamls are populated
+    vodhelper.py e
+
+    # TODO:
+    # upload to youtube
+    vodhelper u
+
 
 run me in a directory containg vods and i'll help you get them annotated
 and perspective corrected
@@ -19,15 +29,17 @@ TODOs:
     [x] tournament
     [x] each vod
 [x] choose perspective for each vod
-[] execute yaml command
-    [] create perspective-corrected vids
-    [] concat all vids into one big 720p video
+[x] execute yaml command
+    [x] create perspective-corrected vids
+    [x] concat all vids into one big 720p video
 [] automate youtube upload
-    [] generate youtube description
+    [] generate youtube [x] description [] title
     [] use youtubeuploader script
+[]? start.gg api integration
 """
 
 from copy import deepcopy
+import datetime
 from pprint import pprint
 import shutil
 
@@ -36,6 +48,8 @@ from datetime import date
 from subprocess import run
 from shlex import split
 import subprocess
+import sys
+import time
 from typing import Any, Optional
 
 import yaml
@@ -218,7 +232,7 @@ def uploadFolder(_dir="./", desc="", vis=""):
 example_ts_path = "/home/kevin/test/202001251759330.ts"
 
 
-print(generateTitleString(os.path.basename(example_ts_path)))
+# print(generateTitleString(os.path.basename(example_ts_path)))
 
 
 def uploadVideo(videoPath, title="", desc="", vis=""):
@@ -313,7 +327,34 @@ def write_vod_yaml(vod: dict, prev: Optional[dict] = None):
     if "y" not in input("y to write").lower():
         print("not writing")
         return
-    write_yaml()
+    write_yaml(vod, yaml_path)
+
+
+def gen_perspective_ffmpeg_cmd(
+    i_vid_path: str,
+    o_vid_path: str,
+    ppoints: list[tuple[int, int]],
+    preview_only: bool = False,
+) -> str:
+    """
+    ffmpeg can modify perspective of a video file.
+    it skews stuff. aka homomorphism
+    see https://en.wikipedia.org/wiki/Homomorphism
+    or https://news.ycombinator.com/item?id=8713070
+
+    """
+    points = ""
+    for a, b in ppoints:
+        points += f":{a}:{b}"
+    # remove first colon
+    points = points[1:]
+    cmd = (
+        f"ffmpeg -y{' -t 3' if preview_only else ''} "
+        f"-i {i_vid_path} "
+        f"-vf perspective={points},scale=960:720,setdar=4/3 -s 960x720 "
+        f"{o_vid_path}"
+    )
+    return cmd
 
 
 def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
@@ -322,25 +363,15 @@ def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
 
     # y  = rf".\bin\ffmpeg.exe -i .\vid\src-10.mp4 -vf perspective={x},scale=960:720,setdar=4/3 43.mp4"
     points = get_perspective_points(vidpath)
-    ppoints = ""
-    for a, b in points:
-        ppoints += f":{a}:{b}"
-    # remove first colon
-    ppoints = ppoints[1:]
 
     # ffplay perspective is broken on normal pixel video files, not sure why
     # probably some pixel ratio thing idk
     # cmd = f"ffplay -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4/3"
 
     # workaround is to render a short preview and ask for confirmation on that
-    def gen_cmd(preview_only: bool = False) -> str:
-        cmd = (
-            f"ffmpeg{' -y -t 3' if preview_only else ''} "
-            f"-i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4/3 {outputpath}"
-        )
-        return cmd
 
-    cmd = gen_cmd(preview_only=True)
+    # make preview video
+    cmd = gen_perspective_ffmpeg_cmd(vidpath, outputpath, points, preview_only=True)
     print(cmd)
     # cmd = f"ffmpeg -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4u3 out.mp4"
 
@@ -383,11 +414,80 @@ def extract_vid_frame_to_file(
     return output_path
 
 
-def execute_ymls():
-    raise NotImplementedError
+def execute_ymls(yaml_paths: list[str], preview_only=False):
+    """
+    now that we have all the yayactually render the final videos
+    [x] render individual perspective-corrected vids
+    [x] concat them together into 720p vid
+        melt worked well for this
+    []? add text overlay to indicate players?
+    """
+    os.makedirs("corrected", exist_ok=True)
+    vids_txt = "vids.txt"
+    with open(vids_txt, "w") as f:
+        # empty the vids.txt file
+        f.write("")
+    for idx, y in enumerate(sorted(yaml_paths)):
+        vod = get_yaml(y)
+        # make perspective videos work
+        outname = f"{idx:03}" + vod["path"]
+        vod["output_path"] = os.path.join("corrected", outname)
+        ffmpeg_cmd = gen_perspective_ffmpeg_cmd(
+            vod["path"], vod["output_path"], vod["pers_pts"], preview_only=preview_only
+        )
+        print(ffmpeg_cmd)
+        run(split(ffmpeg_cmd))
+        with open(vids_txt, "a") as f:
+            f.write(f"file {vod['output_path']}\n")
+    os.makedirs("final", exist_ok=True)
+    final_output_path = os.path.join("final", f"final_{time.time()}.mp4")
+    # cmd = f"ffmpeg -f concat -safe 0 -i {vids_txt} {final_output_path}"
+    mp4list = " ".join(
+        sorted(
+            [
+                os.path.join("corrected", i)
+                for i in os.listdir("corrected")
+                if i.endswith("mp4")
+            ]
+        )
+    )
+    cmd = f"melt {mp4list} -consumer avformat:{final_output_path}"
+    print(cmd)
+    run(split(cmd))
+    run(["mpv", final_output_path])
+
+
+def get_desc(trny: dict, vods: list[dict]) -> tuple[str, str]:
+    "return title of video, description for youtube"
+
+    desc = ""
+    desc += trny["date"] + "\n"
+    desc += trny["tournament_url"] + "\n"
+
+    cur_sec = 0
+    sec2ts = lambda s: str(datetime.timedelta(seconds=s))
+    for vod in vods:
+        desc += f"{sec2ts(cur_sec)} "
+        desc += f"{vod['p1']} vs {vod['p2']}\n"
+        cur_sec += round(vod["duration_ms"] / 1000)
+    print(desc)
+    return "title", desc
 
 
 def main():
+
+    if "d" in sys.argv:
+        trny = get_yaml(TRNY_YAML_NAME)
+        vods = [get_yaml(i) for i in sorted(os.listdir()) if i.endswith("mp4.yml")]
+        get_desc(trny, vods)
+        exit()
+
+    if "e" in sys.argv:
+        ymls = [i for i in os.listdir() if i.endswith(".yml")]
+        if TRNY_YAML_NAME in ymls:
+            ymls.remove(TRNY_YAML_NAME)
+        execute_ymls(ymls, preview_only="s" in sys.argv)
+
     if not os.path.exists(TRNY_YAML_NAME):
         print(f"no {TRNY_YAML_NAME} found, creating")
         init_tourney_yaml()
