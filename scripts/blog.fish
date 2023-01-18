@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 # start a lektor instance and open browser
-set BLOG_DIR ~/lektor/kev-project-lektor
+set BLOG_DIR ~/lektor
 set LEKTOR_PORT 9001
 # ping cannot check ports, use curl
 curl localhost:$LEKTOR_PORT -s > /dev/null
@@ -12,6 +12,5 @@ end
 
 # start up server
 cd $BLOG_DIR
-source ../.venv/bin/activate.fish
-contains "deploy" $argv && lektor deploy && exit 0
+contains "deploy" $argv && lektor build && lektor deploy && exit 0
 lektor server -p $LEKTOR_PORT --browse
