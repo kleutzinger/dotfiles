@@ -91,6 +91,7 @@ def choose_torrent_quality(yts_movie_options: dict) -> str:
         list(sorted(movie["torrents"], key=is1080, reverse=True)),
         display_func=lambda t: f"{t['quality']:8} {t['type']:8} ({t['size']}, seeds={t['seeds']})",
         output_func=lambda t: t["url"],
+        prompt=movie["title_long"] + " >"
     )
     return torrent_url
 

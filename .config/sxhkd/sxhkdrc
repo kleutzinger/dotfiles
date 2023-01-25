@@ -46,7 +46,7 @@ super + n
     fish -c "check-notes.fish"
 
 super + e
-    nautilus
+    thunar
 
 super + shift + b
     $BROWSER 127.0.0.1:9001/admin/
