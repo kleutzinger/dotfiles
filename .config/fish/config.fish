@@ -59,6 +59,19 @@ function rr
     eval "$CMD $PREV_OUTPUT"
 end
 
+function read_confirm
+  while true
+    read -l -P 'Do you want to continue? [y/N] ' confirm
+
+    switch $confirm
+      case Y y
+        return 0
+      case '' N n
+        return 1
+    end
+  end
+end
+
 function bh -d "bat history"
     bat ~/.local/share/fish/fish_history
 end

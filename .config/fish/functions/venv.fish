@@ -25,4 +25,12 @@ function venv --argument-names python_version --description 'Create virtualenv n
     echo Creating virtualenv `$venv_name`
     $python_bin -m venv $HOME/.virtualenvs/$venv_name
     source $HOME/.virtualenvs/$venv_name/bin/activate.fish
+
+    if test -e 'requirements.txt'
+        echo 'requirements.txt detected, install?'
+        if read_confirm
+            python -m pip install -r requirements.txt
+        end
+    end
 end
+
