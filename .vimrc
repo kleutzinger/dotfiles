@@ -1,2 +1,1 @@
-set highlightedyank
 source ~/.config/nvim/init.vim
