@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
-pushd ~/gits/find-classic-games.git
-source $HOME/.virtualenvs/find-classic-games-git/bin/activate
+DIRNAME=find-and-play-classic-videogames
+pushd ~/gits/$DIRNAME
+source $HOME/.virtualenvs/DIRNAME/bin/activate
 python fuzzy_launch.py "$@"
 deactivate
 popd
