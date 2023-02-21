@@ -61,7 +61,7 @@ super + c
     fish -c "check-notes.fish"
 
 super + shift + c
-    qdbus org.kde.KWin /Compositor resume; notify-send "resume compositor"
+    setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl && notify-send 'colemak enabled'
 
 # Disconnect from PS4 controller
 super + b
