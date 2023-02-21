@@ -1,4 +1,6 @@
 function add-pkg --description 'add package and save it for bootstrapping'
-    echo (string join '\n' $argv) >> ~/.config/yadm/arch_packages.txt
+    set PKGFILE ~/.config/yadm/arch_packages.txt
+    echo (string join '\n' $argv) >> $PKGFILE
+    sort $PKGFILE | uniq | sponge $PKGFILE
     yay -S $argv
 end

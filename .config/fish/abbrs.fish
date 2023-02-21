@@ -34,3 +34,4 @@ abbr s 'kitty +kitten ssh'
 abbr ayy 'yay'
 abbr ped sudoedit /etc/pacman.conf
 abbr deploy_blog magic.py ~/gits/kleutzinger.github.io/site-generator/kevbot.xyz.py 0
+abbr pkg add-pkg

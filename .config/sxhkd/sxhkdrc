@@ -25,7 +25,10 @@ super + Return
     mini-kitty.sh
 
 super + space
-    dmenu_run -fn "-xos4-terminus-medium-r-*-*-14-*"
+    dmenu_run -fn 'Droid Sans Mono-25'
+
+super + shift + space
+    xfce4-popup-whiskermenu
 
 super + q
     wmctrl -c :ACTIVE:
