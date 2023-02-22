@@ -1,6 +1,7 @@
 asciidoc
 asciidoctor
 asdf-vm
+audacity
 authy
 fd
 fish
@@ -8,6 +9,7 @@ fisher
 flameshot
 fzf
 geany
+htop
 kitty
 lazygit
 micro

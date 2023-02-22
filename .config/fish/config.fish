@@ -15,6 +15,7 @@ set -gx DOKKU_HOST kevbot.xyz
 set -gx MYVIMRC $HOME/.config/nvim/init.vim
 set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
+set -gx GDK_SCALE 2
 alias p="xsel -ob"
 source $HOME/.config/fish/abbrs.fish
 if test -e $HOME/rescale/env.fish
@@ -71,6 +72,10 @@ function read_confirm
         return 1
     end
   end
+end
+
+function gcd --description "cd to root of git project"
+    cd (git rev-parse --show-toplevel)
 end
 
 function bh -d "bat history"

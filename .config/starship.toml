@@ -21,8 +21,8 @@ style = "italic #87A752"
 [aws]
 disabled = true
 
-[nodejs]
-disabled = true
+# [nodejs]
+# disabled = true
 
 [rust]
 disabled = true
