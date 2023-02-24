@@ -54,6 +54,7 @@ set omnifunc=syntaxcomplete#Complete
 "run in python
 imap <F5> <Esc>:w<CR>:!clear;python %<CR>
 nmap <F5> <Esc>:w<CR>:!clear;python %<CR>
+
 " Exit Vim if NERDTree is the only window left.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
     \ quit | endif
@@ -71,6 +72,17 @@ com! DiffSaved call s:DiffWithSaved()
 nnoremap <silent> <expr> <leader>f  g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeCWD<CR>" : "\:NERDTreeCWD<CR>"
 let NERDTreeShowHidden=0
 nnoremap <leader>nf :Neoformat<Enter>
+
+" ctrl + / to comment
+let g:NERDCreateDefaultMappings = 0
+
+" kitty wants this for control + slash (seems sane enough)
+nmap <C-/>   <Plug>NERDCommenterToggle
+vmap <C-/>   <Plug>NERDCommenterToggle<CR>gv
+
+" other terminals may want this
+nmap <C-_>   <Plug>NERDCommenterToggle
+vmap <C-_>   <Plug>NERDCommenterToggle<CR>gv
 
 " run file as executable
 nnoremap <leader>r :w<Enter>:!%<Enter>

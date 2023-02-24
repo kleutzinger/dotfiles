@@ -16,6 +16,7 @@ micro
 moar
 moreutils
 mosh
+mpv
 nautilus-terminal
 neovim
 neovim-plug
@@ -36,4 +37,5 @@ visual-studio-code-bin
 wmctrl
 yarn
 yt-dlp
+zenity
 zoxide
