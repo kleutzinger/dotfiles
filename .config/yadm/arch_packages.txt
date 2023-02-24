@@ -12,6 +12,7 @@ geany
 htop
 kitty
 lazygit
+libretro-vba-next-git
 micro
 moar
 moreutils
@@ -23,6 +24,8 @@ neovim-plug
 nodejs
 npm
 python-black
+python-iterfzf
+python-requests-html
 radiotray-ng
 slock
 sxhkd
