@@ -1,6 +1,7 @@
 from typing import Any, Callable, Iterable
 from requests_html import HTMLSession, HTMLResponse
 from iterfzf import iterfzf
+import subprocess
 
 
 def identity(x: Any) -> Any:
@@ -37,3 +38,17 @@ def get_url(url: str, execute_js: bool = False) -> HTMLResponse:
     if execute_js:
         req.html.render(timeout=20)
     return req
+
+
+def get_processes():
+    """
+    Parse the output of `ps aux` into a list of dictionaries representing the parsed
+    process information from each row of the output. Keys are mapped to column names,
+    parsed from the first line of the process' output.
+    :rtype: list[dict]
+    :returns: List of dictionaries, each representing a parsed row from the command output
+    """
+    output = subprocess.Popen(["ps", "aux"], stdout=subprocess.PIPE).stdout.readlines()
+    headers = [h for h in " ".join(output[0].decode('utf-8').strip().split()).split() if h]
+    raw_data = map(lambda s: s.strip().split(None, len(headers) - 1), output[1:])
+    return [dict(zip(headers, r)) for r in raw_data]

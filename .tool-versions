@@ -4,3 +4,4 @@ java system
 npm system
 poetry system
 terraform system
+deno system

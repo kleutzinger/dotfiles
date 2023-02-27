@@ -74,7 +74,7 @@ function read_confirm
   end
 end
 
-function gcd --description "cd to root of git project"
+function cdg --description "cd to root of git project"
     cd (git rev-parse --show-toplevel)
 end
 

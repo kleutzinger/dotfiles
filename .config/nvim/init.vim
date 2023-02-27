@@ -77,12 +77,12 @@ nnoremap <leader>nf :Neoformat<Enter>
 let g:NERDCreateDefaultMappings = 0
 
 " kitty wants this for control + slash (seems sane enough)
-nmap <C-/>   <Plug>NERDCommenterToggle
-vmap <C-/>   <Plug>NERDCommenterToggle<CR>gv
+"nmap <C-/>   <Plug>NERDCommenterToggle
+"vmap <C-/>   <Plug>NERDCommenterToggle<CR>gv
 
 " other terminals may want this
-nmap <C-_>   <Plug>NERDCommenterToggle
-vmap <C-_>   <Plug>NERDCommenterToggle<CR>gv
+"nmap <C-_>   <Plug>NERDCommenterToggle
+"vmap <C-_>   <Plug>NERDCommenterToggle<CR>gv
 
 " run file as executable
 nnoremap <leader>r :w<Enter>:!%<Enter>
