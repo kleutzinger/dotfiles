@@ -11,6 +11,7 @@ fzf
 gallery-dl-bin
 geany
 htop
+jq
 kitty
 lazygit
 libretro-vba-next-git
@@ -23,6 +24,7 @@ nautilus-terminal
 neovim
 neovim-plug
 nodejs
+noto-fonts-emoji
 npm
 python-black
 python-iterfzf
@@ -39,8 +41,10 @@ tmux
 tree
 unarchiver
 visual-studio-code-bin
+vlc
 wmctrl
 xsecurelock
+yad
 yarn
 yt-dlp
 zenity

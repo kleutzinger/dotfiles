@@ -41,3 +41,4 @@ All keybindings are defined in [config/sxhkd/sxhkdrc](.config/sxhkd/sxhkdrc)
 
 [] separate commands on different window managers
 [] auto run CocInstall
+[] make `grid_overlay.py` able to click the screen (xdotool)
