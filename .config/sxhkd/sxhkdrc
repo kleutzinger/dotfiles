@@ -91,9 +91,6 @@ super + l
 super + g
     ~/scripts/gym-busy.fish
 
-super + u
-    cd ~/Music; ~/scripts/bandcamp-downloader.sh $(xsel -ob)
-
 ## Some commnad to switch directly to VS Code Screen (super + 1)
 # not using super keys anywhere and i might as well
 
@@ -126,3 +123,8 @@ super + shift + m
 
 #super + m
 #    $HOME/scripts/window-control.fish max
+#
+
+# caps lock
+super + u
+    xdotool key Caps_Lock

@@ -12,6 +12,7 @@ gallery-dl-bin
 geany
 htop
 jq
+keyd
 kitty
 lazygit
 libretro-vba-next-git
@@ -43,6 +44,7 @@ unarchiver
 visual-studio-code-bin
 vlc
 wmctrl
+xdotool
 xsecurelock
 yad
 yarn
