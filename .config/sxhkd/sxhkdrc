@@ -107,7 +107,8 @@ super + h
     $HOME/scripts/google-doc-insert-today-header.sh
 
 super + shift + h
-   python3 /home/kevin/scripts/grid_overlay.py
+   python3 /home/kevin/scripts/click_screen.py
+   #python3 /home/kevin/scripts/grid_overlay.py
 
 super + shift + t
     notify-send "trying to get torrent $(xsel -ob)"; python3 ~/scripts/rutorrent.py $(xsel -ob) | ~/scripts/notify-pipe
@@ -128,3 +129,4 @@ super + shift + m
 # caps lock
 super + u
     xdotool key Caps_Lock
+

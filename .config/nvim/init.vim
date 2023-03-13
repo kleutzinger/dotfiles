@@ -6,6 +6,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'projekt0n/github-nvim-theme'
 Plug 'justinmk/vim-sneak'
 Plug 'google/vim-jsonnet'
+Plug 'github/copilot.vim'
 Plug 'tpope/vim-surround'
 Plug 'skywind3000/vim-terminal-help'
 Plug 'easymotion/vim-easymotion'

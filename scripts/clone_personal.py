@@ -4,15 +4,12 @@ Clone from github, except it'll use my personal account credentials instead
 this lets me commit / push stuff as my personal acct when i'm on my work computer.
 
 USAGE:
-    python clone_personal.py 'https://github.com/kleutzinger/url-shorten-dokku'
+```
+python clone_personal.py # clone inside some git folder
+python clone_personal.py 'https://github.com/kleutzinger/url-shorten-dokku'
+```
 
 Now I can commit and push as https://github.com/kleutzinger/ rather than my work acct
-
----   ~/.ssh/config   ---
-Host github.com-kleutzinger
-    HostName github.com
-    IdentityFile ~/.ssh/kleutzingergithub
-    IdentitiesOnly yes
 """
 
 import contextlib
@@ -23,11 +20,12 @@ import sys
 GITHUB_NAME = "Kevin Leutzinger"
 GITHUB_EMAIL = "6435727+kleutzinger@users.noreply.github.com"
 EXAMPLE_URL = "https://github.com/kleutzinger/invidious-redirect"
-EXAMPLE_URL_SSH = "git@github.com-kleutzinger:kleutzinger/invidious-redirect.git"
+EXAMPLE_URL_SSH = "git@github.com:kleutzinger/invidious-redirect.git"
+
 
 
 def to_ssh(url: str, hostname="") -> str:
-    url = url.replace("https://github.com/", "git@github.com-kleutzinger:") + ".git"
+    url = url.replace("https://github.com/", "git@github.com:") + ".git"
     return url
 
 
