@@ -13,6 +13,9 @@ super + shift + r
 super + shift + k
     $HOME/scripts/edit-hotkeys.sh
 
+super + b
+    xdotool search "Visual Studio Code" windowactivate || firefox
+
 super + w
     xdotool search "Mozilla Firefox" windowactivate || firefox
     # firefox
@@ -46,7 +49,7 @@ shift + F1
     tdrop $BROWSER
 
 super + n
-    fish -c "check-notes.fish"
+    fish -c "note"
 
 super + e
     thunar

@@ -45,6 +45,7 @@ unarchiver
 visual-studio-code-bin
 vlc
 wmctrl
+xclip
 xdotool
 xsecurelock
 yad
