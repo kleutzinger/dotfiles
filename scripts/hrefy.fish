@@ -17,14 +17,17 @@ echo $LINK
 
 if not set -q argv[1]
     # Prompt for <a>TEXT</a>
-    read -P "Link text: " TEXT
+    # get <title> tag from page, hopefully
+    set TEXT (wget -qO- $LINK | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si')
 else
     # TEXT Found in args
     set TEXT $argv[1]
 end
 
 set HREFD "<a href=\"$LINK\">$TEXT</a>"
+set HREFDMD "[$LINK]($TEXT)"
 echo -e "\t$HREFD"
+echo -e "\t$HREFDMD"
 echo "Put in clipboard?"
 read -P "Ctrl+C to cancel: " YESNO
 echo $HREFD | xclip -selection clipboard -in

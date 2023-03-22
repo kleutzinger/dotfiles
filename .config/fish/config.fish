@@ -17,6 +17,7 @@ set -gx SXHKD_SHELL '/usr/bin/sh'
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
 set -gx GDK_SCALE 2
 set -gx QT_AUTO_SCREEN_SCALE_FACTOR 1
+set -gx QT_SCALE_FACTOR 2
 alias p="xsel -ob"
 source $HOME/.config/fish/abbrs.fish
 if test -e $HOME/rescale/env.fish
