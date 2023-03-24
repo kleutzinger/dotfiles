@@ -33,6 +33,7 @@ python-iterfzf
 python-psutil
 python-requests-html
 radiotray-ng
+rofi
 slock
 sxhkd
 tdrop
