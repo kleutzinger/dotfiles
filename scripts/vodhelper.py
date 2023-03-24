@@ -32,6 +32,9 @@ TODOs:
 [x] execute yaml command
     [x] create perspective-corrected vids
     [x] concat all vids into one big 720p video
+[x] add text overlay on video
+    2022-03-24 Kevbot vs XYZ
+[] automatic adding of youtube description
 [] automate youtube upload
     [] generate youtube [x] description [] title
     [] use youtubeuploader script
@@ -51,22 +54,23 @@ import subprocess
 import sys
 import time
 from typing import Any, Optional
+import re
 
 import yaml
 
 TRNY_YAML_NAME = "tournament.yml"
 
 
-def replaceExtension(filename, new_ext):
+def replaceExtension(filename, new_ext) -> str:
     basename, _ = os.path.splitext(filename)
     return basename + new_ext
 
 
-def convert_bytes(num):
+def convert_bytes(num_bytes: int) -> str:
     for x in ["bytes", "KB", "MB", "GB", "TB"]:
-        if num < 1024.0:
-            return "%3.1f %s" % (num, x)
-        num /= 1024.0
+        if num_bytes < 1024.0:
+            return "%3.1f %s" % (num_bytes, x)
+        num_bytes /= 1024.0
 
 
 def file_size(file_path):
@@ -184,7 +188,7 @@ def generateTitleString(ts_basename, tournament_name=""):
 
 
 def copyTS(ts_paths=get_ts_paths()):
-    now = datetime.datetime.today()
+    now = datetime.datetime.today() - datetime.timedelta(hours=20)
     nTime = now.strftime("%Y-%m-%d-%f")
     customFolderName = input("output folder name?: ")
     outputFolder = f'/home/kevin/output/{" ".join([nTime, customFolderName])}'
@@ -270,12 +274,17 @@ def get_vod_duration_ms(vodpath: str) -> float:
     # example: 515367
 
 
-def init_tourney_yaml() -> None:
+def init_tourney_yaml() -> str:
+    """
+    returns path of yaml
+    """
     today = str(date.today())
     print("assuming trny date today", today)
     trny_url = input("start.gg url:")
-    base_yaml = dict(tournament_url=trny_url, date=today)
+    opponents = input("comma separated opponents:").split(",")
+    base_yaml = dict(tournament_url=trny_url, date=today, opponents=opponents)
     write_yaml(base_yaml, TRNY_YAML_NAME)
+    return base_yaml
 
 
 def get_yaml(y_path: str) -> Any:
@@ -284,10 +293,15 @@ def get_yaml(y_path: str) -> Any:
     return vod
 
 
-def make_or_get_vod_yaml(vidpath: str) -> dict:
+def make_or_get_vod_yaml(vidpath: str, tournament: dict, vid_idx: int) -> dict:
     abspath = os.path.abspath(vidpath)
     print(abspath)
     vid_yaml = abspath + ".yml"
+    try:
+        opponent = tournament["opponents"][vid_idx]
+    except IndexError:
+        opponent = ""
+        pass
     if os.path.exists(vid_yaml):
         return get_yaml(vid_yaml)
     else:
@@ -300,8 +314,9 @@ def make_or_get_vod_yaml(vidpath: str) -> dict:
             pers_pts=None,
             frame_pic=None,
             p1="Kevbot (Fox)",
-            p2=None,
+            p2=opponent,
             note="",
+            date=tournament["date"],
             start_offset_ms=0,
             end_offset_ms=0,
             filesize=file_size(abspath),
@@ -335,6 +350,7 @@ def gen_perspective_ffmpeg_cmd(
     o_vid_path: str,
     ppoints: list[tuple[int, int]],
     preview_only: bool = False,
+    text_overlay: str = "",
 ) -> str:
     """
     ffmpeg can modify perspective of a video file.
@@ -351,10 +367,23 @@ def gen_perspective_ffmpeg_cmd(
     cmd = (
         f"ffmpeg -y{' -t 3' if preview_only else ''} "
         f"-i {i_vid_path} "
-        f"-vf perspective={points},scale=960:720,setdar=4/3 -s 960x720 "
+        f"-vf "
+        f"perspective={points},scale=960:720,setdar=4/3,"
+        f"""drawtext=fontfile='/usr/share/fonts/TTF/Ubuntu Mono Nerd Font Complete Mono.ttf':text='{text_overlay}':fontcolor=white:fontsize=30:box=1:boxcolor=black@0.5:boxborderw=5:x=10:y=10 """
+        "-s 960x720 "
         f"{o_vid_path}"
     )
+
     return cmd
+
+
+def vod2textoverlay(vod: dict) -> str:
+    remove_char_paren = lambda s: (s + " ")[: s.rfind("(")].strip()
+    remove_special_chars = lambda s: re.sub(r"[^A-Za-z0-9\- ]+", "", s)
+    p1 = remove_char_paren(vod.get("p1", "Kevbot"))
+    p2 = remove_char_paren(vod.get("p2", "Opponent"))
+    date = vod.get("date", "20XX")
+    return remove_special_chars(f"{date} {p1} vs {p2}")
 
 
 def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
@@ -371,7 +400,13 @@ def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
     # workaround is to render a short preview and ask for confirmation on that
 
     # make preview video
-    cmd = gen_perspective_ffmpeg_cmd(vidpath, outputpath, points, preview_only=True)
+    cmd = gen_perspective_ffmpeg_cmd(
+        vidpath,
+        outputpath,
+        points,
+        preview_only=True,
+        text_overlay="preview",
+    )
     print(cmd)
     # cmd = f"ffmpeg -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4u3 out.mp4"
 
@@ -416,11 +451,11 @@ def extract_vid_frame_to_file(
 
 def execute_ymls(yaml_paths: list[str], preview_only=False):
     """
-    now that we have all the yayactually render the final videos
+    now that we have all the yaymls written, actually render the final videos
     [x] render individual perspective-corrected vids
     [x] concat them together into 720p vid
         melt worked well for this
-    []? add text overlay to indicate players?
+    [x] add text overlay to indicate players?
     """
     os.makedirs("corrected", exist_ok=True)
     vids_txt = "vids.txt"
@@ -433,7 +468,11 @@ def execute_ymls(yaml_paths: list[str], preview_only=False):
         outname = f"{idx:03}" + vod["path"]
         vod["output_path"] = os.path.join("corrected", outname)
         ffmpeg_cmd = gen_perspective_ffmpeg_cmd(
-            vod["path"], vod["output_path"], vod["pers_pts"], preview_only=preview_only
+            i_vid_path=vod["path"],
+            o_vid_path=vod["output_path"],
+            ppoints=vod["pers_pts"],
+            preview_only=preview_only,
+            text_overlay=vod2textoverlay(vod),
         )
         print(ffmpeg_cmd)
         run(split(ffmpeg_cmd))
@@ -451,7 +490,7 @@ def execute_ymls(yaml_paths: list[str], preview_only=False):
             ]
         )
     )
-    cmd = f"melt {mp4list} -consumer avformat:{final_output_path}"
+    cmd = f"melt {mp4list} -consumer avformat:{final_output_path}?framerate=60"
     print(cmd)
     run(split(cmd))
     run(["mpv", final_output_path])
@@ -483,6 +522,7 @@ def main():
         exit()
 
     if "e" in sys.argv:
+        input('start render? (will overwrite stuff in "corrected" and "final)')
         ymls = [i for i in os.listdir() if i.endswith(".yml")]
         if TRNY_YAML_NAME in ymls:
             ymls.remove(TRNY_YAML_NAME)
@@ -491,10 +531,12 @@ def main():
     if not os.path.exists(TRNY_YAML_NAME):
         print(f"no {TRNY_YAML_NAME} found, creating")
         init_tourney_yaml()
+    tournament = get_yaml(TRNY_YAML_NAME)
     vid_paths = get_ts_mp4_paths()
     os.makedirs("tmp", exist_ok=True)
-    for vid_path in vid_paths:
-        vod = make_or_get_vod_yaml(vid_path)
+    assert len(vid_paths) == len(tournament["opponents"])
+    for vid_idx, vid_path in enumerate(vid_paths):
+        vod = make_or_get_vod_yaml(vid_path, tournament, vid_idx)
         prev_vod = deepcopy(vod)
         print(f"{vid_path=}")
         if vod.get("pers_pts") is None:
@@ -508,6 +550,7 @@ def main():
             vod["pers_pts"] = points
         if vod.get("p2") is None:
             vod["p2"] = input("player 2?: ")
+        print(vod2textoverlay(vod))
         write_vod_yaml(vod, prev=prev_vod)
 
     # init_yaml(vid_paths)
