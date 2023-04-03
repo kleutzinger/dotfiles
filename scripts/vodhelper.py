@@ -490,7 +490,7 @@ def execute_ymls(yaml_paths: list[str], preview_only=False):
             ]
         )
     )
-    cmd = f"melt {mp4list} -consumer avformat:{final_output_path}?framerate=60"
+    cmd = f"melt {mp4list} -consumer avformat:{final_output_path}"
     print(cmd)
     run(split(cmd))
     run(["mpv", final_output_path])
