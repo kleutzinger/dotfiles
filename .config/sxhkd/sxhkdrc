@@ -90,6 +90,7 @@ super + y
 
 super + l
     slock
+    # XSECURELOCK_DISCARD_FIRST_KEYPRESS=0 xsecurelock
 
 super + g
     ~/scripts/gym-busy.fish

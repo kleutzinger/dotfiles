@@ -20,9 +20,12 @@ def main():
     outfile = env_file + ".example"
     with open(outfile, "w") as f:
         for line in lines:
+            if line.startswith("#"):
+                f.write(line)
+                continue
             key, value = line.strip().split("=", 1)
-            f.write("{}={}\n".format(key, "*" * len(value)))
-    print(f'wrote {len(lines)} lines to {outfile}')
+            f.write(f"{key}=*****\n")
+    print(f"wrote {len(lines)} lines to {outfile}")
 
 
 if __name__ == "__main__":
