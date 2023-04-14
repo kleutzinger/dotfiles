@@ -46,6 +46,7 @@ unarchiver
 visual-studio-code-bin
 vlc
 wmctrl
+words
 xclip
 xdotool
 xsecurelock
