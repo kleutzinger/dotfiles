@@ -18,13 +18,16 @@ def main():
         lines = f.readlines()
 
     outfile = env_file + ".example"
+    wrote = []
     with open(outfile, "w") as f:
         for line in lines:
             if line.startswith("#"):
                 f.write(line)
                 continue
             key, value = line.strip().split("=", 1)
-            f.write(f"{key}=*****\n")
+            to_write = f"{key}=*****\n"
+            print(to_write)
+            f.write(to_write)
     print(f"wrote {len(lines)} lines to {outfile}")
 
 
