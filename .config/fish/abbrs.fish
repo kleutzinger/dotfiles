@@ -37,3 +37,4 @@ abbr deploy_blog magic.py ~/gits/kleutzinger.github.io/site-generator/kevbot.xyz
 abbr pkg add-pkg
 abbr ij 'intellij-idea-ultimate-edition .'
 abbr c 'code .'
+abbr t '~'

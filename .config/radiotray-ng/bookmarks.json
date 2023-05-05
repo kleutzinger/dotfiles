@@ -84,6 +84,10 @@
 				"name" : "rainwave OC remix",
 				"notifications" : false,
 				"url" : "https://relay.rainwave.cc:443/ocremix.mp3"
+			},
+			{
+				"name" : "gensokyo",
+				"url" : "https://stream.gensokyoradio.net/1/"
 			}
 		]
 	}

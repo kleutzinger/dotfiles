@@ -1,10 +1,5 @@
 #!/usr/bin/env sh
 
-# https://github.com/RaitaroH/sxhkd_plasma
-super + alt + {Right,Left}
-    {qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window to Next Desktop',\
-    qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut 'Window to Previous Desktop'}
-
 # https://web.archive.org/web/20200816032902/https://my-take-on.tech/2020/07/03/some-tricks-for-sxhkd-and-bspwm/#reloading-sxhkdrc
 
 super + shift + r
@@ -132,5 +127,5 @@ super + shift + m
 
 # caps lock
 super + u
-    xdotool key Caps_Lock
+    notify-send 'super+u caps lock toggle' && xdotool key Caps_Lock
 
