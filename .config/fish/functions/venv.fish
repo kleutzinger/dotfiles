@@ -13,6 +13,7 @@ function venv --argument-names python_version --description 'Create virtualenv n
         set python_bin (which python)
     else
         set python_bin $ASDF_DIR/installs/python/$python_version/bin/python
+        echo "activating $python_bin"
     end
 
     set -l venv_name (basename $PWD | tr . -)

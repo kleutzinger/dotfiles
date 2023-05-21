@@ -514,7 +514,6 @@ def get_desc(trny: dict, vods: list[dict]) -> tuple[str, str]:
 
 
 def main():
-
     if "d" in sys.argv:
         trny = get_yaml(TRNY_YAML_NAME)
         vods = [get_yaml(i) for i in sorted(os.listdir()) if i.endswith("mp4.yml")]
@@ -545,8 +544,12 @@ def main():
                 if len(points) != 4:
                     print(f"bad {len(points)=}. should be 4")
                     continue
-                if "r" not in input("r to retry").lower():
+                inp = input("r to retry, y to continue").lower()
+                if "r" in inp:
+                    continue
+                else:
                     break
+
             vod["pers_pts"] = points
         if vod.get("p2") is None:
             vod["p2"] = input("player 2?: ")

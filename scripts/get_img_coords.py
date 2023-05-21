@@ -7,6 +7,7 @@
 [] connect image
 """
 
+import random
 from vodhelper import extract_vid_frame_to_file, get_vod_duration_ms
 import cv2 as cv
 import numpy as np
@@ -117,9 +118,10 @@ def test_order_pts():
 
 
 def main(num_points: int, path: str) -> PointList:
-    center_second = int(get_vod_duration_ms(path) / 2 / 1000)
+    frame_second = int(get_vod_duration_ms(path) * random.random() / 1000)
+    frame_second = 0
     framepath = extract_vid_frame_to_file(
-        path, path + ".png", seek_sec=center_second, overwrite=True
+        path, path + ".png", seek_sec=frame_second, overwrite=True
     )
     ret = choose_points(framepath)
     return ret
