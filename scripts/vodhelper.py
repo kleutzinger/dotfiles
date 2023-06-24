@@ -96,6 +96,8 @@ def get_ts_mp4_paths(_dir="./"):
         filter(lambda x: x[-3:] == ".ts" or x[-4:] == ".mp4", os.listdir(_dir))
     )
     video_paths = sorted(video_paths)
+    # filter out videos with tmp in their name
+    video_paths = list(filter(lambda x: "tmp" not in x, video_paths))
     return list(video_paths)
     # return [os.path.join(_dir, v) for v in video_paths]
 
@@ -189,7 +191,12 @@ def generateTitleString(ts_basename, tournament_name=""):
 
 def copyTS(ts_paths=get_ts_paths()):
     now = datetime.datetime.today() - datetime.timedelta(hours=20)
-    nTime = now.strftime("%Y-%m-%d-%f")
+    guess_time = now.strftime("%Y-%m-%d-%f")
+    nTime = input(
+        f"what is the date? \n my guess is\n{guess_time}\ninput something else if not:\n"
+    )
+    if not nTime:
+        nTime = guess_time
     customFolderName = input("output folder name?: ")
     outputFolder = f'/home/kevin/output/{" ".join([nTime, customFolderName])}'
     os.makedirs(outputFolder, exist_ok=True)
@@ -364,12 +371,19 @@ def gen_perspective_ffmpeg_cmd(
         points += f":{a}:{b}"
     # remove first colon
     points = points[1:]
+    # check if we're on windows
+    if os.name == "nt":
+        font_path = "C\\\\:/Windows/Fonts/arial.ttf"
+    elif os.name == "posix":
+        font_path = "/usr/share/fonts/TTF/Ubuntu Mono Nerd Font Complete Mono.ttf"
+    else:
+        raise NotImplementedError(f"unknown os {os.name}")
     cmd = (
         f"ffmpeg -y{' -t 3' if preview_only else ''} "
         f"-i {i_vid_path} "
         f"-vf "
         f"perspective={points},scale=960:720,setdar=4/3,"
-        f"""drawtext=fontfile='/usr/share/fonts/TTF/Ubuntu Mono Nerd Font Complete Mono.ttf':text='{text_overlay}':fontcolor=white:fontsize=30:box=1:boxcolor=black@0.5:boxborderw=5:x=10:y=10 """
+        f"""drawtext=fontfile='{font_path}':text='{text_overlay}':fontcolor=white:fontsize=30:box=1:boxcolor=black@0.5:boxborderw=5:x=10:y=10 """
         "-s 960x720 "
         f"{o_vid_path}"
     )
@@ -533,7 +547,7 @@ def main():
     tournament = get_yaml(TRNY_YAML_NAME)
     vid_paths = get_ts_mp4_paths()
     os.makedirs("tmp", exist_ok=True)
-    assert len(vid_paths) == len(tournament["opponents"])
+    print(len(vid_paths), len(tournament["opponents"]))
     for vid_idx, vid_path in enumerate(vid_paths):
         vod = make_or_get_vod_yaml(vid_path, tournament, vid_idx)
         prev_vod = deepcopy(vod)
