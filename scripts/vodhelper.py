@@ -346,9 +346,7 @@ def write_vod_yaml(vod: dict, prev: Optional[dict] = None):
     # if os.path.exists(yaml_path) and prev == get_yaml(yaml_path):
     #     print("no changes, no writing yaml")
     #     return
-    if "y" not in input("y to write").lower():
-        print("not writing")
-        return
+    input("ctrl + c to cancel?")
     write_yaml(vod, yaml_path)
 
 
@@ -523,6 +521,7 @@ def get_desc(trny: dict, vods: list[dict]) -> tuple[str, str]:
         desc += f"{sec2ts(cur_sec)} "
         desc += f"{vod['p1']} vs {vod['p2']}\n"
         cur_sec += round(vod["duration_ms"] / 1000)
+        cur_sec += 5
     print(desc)
     return "title", desc
 
