@@ -44,7 +44,6 @@ TODOs:
 from copy import deepcopy
 import datetime
 from pprint import pprint
-import shutil
 
 import os
 from datetime import date
@@ -61,11 +60,6 @@ import yaml
 TRNY_YAML_NAME = "tournament.yml"
 
 
-def replaceExtension(filename, new_ext) -> str:
-    basename, _ = os.path.splitext(filename)
-    return basename + new_ext
-
-
 def convert_bytes(num_bytes: int) -> str:
     for x in ["bytes", "KB", "MB", "GB", "TB"]:
         if num_bytes < 1024.0:
@@ -79,179 +73,15 @@ def file_size(file_path):
         return convert_bytes(file_info.st_size)
 
 
-def get_ts_files(_dir="./"):
-    ts_files = list(filter(lambda x: x[-3:] == ".ts", os.listdir(_dir)))
-    ts_files = sorted(ts_files)
-    return ts_files
-
-
-def get_ts_paths(_dir="./"):
-    ts_files = list(filter(lambda x: x[-3:] == ".ts", os.listdir(_dir)))
-    ts_files = sorted(ts_files)
-    return [os.path.join(_dir, t) for t in ts_files]
-
-
 def get_ts_mp4_paths(_dir="./"):
     video_paths = list(
         filter(lambda x: x[-3:] == ".ts" or x[-4:] == ".mp4", os.listdir(_dir))
     )
     video_paths = sorted(video_paths)
+    # filter out videos with tmp in their name
+    video_paths = list(filter(lambda x: "tmp" not in x, video_paths))
     return list(video_paths)
     # return [os.path.join(_dir, v) for v in video_paths]
-
-
-def promptTsFiles(ts_paths):
-    skipConversion = False
-    for idx, ts_path in enumerate(ts_paths):
-        if skipConversion:
-            break
-        ts = os.path.basename(ts_path)
-        # print(ts_path)
-        size = file_size(ts_path)
-        while not skipConversion:
-            prompt = f"#{idx+1}/{len(ts_paths)}\n"
-            prompt += f"{ts} \nsize: {size}\n"
-            prompt += (
-                "cmds:(v)preview (r)ename (n)ext (d)elete (l)ist (s)kipConversion: "
-            )
-            print("\n\n\n")
-            cmd = input(prompt)
-            if cmd == "v":  # view preview in vlc
-                subprocess.call(f'/usr/bin/mplayer "{ts_path}"', shell=True)
-            elif cmd == "r":  # rename
-                no_extension, ext = os.path.splitext(ts)
-                append_to_filename = input(f"rename to: {no_extension}")
-                new_filename = no_extension + append_to_filename + ext
-                os.rename(ts_path, new_filename)
-                print("renamed: ", new_filename)
-                ts = new_filename
-                ts_path = os.path.abspath(ts)
-            elif cmd == "d":  # move to delete folder
-                os.makedirs("del", exist_ok=True)
-                source = ts_path
-                destination = os.path.join(os.path.curdir, "del", ts)
-                os.rename(source, destination)
-                break
-            elif cmd == "n":  # continue to next file
-                break
-            elif cmd == "l":
-                print("\n".join(get_ts_files()))
-            elif cmd == "s":
-                skipConversion = True
-            else:
-                continue
-    return get_ts_paths()
-
-
-def addBrackets(str_):
-    return f"({str_})"
-    # return '[' + _str + ']'
-
-
-def generateTitleString(ts_basename, tournament_name=""):
-    try:
-        leading_nums = ts_basename[:15]
-        year = leading_nums[:4]
-        month = leading_nums[4:6]
-        num2month = {
-            "01": "Jan",
-            "02": "Feb",
-            "03": "Mar",
-            "04": "Apr",
-            "05": "May",
-            "06": "Jun",
-            "07": "Jul",
-            "08": "Aug",
-            "09": "Sept",
-            "10": "Oct",
-            "11": "Nov",
-            "12": "Dec",
-        }
-        month = num2month[month]
-        day = leading_nums[6:8]
-        date_str = " ".join([year, month, day])
-        # if len(ts_basename) > 18:  # filename has added title
-        # date_str = ' ' + date_str
-        date_str = addBrackets(date_str)
-        filename, ext = os.path.splitext(ts_basename)
-        # if len(batch_idx) > 0:
-        #     batch_idx = addBrackets(batch_idx)
-        if len(tournament_name) > 0:
-            tournament_name = addBrackets(tournament_name)
-        return f"{filename[15:]} {date_str} {tournament_name}{ext}"
-    except Exception as e:
-        print(e)
-        return ts_basename
-
-
-# if input('do not copy+convert? x to cancel: ') != 'x':
-
-
-def copyTS(ts_paths=get_ts_paths()):
-    now = datetime.datetime.today() - datetime.timedelta(hours=20)
-    nTime = now.strftime("%Y-%m-%d-%f")
-    customFolderName = input("output folder name?: ")
-    outputFolder = f'/home/kevin/output/{" ".join([nTime, customFolderName])}'
-    os.makedirs(outputFolder, exist_ok=True)
-    print(nTime)
-    for ts_path in ts_paths:
-        source = ts_path
-        destination = outputFolder
-        shutil.copy(source, destination)
-        print("done copying ", ts_path)
-    return outputFolder
-    # goto new folder and covnert c
-
-
-def convert(
-    ts_paths=get_ts_paths(), append_to_filename=""
-):  # makes file.mp4 in mp4 folder
-    outputMP4s = []
-    for idx, ts_path in enumerate(ts_paths):
-        ts_dirname = os.path.dirname(ts_path)
-        os.makedirs(os.path.join(ts_dirname, "mp4"), exist_ok=True)
-        # idx_no = str(idx+1).zfill(2)
-        basename = os.path.basename(ts_path)
-        # mp4name = generateTitleString(
-        #     basename, f'{idx_no}_{len(ts_paths)}')
-        mp4name = generateTitleString(basename, append_to_filename)
-
-        mp4name = replaceExtension(mp4name, ".mp4")
-        # figure out why not mp4 folder?
-        outputPath = os.path.join(ts_dirname, "mp4", mp4name)
-        outputMP4s.append(outputPath)
-        subprocess.call(
-            f'ffmpeg -y -i "{ts_path}" -preset veryfast -vf scale=1280:-2 "{outputPath}"',
-            shell=True,
-        )
-    return outputMP4s
-
-
-def uploadFolder(_dir="./", desc="", vis=""):
-    video_paths = get_ts_mp4_paths(_dir)
-    for v in video_paths:
-        uploadVideo(v, desc=desc, vis=vis)
-
-
-example_ts_path = "/home/kevin/test/202001251759330.ts"
-
-
-# print(generateTitleString(os.path.basename(example_ts_path)))
-
-
-def uploadVideo(videoPath, title="", desc="", vis=""):
-    if vis == "p":
-        vis = "public"
-    else:
-        vis = "unlisted"
-    if len(title) == 0:
-        title = os.path.splitext(os.path.basename(videoPath))[0]
-    uploadCmd = f'~/scripts/youtubeuploader -oe -op "{vis}" -od "{desc}" -ot "{title}" -l -v "{videoPath}"'
-    subprocess.call(uploadCmd, shell=True)
-
-
-def getGlobalFlags():
-    pass
 
 
 def get_vod_duration_ms(vodpath: str) -> float:
@@ -278,11 +108,19 @@ def init_tourney_yaml() -> str:
     """
     returns path of yaml
     """
-    today = str(date.today())
-    print("assuming trny date today", today)
+
+    now = datetime.datetime.today() - datetime.timedelta(hours=20)
+    guess_time = now.strftime("%Y-%m-%d")
+    nTime = input(
+        f"what is the date? \n my guess is\n{guess_time} ({now.strftime('%A')})\ninput something else if not:\n"
+    )
+    if not nTime:
+        nTime = guess_time
+    nTime = str(date.today())
+    print("assuming trny date today", nTime)
     trny_url = input("start.gg url:")
     opponents = input("comma separated opponents:").split(",")
-    base_yaml = dict(tournament_url=trny_url, date=today, opponents=opponents)
+    base_yaml = dict(tournament_url=trny_url, date=nTime, opponents=opponents)
     write_yaml(base_yaml, TRNY_YAML_NAME)
     return base_yaml
 
@@ -339,9 +177,7 @@ def write_vod_yaml(vod: dict, prev: Optional[dict] = None):
     # if os.path.exists(yaml_path) and prev == get_yaml(yaml_path):
     #     print("no changes, no writing yaml")
     #     return
-    if "y" not in input("y to write").lower():
-        print("not writing")
-        return
+    input("ctrl + c to cancel?")
     write_yaml(vod, yaml_path)
 
 
@@ -364,12 +200,19 @@ def gen_perspective_ffmpeg_cmd(
         points += f":{a}:{b}"
     # remove first colon
     points = points[1:]
+    # check if we're on windows
+    if os.name == "nt":
+        font_path = "C\\\\:/Windows/Fonts/arial.ttf"
+    elif os.name == "posix":
+        font_path = "/usr/share/fonts/TTF/Ubuntu Mono Nerd Font Complete Mono.ttf"
+    else:
+        raise NotImplementedError(f"unknown os {os.name}")
     cmd = (
         f"ffmpeg -y{' -t 3' if preview_only else ''} "
         f"-i {i_vid_path} "
         f"-vf "
         f"perspective={points},scale=960:720,setdar=4/3,"
-        f"""drawtext=fontfile='/usr/share/fonts/TTF/Ubuntu Mono Nerd Font Complete Mono.ttf':text='{text_overlay}':fontcolor=white:fontsize=30:box=1:boxcolor=black@0.5:boxborderw=5:x=10:y=10 """
+        f"""drawtext=fontfile='{font_path}':text='{text_overlay}':fontcolor=white:fontsize=30:box=1:boxcolor=black@0.5:boxborderw=5:x=10:y=10 """
         "-s 960x720 "
         f"{o_vid_path}"
     )
@@ -509,6 +352,7 @@ def get_desc(trny: dict, vods: list[dict]) -> tuple[str, str]:
         desc += f"{sec2ts(cur_sec)} "
         desc += f"{vod['p1']} vs {vod['p2']}\n"
         cur_sec += round(vod["duration_ms"] / 1000)
+        cur_sec += 5
     print(desc)
     return "title", desc
 
@@ -533,7 +377,7 @@ def main():
     tournament = get_yaml(TRNY_YAML_NAME)
     vid_paths = get_ts_mp4_paths()
     os.makedirs("tmp", exist_ok=True)
-    assert len(vid_paths) == len(tournament["opponents"])
+    print(len(vid_paths), len(tournament["opponents"]))
     for vid_idx, vid_path in enumerate(vid_paths):
         vod = make_or_get_vod_yaml(vid_path, tournament, vid_idx)
         prev_vod = deepcopy(vod)
@@ -555,25 +399,6 @@ def main():
             vod["p2"] = input("player 2?: ")
         print(vod2textoverlay(vod))
         write_vod_yaml(vod, prev=prev_vod)
-
-    # init_yaml(vid_paths)
-    # ts_paths = get_ts_files()  # current folder ts paths
-    # renamed_ts_paths = promptTsFiles(ts_paths)
-    # copied_output_folder = copyTS(renamed_ts_paths)
-    # output_mp4_paths = convert(
-    #     get_ts_paths(copied_output_folder), flags["tournament_name"]
-    # )
-    # subprocess.call(
-    #     f'notify-send -u critical "conversion complete {copied_output_folder}/mp4"',
-    #     shell=True,
-    # )
-
-    # Disable uploads (api rate-limited too heavily)
-    """
-    for mp4_path in output_mp4_paths:
-        uploadVideo(
-            mp4_path, desc=flags['bracketURL'], vis=flags['visibility'])
-    """
 
 
 if __name__ == "__main__":

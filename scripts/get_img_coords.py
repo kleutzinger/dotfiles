@@ -9,6 +9,8 @@
 
 import random
 from vodhelper import extract_vid_frame_to_file, get_vod_duration_ms
+
+# python -m pip install opencv-python
 import cv2 as cv
 import numpy as np
 from typing import List, Tuple
@@ -41,7 +43,9 @@ def choose_points(path: str) -> PointList:
         cv.BORDER_CONSTANT,
         value=white,
     )
+    cv.namedWindow("window", cv.WINDOW_NORMAL)
     cv.imshow("window", with_border)
+    # cv.resizeWindow("window", 500, 500)
     pts: list[tuple[int, int]]
     pts = []
 
@@ -119,7 +123,6 @@ def test_order_pts():
 
 def main(num_points: int, path: str) -> PointList:
     frame_second = int(get_vod_duration_ms(path) * random.random() / 1000)
-    frame_second = 0
     framepath = extract_vid_frame_to_file(
         path, path + ".png", seek_sec=frame_second, overwrite=True
     )
