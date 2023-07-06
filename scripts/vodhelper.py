@@ -116,7 +116,6 @@ def init_tourney_yaml() -> str:
     )
     if not nTime:
         nTime = guess_time
-    nTime = str(date.today())
     print("assuming trny date today", nTime)
     trny_url = input("start.gg url:")
     opponents = input("comma separated opponents:").split(",")
