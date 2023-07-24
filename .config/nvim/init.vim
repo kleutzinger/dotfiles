@@ -112,7 +112,7 @@ tnoremap <Esc> <C-\><C-n>:q!<CR>
 set whichwrap+=<,>,[,]
 
 " COLORSCHEME:
-colorscheme github_dimmed
+" colorscheme github_dark_dimmed
 
 
 let g:embark_tkittyerminal_italics = 1

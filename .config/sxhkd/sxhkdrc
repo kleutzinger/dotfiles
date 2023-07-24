@@ -70,7 +70,7 @@ super + b
 
 # Put computer to sleep
 
-super + shift + s
+super + s
     python $HOME/scripts/going-to-sleep.py
 
 # turn off screen
