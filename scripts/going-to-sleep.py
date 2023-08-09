@@ -22,7 +22,8 @@ def notif(msg):
 
 def suspend():
     # call(["xset", "dpms", "force", "off"])
-    call(["slock", "systemctl", "suspend"])
+    # call(["slock", "systemctl", "suspend"])
+    call(["systemctl", "suspend"])
 
 
 def remove_sleep_file():

@@ -4,6 +4,7 @@ so ~/.config/coc/config.vim
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'projekt0n/github-nvim-theme'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'justinmk/vim-sneak'
 Plug 'google/vim-jsonnet'
 Plug 'wellle/targets.vim'
@@ -112,13 +113,14 @@ tnoremap <Esc> <C-\><C-n>:q!<CR>
 set whichwrap+=<,>,[,]
 
 " COLORSCHEME:
-" colorscheme github_dark_dimmed
+" colorscheme github_dark_high_contrast
+"colorscheme catppuccin-mocha
 
 
 let g:embark_tkittyerminal_italics = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
 nmap s <Plug>(easymotion-s2)
-" set termguicolors
+set termguicolors
 :hi! Normal ctermbg=BLACK guibg=NONE
 ":hi! CursorLineNr guibg=NONE
 :set notermguicolors
