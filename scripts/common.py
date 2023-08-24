@@ -1,5 +1,6 @@
 from typing import Any, Callable, Iterable, Optional
 from requests_html import HTMLSession, HTMLResponse
+import requests
 from iterfzf import iterfzf
 import subprocess
 
