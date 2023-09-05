@@ -20,7 +20,7 @@ super + shift + w
     firefox 'https://www.google.com/android/find?u=0'
 
 super + Return
-    $HOME/scripts/toggle-term.sh
+    $HOME/scripts/toggle-term.sh --new-window
 
 super + space
     dmenu_run -fn 'Droid Sans Mono-25'
