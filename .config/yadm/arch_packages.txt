@@ -37,6 +37,7 @@ radiotray-ng
 rofi
 slock
 sxhkd
+sxhkhm-git
 tdrop
 tdrop-git
 tealdeer

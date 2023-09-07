@@ -1,66 +1,81 @@
 #!/usr/bin/env sh
 
-# https://web.archive.org/web/20200816032902/https://my-take-on.tech/2020/07/03/some-tricks-for-sxhkd-and-bspwm/#reloading-sxhkdrc
-
+# reload sxhkd
 super + shift + r
     pkill -usr1 -x sxhkd; notify-send -t 15000 'sxhkd' 'Reloaded config'
 
+# edit sxhkdrc
 super + shift + k
     $HOME/scripts/edit-hotkeys.sh
 
+# open or cycle through text editor
 super + b
     xdotool search "Visual Studio Code" windowactivate || firefox
 
+# open or cycle through firefox
 super + w
     xdotool search "Mozilla Firefox" windowactivate || firefox
-    # firefox
-    #tdrop -h '100%' $BROWSER "file:///home/kevin/rescale/kevdocs/joey-new-tab.html"
 
+# find my phone
 super + shift + w
     firefox 'https://www.google.com/android/find?u=0'
 
+# open a new terminal window (pane)
 super + Return
     $HOME/scripts/toggle-term.sh --new-window
 
+# run dmenu
 super + space
     dmenu_run -fn 'Droid Sans Mono-25'
 
+# open "start" menu
 super + shift + space
     xfce4-popup-whiskermenu
 
+# close current window
 super + q
     wmctrl -c :ACTIVE:
 
+# screenshot utility
 Print
     flameshot gui
 
+# take a full screenshot
 shift + Print
     flameshot full -p $HOME/Pictures/scrots
 
+# toggle terminal
 F1
     $HOME/scripts/toggle-term.sh
 
+# toggleable firefox
 shift + F1
     tdrop $BROWSER
 
+# open a new note
 super + n
     fish -c "note"
 
+# open file manager
 super + e
     thunar
 
+# open blog
 super + shift + b
-    $BROWSER 127.0.0.1:9001/admin/
+    fish -c 'blog.fish'
 
+# launch a a game
 super + o
     terminator -m -e "game.sh"
 
+# launch a a game (retro)
 super + shift + o
     cool-retro-term -e game.sh d
 
 super + c
     fish -c "check-notes.fish"
 
+# enable colemak and switch ctrl and alt
 super + shift + c
     setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl && notify-send 'colemak enabled'
 
@@ -69,63 +84,45 @@ super + b
     bluetoothctl -- disconnect 1C:66:6D:C4:DD:FA && notify-send -t 1000 "Disconnected from Dualshock 4"
 
 # Put computer to sleep
-
 super + s
     python $HOME/scripts/going-to-sleep.py
 
-# turn off screen
-#super + shift +  s
-    #xset dpms force off
-
-super + shift + f
-    ~/scripts/clip-fmt-py.sh && notify-send -t 1000 "Fmt Python"
-
+# open clipboard in mpv
 super + y
     notify-send "$(xsel -ob)"; mpv $(xsel -ob)
 
+# lock screen
 super + l
     slock
-    # XSECURELOCK_DISCARD_FIRST_KEYPRESS=0 xsecurelock
 
-super + g
-    ~/scripts/gym-busy.fish
-
-## Some commnad to switch directly to VS Code Screen (super + 1)
-# not using super keys anywhere and i might as well
-
+# manage multiple monitors
 super + p
     lxrandr
 
+# open clipboard history
 super + v
     xfce4-clipman-history
 
+# modify clipboard in editor
 super + shift + v
     terminator -e "~/scripts/edit-clipboard.sh"
 
-super + h
+# insert today's date (while in google docs)
+super + shift + d
     $HOME/scripts/google-doc-insert-today-header.sh
 
+# grid overlay on screen
 super + shift + h
    python3 /home/kevin/scripts/click_screen.py
-   #python3 /home/kevin/scripts/grid_overlay.py
 
-super + shift + t
-    notify-send "trying to get torrent $(xsel -ob)"; python3 ~/scripts/rutorrent.py $(xsel -ob) | ~/scripts/notify-pipe
-
+# select a window
 super + shift + u
     $HOME/scripts/window-select.sh
 
-super + shift + e
-    sleep 0.5; xdotool type 'thedookmaster@gmail.com'
-
-super + shift + m
-    terminator -m -e "~/scripts/movie_api.py"
-
-#super + m
-#    $HOME/scripts/window-control.fish max
-#
-
-# caps lock
+# toggle caps lock
 super + u
     notify-send 'super+u caps lock toggle' && xdotool key Caps_Lock
 
+# Display keybind menu
+super + h
+    sxhkhmenu
