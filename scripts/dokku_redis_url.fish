@@ -21,9 +21,9 @@ end
 set outfile (mktemp)
 echo "made $outfile"
 
-dokku redis:info $argv > $outfile
+dokku redis:info $argv >$outfile
 echo "wrote $outfile"
-cat $outfile | python -c '
+cat $outfile | python3 -c '
 import fileinput
 with fileinput.input() as f_input:
     for line in f_input:
@@ -31,6 +31,9 @@ with fileinput.input() as f_input:
         if line.startswith("Dsn:"):
             dsn = line.split("Dsn:")[1].strip()
         if line.startswith("Exposed ports:"):
+            if ("->" not in line):
+                print(f"please run dokku redis:expose <db_name>")
+                exit(1)
             port = line.split("->")[1]
 password = dsn.split("@")[0].split(":")[-1]
 print(f"{dsn}, {port}")
@@ -40,4 +43,3 @@ print("\t" + connect_url)
 connect_cmd = f"redis-cli -h kevbot.xyz -p {port} -a {password}"
 print("\t" + connect_cmd)
 '
-
