@@ -1,5 +1,5 @@
 add_newline = false
-
+command_timeout = 2000
 
 [username]
 style_user = "bold dimmed blue"
