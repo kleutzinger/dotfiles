@@ -19,6 +19,7 @@ set -gx GDK_SCALE 1
 set -gx QT_AUTO_SCREEN_SCALE_FACTOR 1
 set -gx QT_SCALE_FACTOR 2
 alias p="xsel -ob"
+alias bunx="bun x"
 source $HOME/.config/fish/abbrs.fish
 if test -e $HOME/rescale/env.fish
     source $HOME/rescale/env.fish

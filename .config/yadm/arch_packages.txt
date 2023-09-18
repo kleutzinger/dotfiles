@@ -29,6 +29,7 @@ neovim-plug
 nodejs
 noto-fonts-emoji
 npm
+peek
 python-black
 python-iterfzf
 python-psutil
