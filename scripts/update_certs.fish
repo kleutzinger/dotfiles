@@ -37,15 +37,8 @@ end
 
 
 set APPS (DOKKU_CMD --quiet apps:list)
+mkdir -p /etc/letsencrypt/live/kevbot.xyz
 cd /etc/letsencrypt/live/kevbot.xyz
-
-# cd /etc/letsencrypt/live/kevbot.xyz
-# certbot certonly --manual --preferred-challenges=dns --domain "kevbot.xyz,*.kevbot.xyz"
-# tar cvf certs.tar server.crt server.key
-# dokku global-cert:set < certs.tar
-# dokku certs:add movies < certs.tar
-
-# certbot certonly --manual --preferred-challenges=dns --preferred-chain 'ISRG Root X1' --domain "kevbot.xyz,*.kevbot.xyz"
 
 echo "please run to check deployed .txt records:"
 echo "nslookup -q=txt _acme-challenge.kevbot.xyz."
