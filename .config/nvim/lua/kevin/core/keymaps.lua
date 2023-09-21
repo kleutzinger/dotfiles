@@ -6,6 +6,9 @@ local keymap = vim.keymap -- for conciseness
 ---------------------
 -- General Keymaps -------------------
 
+-- use backslash to go back when using f/t
+vim.api.nvim_set_keymap("n", "\\", ",", { noremap = true })
+
 -- use hk to exit insert mode
 keymap.set("i", "hk", "<ESC>", { desc = "Exit insert mode with hk" })
 
