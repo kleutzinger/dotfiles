@@ -15,12 +15,12 @@ return {
     nvimtree.setup({
       view = {
         width = 35,
-        relativenumber = true,
+        relativenumber = false,
       },
       -- change folder arrow icons
       renderer = {
         indent_markers = {
-          enable = true
+          enable = true,
         },
         icons = {
           glyphs = {

@@ -6,8 +6,8 @@ local keymap = vim.keymap -- for conciseness
 ---------------------
 -- General Keymaps -------------------
 
--- use jk to exit insert mode
-keymap.set("i", "hk", "<ESC>", { desc = "Exit insert mode with jk" })
+-- use hk to exit insert mode
+keymap.set("i", "hk", "<ESC>", { desc = "Exit insert mode with hk" })
 
 -- clear search highlights
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })

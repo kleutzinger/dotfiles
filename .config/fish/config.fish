@@ -46,7 +46,9 @@ function fed
 end
 
 function ved
-	$EDITOR ~/.config/nvim/init.vim
+  pushd ~/.config/nvim
+  GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR ./
+  popd
 end
 
 function e -d "open a file in a text editor"
