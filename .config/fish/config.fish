@@ -27,6 +27,10 @@ else
     set -gx BROWSER firefox
 end
 
+if test -e $HOME/.config/fish/secrets.fish
+    source $HOME/.config/fish/secrets.fish
+end
+
 # https://github.com/decors/fish-colored-man settings
 set -g man_blink -o red
 set -g man_bold -o green
