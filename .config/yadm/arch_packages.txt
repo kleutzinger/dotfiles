@@ -3,6 +3,7 @@ asciidoctor
 asdf-vm
 audacity
 authy
+croc
 fd
 fish
 fisher

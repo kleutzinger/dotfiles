@@ -55,6 +55,10 @@ function ved
   popd
 end
 
+function yedit --description "edit with yadm as git dir"
+  GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR $argv
+end
+
 function e -d "open a file in a text editor"
     $EDITOR $argv
 end
