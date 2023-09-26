@@ -5,4 +5,6 @@ return {
   "github/copilot.vim",
   "nvim-treesitter/playground",
   "sbdchd/neoformat",
+  "weilbith/nvim-code-action-menu",
+  "mattn/emmet-vim",
 }
