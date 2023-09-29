@@ -12,15 +12,12 @@ vim.api.nvim_set_keymap("n", "\\", ",", { noremap = true })
 -- use hk to exit insert mode
 keymap.set("i", "hk", "<ESC>", { desc = "Exit insert mode with hk" })
 
--- clear search highlights
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
 
--- delete single character without copying into register
--- keymap.set("n", "x", '"_x')
+keymap.set("n", "<leader>lg", ":LazyGit<CR>", { desc = "Open LazyGit" })
 
--- increment/decrement numbers
-keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" }) -- increment
-keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
+-- delete single character without copying into register
+keymap.set("n", "x", '"_x')
 
 -- window management
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically

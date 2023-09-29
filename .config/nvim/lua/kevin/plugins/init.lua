@@ -7,4 +7,5 @@ return {
   "sbdchd/neoformat",
   "weilbith/nvim-code-action-menu",
   "mattn/emmet-vim",
+  "kdheepak/lazygit.nvim",
 }
