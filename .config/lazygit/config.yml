@@ -1,6 +1,14 @@
 keybinding:
   universal:
-    prevItem-alt: 'h' # go one line up
-    nextItem-alt: 'k' # go one line down
-    prevBlock-alt: 'j' # goto the previous block / panel
-    nextBlock-alt: 'l' # goto the next block / panel
+    prevItem-alt: "h" # go one line up
+    nextItem-alt: "k" # go one line down
+    prevBlock-alt: "j" # goto the previous block / panel
+    nextBlock-alt: "l" # goto the next block / panel
+gui:
+  theme:
+    # selectedLineBgColor:
+    #   - black # set to `default` to have no background colour
+    # selectedRangeBgColor:
+    #   - black
+    selectedLineBgColor:
+      - reverse
