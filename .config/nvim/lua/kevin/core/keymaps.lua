@@ -30,3 +30,21 @@ keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" 
 keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" }) --  go to next tab
 keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" }) --  go to previous tab
 keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" }) --  move current buffer to new tab
+
+-- map f to sneak plugin in all modes
+keymap.set("n", "f", "<Plug>Sneak_f", { silent = true })
+keymap.set("o", "f", "<Plug>Sneak_f", { silent = true })
+keymap.set("x", "f", "<Plug>Sneak_f", { silent = true })
+
+-- same for F and t and T
+keymap.set("n", "F", "<Plug>Sneak_F", { silent = true })
+keymap.set("o", "F", "<Plug>Sneak_F", { silent = true })
+keymap.set("x", "F", "<Plug>Sneak_F", { silent = true })
+
+keymap.set("n", "t", "<Plug>Sneak_t", { silent = true })
+keymap.set("o", "t", "<Plug>Sneak_t", { silent = true })
+keymap.set("x", "t", "<Plug>Sneak_t", { silent = true })
+
+keymap.set("n", "T", "<Plug>Sneak_T", { silent = true })
+keymap.set("o", "T", "<Plug>Sneak_T", { silent = true })
+keymap.set("x", "T", "<Plug>Sneak_T", { silent = true })
