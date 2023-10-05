@@ -19,6 +19,9 @@ opt.smartcase = true -- if you include mixed case in your search, assumes you wa
 
 -- cursor line
 opt.cursorline = true -- highlight the current cursor line
+-- lock cursor to center-ish of screen
+opt.so = 5
+-- opt.guicursor = "i:block"
 
 -- appearance
 
@@ -40,6 +43,3 @@ opt.splitbelow = true -- split horizontal window to the bottom
 
 -- turn off swapfile
 opt.swapfile = false
-
--- lock cursor to center of screen
-opt.so = 5
