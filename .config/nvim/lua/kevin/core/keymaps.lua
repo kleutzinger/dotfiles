@@ -48,3 +48,5 @@ keymap.set("x", "t", "<Plug>Sneak_t", { silent = true })
 keymap.set("n", "T", "<Plug>Sneak_T", { silent = true })
 keymap.set("o", "T", "<Plug>Sneak_T", { silent = true })
 keymap.set("x", "T", "<Plug>Sneak_T", { silent = true })
+
+keymap.set("n", "<esc><esc><esc>", "<cmd>qa<CR>", { desc = "Quit neovim" })

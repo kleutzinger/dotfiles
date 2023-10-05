@@ -5,6 +5,7 @@ keybinding:
     prevBlock-alt: "j" # goto the previous block / panel
     nextBlock-alt: "l" # goto the next block / panel
 gui:
+  windowSize: "half"
   theme:
     # selectedLineBgColor:
     #   - black # set to `default` to have no background colour

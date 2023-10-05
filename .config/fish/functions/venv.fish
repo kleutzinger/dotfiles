@@ -18,7 +18,6 @@ function venv --argument-names python_version --description 'Create virtualenv n
 
     set -l venv_name (basename $PWD | tr . -)
 
-    echo
     if not test -e $python_bin
         echo "Python version `$python_version` is not installed."
         return 1
@@ -27,6 +26,7 @@ function venv --argument-names python_version --description 'Create virtualenv n
     echo Creating virtualenv `$venv_name`
     $python_bin -m venv $HOME/.virtualenvs/$venv_name
     source $HOME/.virtualenvs/$venv_name/bin/activate.fish
+    echo `$venv_name`  activated
 
     if test -e 'requirements.txt'
         echo 'requirements.txt detected, install?'
