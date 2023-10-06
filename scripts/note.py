@@ -21,8 +21,8 @@ TODO:
         - [ ] add cli arg for this
     [x] select by content? search headers?
     [ ] launch check_notes.fish
-    [ ] search headers (# HEADER)
-        [ ] select notes containing header
+    [x] figure out only opening single instance of nvim (i use nvim-qt)
+    [x] search headers (# HEADER)
     [x] movie template
         - themes, who should watch it,
         - access tmdb api? movies.kevbot.xyz api?
@@ -33,7 +33,6 @@ TODO:
     [ ] fish shell completion generation
         [ ] move templates to dict?
     [ ] note.py c # paste clipboard contents to note
-    [ ] edit multiple day's notes at once (append together and re-split/write?)
 
 https://stackoverflow.com/questions/26216875/how-to-handle-cli-subcommands-with-argparse
 """
@@ -47,18 +46,31 @@ import subprocess
 import sys
 import time
 
-EDITOR = os.getenv("EDITOR") or "gedit"
 # how many hours after midnight do days roll over (5 am default)
 MIDNIGHT_HOUR_SHIFT = 5
 # note path = NOTE_DIR/NOTE_STRFTIME.NOTE_EXT
-NOTE_DIR = os.getenv("NOTE_DIR")
-NOTE_STRFTIME = "%Y-%m-%d"
+NOTE_DIR = os.getenv("NOTE_DIR") or os.path.join(os.path.expanduser("~"), "notes")
+NOTE_STRFTIME = "%Y-%m-%d %a"
 NOTE_EXT = ".md"
 
 if getpass.getuser() == "kevin":
     # this is for my own stuff
-    EDITOR = "nvim '+normal G\$'"
-    NOTE_EXT = ".adoc"
+    NOTE_EXT = ".md"
+
+
+def get_note_path():
+    "get the main note file's path"
+    return os.path.join(NOTE_DIR, "note" + NOTE_EXT)
+
+
+def EDITOR_AT_LINE(line_num=None, note_path=get_note_path()):
+    "open a file at a certain line number. if no line number provided, open at bottom"
+    if line_num is None:
+        # assume bottom of file
+        run_cmd = "nvim-qt '+normal " + r"G\$ ' " + note_path
+    else:
+        run_cmd = f"nvim-qt '+normal {line_num}" + r"G\$' " + note_path
+    subprocess.run(run_cmd, shell=True)
 
 
 def main():
@@ -69,21 +81,26 @@ def main():
         filename = get_note_path()
         print(f"opening {filename}")
         open_note(filename)
+        return
     else:
         argcmd = sys.argv[1]
         if argcmd == "e":
             # edit this source code
-            subprocess.run(f"{EDITOR} {__file__}", shell=True)
+            EDITOR_AT_LINE(0, __file__)
+            return
         if argcmd.startswith("m"):
             import movie_api
 
             search_query = input("what movie title?\n")
             template = movie_api.search_to_template(search_query)
             open_note(get_note_path(), template)
+            return
         if argcmd == "p":
             # print today's note path
             print(os.path.abspath(get_note_path()))
         if argcmd == "i":
+            print("have to reimplment this")
+            sys.exit(1)
             from iterfzf import iterfzf
 
             # get a fzf all notes in dir and choose one to edit
@@ -99,32 +116,48 @@ def verify_env():
     if not NOTE_DIR:
         print("please set NOTE_DIR environment variable, exiting")
         exit(1)
-
     if not os.path.exists(NOTE_DIR):
         print("creating ${NOTE_DIR}")
         os.makedirs(NOTE_DIR)
 
-    editor_loc = shutil.which(EDITOR.split(" ")[0])
-    if not editor_loc:
-        print(f"invalid EDITOR:\n{EDITOR}")
-        print("please set EDITOR environment variable or edit this script")
 
-
-def open_note(path, append_template=""):
+def open_note(path, at_header=None, append_template=""):
     "open note in editor. creates file on open if not existing"
     if not os.path.isdir(path):
         with open(path, "a+") as f:
             if append_template:
                 f.write(append_template)
-    subprocess.run(f"{EDITOR} {path}", shell=True)
+    if at_header:
+        header_found_at = get_line_of_header(path, at_header)
+        EDITOR_AT_LINE(header_found_at)
+        return
+    todays_header = "## " + rel_time_ago(0)
+    header_found_at = get_line_of_header(path, todays_header)
+    if header_found_at:
+        # currently this opens at the line of the header
+        # it would be better to open at the bottom of the section containing the header
+        EDITOR_AT_LINE(header_found_at)
+        return
+    else:
+        # header not found, append it
+        with open(path, "a+") as f:
+            f.write("\n\n" + todays_header + "\n\n")
+    EDITOR_AT_LINE(None)
 
 
-def get_note_path(days_ago=0):
-    "get today's note path. or get it from X days ago"
+def rel_time_ago(days_ago=0):
     timestamp = time.time() - (3600 * MIDNIGHT_HOUR_SHIFT) - (days_ago * 3600 * 24)
     at_date = datetime.date.fromtimestamp(timestamp)
-    filename = at_date.strftime(NOTE_STRFTIME) + NOTE_EXT
-    return filename
+    return at_date.strftime(NOTE_STRFTIME)
+
+
+def get_line_of_header(note_path, header):
+    "return line number of header, searching the file from bottom up"
+    with open(note_path, "r") as f:
+        lines = f.readlines()
+        for i, line in enumerate(reversed(lines)):
+            if line.startswith(header):
+                return len(lines) - i
 
 
 def get_note_list():

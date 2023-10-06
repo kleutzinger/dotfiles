@@ -1,10 +1,9 @@
-asciidoc
-asciidoctor
 asdf-vm
 audacity
 authy
 croc
 fd
+ffmpeg
 fish
 fisher
 flameshot
@@ -26,7 +25,7 @@ mosh
 mpv
 nautilus-terminal
 neovim
-neovim-plug
+neovim-qt
 nodejs
 noto-fonts-emoji
 npm
@@ -40,7 +39,6 @@ rofi
 slock
 sxhkd
 sxhkhm-git
-tdrop
 tdrop-git
 tealdeer
 terminator

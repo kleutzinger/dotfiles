@@ -8,9 +8,6 @@ abbr r "python run.py"
 abbr pdb "python -m pdb"
 abbr m "micro"
 abbr ytp "mpv (xclip -o)"
-function note
-    pushd ~/gits/foam && code . && popd
-end
 abbr :q exit
 abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
 abbr hm 'history --merge'

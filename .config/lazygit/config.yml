@@ -5,6 +5,7 @@ keybinding:
     prevBlock-alt: "j" # goto the previous block / panel
     nextBlock-alt: "l" # goto the next block / panel
 gui:
+  sidePanelWidth: 0.3
   windowSize: "half"
   theme:
     # selectedLineBgColor:

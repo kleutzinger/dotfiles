@@ -8,10 +8,6 @@ super + shift + r
 super + shift + k
     $HOME/scripts/edit-hotkeys.sh
 
-# open or cycle through text editor
-super + b
-    xdotool search "Visual Studio Code" windowactivate || firefox
-
 # open or cycle through firefox
 super + w
     xdotool search "Mozilla Firefox" windowactivate || firefox
@@ -54,7 +50,7 @@ shift + F1
 
 # open a new note
 super + n
-    fish -c "note"
+    xdotool search --class "nvim-qt" windowactivate || $HOME/scripts/note.py
 
 # open file manager
 super + e
@@ -80,7 +76,7 @@ super + shift + c
     setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl && notify-send 'colemak enabled'
 
 # Disconnect from PS4 controller
-super + b
+super + shift + b
     bluetoothctl -- disconnect 1C:66:6D:C4:DD:FA && notify-send -t 1000 "Disconnected from Dualshock 4"
 
 # Put computer to sleep

@@ -12,4 +12,5 @@ return {
   "mhinz/vim-startify", -- auto start screen
   "ravenxrz/DAPInstall.nvim",
   "yorickpeterse/nvim-window",
+  "tpope/vim-rsi",
 }

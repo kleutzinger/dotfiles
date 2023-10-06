@@ -50,3 +50,5 @@ keymap.set("o", "T", "<Plug>Sneak_T", { silent = true })
 keymap.set("x", "T", "<Plug>Sneak_T", { silent = true })
 
 keymap.set("n", "<esc><esc><esc>", "<cmd>qa<CR>", { desc = "Quit neovim" })
+
+keymap.set("i", "<C-BS>", "<C-W>", { desc = "Delete word backwards in insert mode" })
