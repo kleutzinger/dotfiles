@@ -37,5 +37,6 @@ return {
     keymap.set("n", "<leader><leader>b", "<cmd>Telescope buffers<cr>", { desc = "buffers" })
     keymap.set("n", "<leader><leader>m", "<cmd>Telescope marks<cr>", { desc = "marks" })
     keymap.set("n", "<leader><leader>y", "<cmd>Telescope registers<cr>", { desc = "registers" })
+    keymap.set("n", "<leader><leader>j", "<cmd>Telescope jumplist<cr>", { desc = "jumplist" })
   end,
 }

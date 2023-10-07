@@ -134,7 +134,7 @@ def open_note(path, at_header=None, append_template=""):
         header_found_at = get_line_of_header(path, at_header)
         EDITOR_AT_LINE(header_found_at)
         return
-    todays_header = relative_header(0)
+    todays_header, suffix = relative_header(0)
     header_found_at = get_line_of_header(path, todays_header)
     if header_found_at:
         # currently this opens at the line of the header
@@ -144,14 +144,14 @@ def open_note(path, at_header=None, append_template=""):
     else:
         # header not found, append it
         with open(path, "a+") as f:
-            f.write("\n\n" + todays_header + "\n\n")
+            f.write("\n\n" + todays_header + suffix + "\n\n")
     EDITOR_AT_LINE(None)
 
 
 def relative_header(days_ago=0):
     timestamp = time.time() - (3600 * MIDNIGHT_HOUR_SHIFT) - (days_ago * 3600 * 24)
     at_date = datetime.date.fromtimestamp(timestamp)
-    return "## " + at_date.strftime(HEADER_STRFTIME)
+    return "# " + at_date.strftime(HEADER_STRFTIME), " " + "=" * 20
 
 
 def get_line_of_header(note_path, header):

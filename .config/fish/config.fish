@@ -56,7 +56,21 @@ function ved
 end
 
 function yedit --description "edit with yadm as git dir"
-  GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR $argv
+  # if no args, search for  a file with yadm ls-files
+  if count $argv > /dev/null
+    set FILE $argv
+  else
+    set FILE (yadm ls-files | fzf)
+    if test -z $FILE
+      echo "No file selected"
+      return 1
+    end
+  end
+  GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR $FILE
+  # if file exitst, add
+  if test -e $FILE
+    yadm add $FILE
+  end
 end
 
 function e -d "open a file in a text editor"
