@@ -102,12 +102,12 @@ def search_to_template(query, num_actors=5):
     movie = get_tmdb_json(t_id, add_credits=True)
     movie_str = movie2trim(movie, add_kevbot_link=True)
     cast_str = movie2cast(movie, num_actors)
-    out = f"== {movie_str}\n\n"
-    out += f"=== Themes\n\n"
-    out += f"=== Characters\n\n"
+    out = f"## {movie_str}\n\n"
+    out += f"### Themes\n\n"
+    out += f"### Characters\n\n"
     out += f"{cast_str}\n\n"
-    out += f"=== Memorable Parts\n\n"
-    out += f"=== Reminded of\n\n"
+    out += f"### Memorable Parts\n\n"
+    out += f"### Reminded of\n\n"
     return out
 
 

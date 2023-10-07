@@ -30,7 +30,7 @@ return {
 
     keymap.set("n", "<leader><leader><leader>", "<cmd>Telescope<cr>", { desc = "Open Telescope" })
     keymap.set("n", "<leader><leader>f", "<cmd>Telescope find_files<cr>", { desc = "files in cwd" })
-    keymap.set("n", "<leader>ff", "<cmd>echo ',,f THIS KEYMAP HAS CHANED'<cr>", { desc = "keymap changed" })
+    keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "files in cwd" })
     keymap.set("n", "<leader><leader>r", "<cmd>Telescope oldfiles<cr>", { desc = "recent files" })
     keymap.set("n", "<leader><leader>s", "<cmd>Telescope live_grep<cr>", { desc = "string in cwd" })
     keymap.set("n", "<leader><leader>c", "<cmd>Telescope grep_string<cr>", { desc = "string under cursor in cwd" })

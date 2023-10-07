@@ -50,7 +50,7 @@ import time
 MIDNIGHT_HOUR_SHIFT = 5
 # note path = NOTE_DIR/NOTE_STRFTIME.NOTE_EXT
 NOTE_DIR = os.getenv("NOTE_DIR") or os.path.join(os.path.expanduser("~"), "notes")
-NOTE_STRFTIME = "%Y-%m-%d %a"
+HEADER_STRFTIME = "%Y-%m-%d %a"
 NOTE_EXT = ".md"
 
 if getpass.getuser() == "kevin":
@@ -60,7 +60,8 @@ if getpass.getuser() == "kevin":
 
 def get_note_path():
     "get the main note file's path"
-    return os.path.join(NOTE_DIR, "note" + NOTE_EXT)
+    current_year = datetime.datetime.now().year
+    return os.path.join(NOTE_DIR, f"note-{current_year}{NOTE_EXT}")
 
 
 def EDITOR_AT_LINE(line_num=None, note_path=get_note_path()):
@@ -89,6 +90,8 @@ def main():
             EDITOR_AT_LINE(0, __file__)
             return
         if argcmd.startswith("m"):
+            print("have to reimplment this")
+            sys.exit(1)
             import movie_api
 
             search_query = input("what movie title?\n")
@@ -131,7 +134,7 @@ def open_note(path, at_header=None, append_template=""):
         header_found_at = get_line_of_header(path, at_header)
         EDITOR_AT_LINE(header_found_at)
         return
-    todays_header = "## " + rel_time_ago(0)
+    todays_header = relative_header(0)
     header_found_at = get_line_of_header(path, todays_header)
     if header_found_at:
         # currently this opens at the line of the header
@@ -145,10 +148,10 @@ def open_note(path, at_header=None, append_template=""):
     EDITOR_AT_LINE(None)
 
 
-def rel_time_ago(days_ago=0):
+def relative_header(days_ago=0):
     timestamp = time.time() - (3600 * MIDNIGHT_HOUR_SHIFT) - (days_ago * 3600 * 24)
     at_date = datetime.date.fromtimestamp(timestamp)
-    return at_date.strftime(NOTE_STRFTIME)
+    return "## " + at_date.strftime(HEADER_STRFTIME)
 
 
 def get_line_of_header(note_path, header):

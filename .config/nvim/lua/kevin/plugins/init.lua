@@ -13,4 +13,5 @@ return {
   "ravenxrz/DAPInstall.nvim",
   "yorickpeterse/nvim-window",
   "tpope/vim-rsi",
+  "rhysd/git-messenger.vim",
 }
