@@ -43,6 +43,7 @@ tdrop-git
 tealdeer
 terminator
 tmux
+trash
 tree
 unarchiver
 visual-studio-code-bin

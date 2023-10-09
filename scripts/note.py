@@ -68,9 +68,9 @@ def EDITOR_AT_LINE(line_num=None, note_path=get_note_path()):
     "open a file at a certain line number. if no line number provided, open at bottom"
     if line_num is None:
         # assume bottom of file
-        run_cmd = "nvim-qt '+normal " + r"G\$ ' " + note_path
+        run_cmd = "nvim-qt '+normal " + r"G\$zz ' " + note_path
     else:
-        run_cmd = f"nvim-qt '+normal {line_num}" + r"G\$' " + note_path
+        run_cmd = f"nvim-qt '+normal {line_num}" + r"G\$zz' " + note_path
     subprocess.run(run_cmd, shell=True)
 
 
@@ -90,13 +90,11 @@ def main():
             EDITOR_AT_LINE(0, __file__)
             return
         if argcmd.startswith("m"):
-            print("have to reimplment this")
-            sys.exit(1)
             import movie_api
 
             search_query = input("what movie title?\n")
             template = movie_api.search_to_template(search_query)
-            open_note(get_note_path(), template)
+            open_note(get_note_path(), None, template)
             return
         if argcmd == "p":
             # print today's note path
