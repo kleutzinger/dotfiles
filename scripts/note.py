@@ -68,10 +68,13 @@ def EDITOR_AT_LINE(line_num=None, note_path=get_note_path()):
     "open a file at a certain line number. if no line number provided, open at bottom"
     if line_num is None:
         # assume bottom of file
-        run_cmd = "nvim-qt '+normal " + r"G\$zz ' " + note_path
+        # run_cmd = "nvim-qt '+normal " + r"G\$zz ' " + note_path
+        run_cmd = ["nvim-qt", "--nofork", r"+normal G\$zz", note_path]
     else:
-        run_cmd = f"nvim-qt '+normal {line_num}" + r"G\$zz' " + note_path
-    subprocess.run(run_cmd, shell=True)
+        # run_cmd = f"nvim-qt '+normal {line_num}" + r"G\$zz' " + note_path
+        run_cmd = ["nvim-qt", "--nofork", f"+normal {line_num}G\\$zz", note_path]
+
+    subprocess.run(run_cmd)
 
 
 def main():
@@ -175,7 +178,13 @@ def parse_arguments():
     parser.add_argument("-c", required=False, type=str, help="check notes .fish")
     args = parser.parse_args()
 
+def run_sync():
+    "run sync script"
+    sync_script = [os.path.join(NOTE_DIR, "sync.sh")]
+    subprocess.run(sync_script)
+
 
 if __name__ == "__main__":
     # argumets = parse_arguments()
     main()
+    run_sync()

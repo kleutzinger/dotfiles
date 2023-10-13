@@ -3,7 +3,7 @@ return {
   lazy = true,
   keys = {
     {
-      "<leader>ww",
+      "<leader><leader>w",
       function()
         require("winpick").select()
       end,
