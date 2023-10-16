@@ -55,3 +55,5 @@ keymap.set("i", "<C-BS>", "<C-W>", { desc = "Delete word backwards in insert mod
 
 -- leader w to save file
 keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
+
+keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//g<left><left>', { desc = "Replace all instances of highlighted words" })

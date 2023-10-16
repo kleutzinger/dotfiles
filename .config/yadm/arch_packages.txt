@@ -1,3 +1,4 @@
+
 asdf-vm
 audacity
 authy
@@ -17,6 +18,7 @@ killport
 kitty
 lazygit
 libretro-vba-next-git
+marked
 meld
 micro
 moar
