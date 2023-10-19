@@ -36,6 +36,7 @@ peek
 python-black
 python-iterfzf
 python-psutil
+python-pyautogui
 python-requests-html
 radiotray-ng
 rofi

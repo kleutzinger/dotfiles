@@ -122,3 +122,6 @@ super + u
 # Display keybind menu
 super + h
     sxhkhmenu
+
+super + b
+    python3 $HOME/scripts/press-enter.py
