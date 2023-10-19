@@ -11,6 +11,7 @@ flameshot
 fzf
 gallery-dl-bin
 geany
+gist
 htop
 jq
 keyd

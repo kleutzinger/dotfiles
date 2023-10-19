@@ -59,7 +59,9 @@ def with_arg(filename):
                 spell_counter += 1
     if spell_counter == 0:
         print(f"no spells found in {filename}")
-        sys.exit(1)
+        print("executing shebang at top")
+        subprocess.run(["perl", filename])
+        exit(0)
     if len(sys.argv) >= 3:
         spell_idx = int(sys.argv[2])
     else:
@@ -67,7 +69,7 @@ def with_arg(filename):
     name, command = spells[spell_idx]
 
     print(f"{CAST_EMOJI}{name}")
-    process = subprocess.call(command, shell=True)
+    subprocess.call(command, shell=True)
 
 
 def sub_magic(command, argfile):
@@ -85,6 +87,8 @@ def choose_spell_idx(spells):
         print(f"{command}")
         print("-" * 5)
         idx += 1
+    if len(spells) == 1:
+        return 0
     inp = input("idx: ")
     if not inp:
         spell_idx = 0

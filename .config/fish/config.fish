@@ -66,6 +66,7 @@ function yedit --description "edit with yadm as git dir"
       return 1
     end
   end
+  set FILE "$HOME/$FILE"
   GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR $FILE
   # if file exitst, add
   if test -e $FILE

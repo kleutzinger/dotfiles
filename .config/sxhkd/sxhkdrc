@@ -109,7 +109,7 @@ super + shift + d
 
 # grid overlay on screen
 super + shift + h
-   python3 /home/kevin/scripts/click_screen.py
+  $HOME/scripts/grid_overlay.py
 
 # select a window
 super + shift + u

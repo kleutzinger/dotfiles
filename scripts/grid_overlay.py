@@ -21,6 +21,8 @@ must have these pre-installed
     PIL: https://pillow.readthedocs.io/en/stable/index.html
     feh: https://feh.finalrewind.org/
     scrot: https://github.com/resurrecting-open-source-projects/scrot
+
+#__RUN__# python #__file__#
 """
 
 import subprocess
@@ -60,8 +62,10 @@ def grid_on_img(img: Image.Image) -> str:
     for y in range(0, H, GRID_STEP_SIZE):
         for x in range(0, W, GRID_STEP_SIZE):
             coord_str = f"{x//GRID_STEP_SIZE},{y//GRID_STEP_SIZE}"
-            ts = font.getsize(coord_str)
-            draw.rectangle((x, y, x + ts[0], y + ts[1]), fill=128)
+            # hardcoding text size for now
+            # ideally we would calculate this based on font size
+            text_size = [4,4]
+            draw.rectangle((x, y, x + text_size[0], y + text_size[1]), fill=128)
             draw.text((x, y), coord_str, font=font)
 
     img.save(out_path, "PNG")
