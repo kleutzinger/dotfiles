@@ -19,6 +19,7 @@ killport
 kitty
 lazygit
 libretro-vba-next-git
+lice-git
 marked
 meld
 micro
@@ -47,7 +48,7 @@ tdrop-git
 tealdeer
 terminator
 tmux
-trash
+trash-cli
 tree
 unarchiver
 visual-studio-code-bin
