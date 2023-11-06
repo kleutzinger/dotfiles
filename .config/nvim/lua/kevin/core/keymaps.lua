@@ -56,7 +56,35 @@ keymap.set("i", "<C-BS>", "<C-W>", { desc = "Delete word backwards in insert mod
 -- leader w to save file
 keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
 
-keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//g<left><left>', { desc = "Replace all instances of highlighted words" })
+keymap.set("v", "<leader>R", '"hy:%s/<C-r>h//g<left><left>', { desc = "Replace all instances of highlighted words" })
 
 local def_opts = { silent = false, noremap = true }
 vim.keymap.set({ "n", "v" }, "<CR>", ":<up>", def_opts)
+
+keymap.set("x", "<leader>re", function()
+  require("refactoring").refactor("Extract Function")
+end, { desc = "Extract function" })
+
+keymap.set("x", "<leader>rf", function()
+  require("refactoring").refactor("Extract Function To File")
+end, { desc = "Extract Function To File" })
+
+keymap.set("x", "<leader>rv", function()
+  require("refactoring").refactor("Extract Variable")
+end, { desc = "Extract Variable" })
+
+keymap.set("n", "<leader>rI", function()
+  require("refactoring").refactor("Inline Function")
+end, { desc = "Inline Function" })
+
+keymap.set({ "n", "x" }, "<leader>ri", function()
+  require("refactoring").refactor("Inline Variable")
+end, { desc = "Inline Variable" })
+
+keymap.set("n", "<leader>rb", function()
+  require("refactoring").refactor("Extract Block")
+end, { desc = "Extract Block" })
+
+keymap.set("n", "<leader>rbf", function()
+  require("refactoring").refactor("Extract Block To File")
+end, { desc = "Extract Block To File" })
