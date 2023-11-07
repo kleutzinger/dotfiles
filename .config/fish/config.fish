@@ -110,11 +110,14 @@ function bh -d "bat history"
     bat ~/.local/share/fish/fish_history
 end
 
-if test -e /usr/bin/zoxide
+if type -q zoxide
     zoxide init fish | source
 end
 
-starship init fish | source
+if type -q starship
+    starship init fish | source
+end
+
 if test -e /opt/asdf-vm/asdf.fish
     source /opt/asdf-vm/asdf.fish
 end
