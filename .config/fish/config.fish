@@ -3,7 +3,6 @@ set -gx SCRIPTS_DIR $HOME/scripts/
 #xmodmap $HOME/.Xmodmap
 set -gx NOTE_DIR $HOME/notes
 set -gx EDITOR nvim
-set -gx COMPOSE_FILE $HOME/squid/docker/docker-compose.yml
 set -gx PAGER less
 set -gx MOAR '--statusbar=inverse --no-linenumbers'
 set -gx MOZ_X11_EGL 1

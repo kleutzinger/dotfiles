@@ -88,6 +88,10 @@
 			{
 				"name" : "gensokyo",
 				"url" : "https://stream.gensokyoradio.net/1/"
+			},
+			{
+				"name" : "kevbot radio",
+				"url" : "https://radio.kevbot.xyz/stream"
 			}
 		]
 	}

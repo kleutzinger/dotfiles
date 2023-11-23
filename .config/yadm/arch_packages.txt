@@ -10,6 +10,7 @@ fisher
 flameshot
 fzf
 gallery-dl-bin
+gdu
 geany
 gist
 htop
