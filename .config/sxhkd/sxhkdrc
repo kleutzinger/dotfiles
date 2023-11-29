@@ -69,7 +69,7 @@ super + shift + o
     cool-retro-term -e game.sh d
 
 super + c
-    fish -c "check-notes.fish"
+    fish -c "coconut.py"
 
 # enable colemak and switch ctrl and alt
 super + shift + c

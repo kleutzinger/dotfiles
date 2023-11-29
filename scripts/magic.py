@@ -30,7 +30,18 @@ import sys
 import subprocess
 
 MAGIC_REGEX = re.compile(r"\s*#\s*__([A-Z0-9_]+)__#\s*(\S.*)")
-CAST_EMOJI = "(๑•ᴗ•)⊃━☆.*･｡ﾟ"
+KIRBY = "(๑•ᴗ•)⊃━"
+STARS = "☆.*･｡ﾟ･"
+
+
+def show_cast(name):
+    import time
+
+    print(KIRBY, end="")
+    for star in STARS:
+        print(star, end="", flush=True)
+        time.sleep(0.2)
+    print(name)
 
 
 def main():
@@ -59,8 +70,20 @@ def with_arg(filename):
                 spell_counter += 1
     if spell_counter == 0:
         print(f"no spells found in {filename}")
+        if filename.endswith(".py"):
+            print("running python file")
+            show_cast("python3 " + filename)
+            subprocess.run(["python3", filename])
+            return
         print("executing shebang at top")
-        subprocess.run(["perl", filename])
+        with open(filename, "r") as fileobj:
+            first_line = fileobj.readline()
+            if not first_line.startswith("#!"):
+                print("no shebang found")
+                exit(1)
+            else:
+                show_cast("./" + filename)
+                subprocess.run(["perl", filename])
         exit(0)
     if len(sys.argv) >= 3:
         spell_idx = int(sys.argv[2])
@@ -68,7 +91,7 @@ def with_arg(filename):
         spell_idx = choose_spell_idx(spells)
     name, command = spells[spell_idx]
 
-    print(f"{CAST_EMOJI}{name}")
+    show_cast(name)
     subprocess.call(command, shell=True)
 
 
@@ -83,7 +106,7 @@ def sub_magic(command, argfile):
 def choose_spell_idx(spells):
     idx = 0
     for name, command in spells:
-        print(f"{idx}.\t{CAST_EMOJI}{name}")
+        print(f"{idx}.\t{KIRBY}{name}")
         print(f"{command}")
         print("-" * 5)
         idx += 1

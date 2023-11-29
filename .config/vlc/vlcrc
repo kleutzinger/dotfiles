@@ -414,7 +414,7 @@
 #logo-opacity=255
 
 # Logo position (integer)
-#logo-position=-1
+logo-position=0
 
 [dynamicoverlay] # Dynamic video overlay
 
@@ -3324,6 +3324,11 @@ freetype-font=Droid Sans [1ASC]
 # Forces the audio language (string)
 #rawaud-lang=eng
 
+[lirc] # Infrared remote control interface
+
+# Change the lirc configuration file (string)
+#lirc-file=
+
 [oldrc] # Remote control interface
 
 # Show stream position (boolean)
@@ -4188,7 +4193,7 @@ vout=any
 #input-timeshift-granularity=-1
 
 # Change title according to current media (string)
-#input-title-format=$Z
+input-title-format=$F
 
 # Disable all lua plugins (boolean)
 #lua=1
@@ -4260,7 +4265,7 @@ vout=any
 #packetizer=
 
 # VoD server module (string)
-#vod-server=
+vod-server=any
 
 # Use a plugins cache (boolean)
 #plugins-cache=1
