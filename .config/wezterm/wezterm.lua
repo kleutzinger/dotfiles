@@ -13,7 +13,11 @@ end
 -- This is where you actually apply your config choices
 
 -- For example, changing the color scheme:
-config.color_scheme = "AdventureTime"
+config.color_scheme = "catppuccin-macchiato"
+
+config.window_decorations = "NONE"
+config.hide_tab_bar_if_only_one_tab = true
+config.tab_bar_at_bottom = true
 
 config.keys = {
 	{

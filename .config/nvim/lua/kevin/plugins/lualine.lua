@@ -52,7 +52,7 @@ return {
     -- configure lualine with modified theme
     lualine.setup({
       options = {
-        theme = "auto",
+        theme = "nord",
       },
       sections = {
         lualine_x = {
