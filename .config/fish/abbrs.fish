@@ -31,5 +31,4 @@ abbr ped sudoedit /etc/pacman.conf
 abbr deploy_blog magic.py ~/gits/kleutzinger.github.io/site-generator/kevbot.xyz.py 0
 abbr pkg add-pkg
 abbr ij 'intellij-idea-ultimate-edition .'
-abbr c 'code .'
 abbr t '~'

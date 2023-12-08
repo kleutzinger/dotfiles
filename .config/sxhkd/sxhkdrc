@@ -104,7 +104,7 @@ super + shift + v
     terminator -e "~/scripts/edit-clipboard.sh"
 
 # insert today's date (while in google docs)
-super + shift + d
+super + h
     $HOME/scripts/google-doc-insert-today-header.sh
 
 # grid overlay on screen
@@ -120,7 +120,7 @@ super + u
     notify-send 'super+u caps lock toggle' && xdotool key Caps_Lock
 
 # Display keybind menu
-super + h
+super + slash
     sxhkhmenu
 
 super + b

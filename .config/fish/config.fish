@@ -3,7 +3,7 @@ set -gx SCRIPTS_DIR $HOME/scripts/
 #xmodmap $HOME/.Xmodmap
 set -gx NOTE_DIR $HOME/notes
 set -gx EDITOR nvim
-set -gx PAGER less
+set -gx PAGER moar
 set -gx MOAR '--statusbar=inverse --no-linenumbers'
 set -gx MOZ_X11_EGL 1
 set fish_greeting
