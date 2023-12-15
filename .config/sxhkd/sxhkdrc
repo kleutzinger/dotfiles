@@ -112,7 +112,7 @@ super + shift + h
   $HOME/scripts/grid_overlay.py
 
 # select a window
-super + shift + u
+super + Tab
     $HOME/scripts/window-select.sh
 
 # toggle caps lock
