@@ -9,7 +9,6 @@ return {
   "kdheepak/lazygit.nvim",
   "mfussenegger/nvim-dap",
   "folke/neodev.nvim",
-  "mhinz/vim-startify", -- auto start screen
   "ravenxrz/DAPInstall.nvim",
   "yorickpeterse/nvim-window",
   "tpope/vim-rsi",
