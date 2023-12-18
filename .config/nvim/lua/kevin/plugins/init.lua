@@ -13,4 +13,5 @@ return {
   "yorickpeterse/nvim-window",
   "tpope/vim-rsi",
   "rhysd/git-messenger.vim",
+  "eandrju/cellular-automaton.nvim",
 }

@@ -92,6 +92,10 @@
 			{
 				"name" : "kevbot radio",
 				"url" : "https://radio.kevbot.xyz/stream"
+			},
+			{
+				"name" : "KB video game radio",
+				"url" : "https://radio.kevbot.xyz/videogame"
 			}
 		]
 	}
