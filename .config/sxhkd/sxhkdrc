@@ -131,4 +131,4 @@ super + b
     python3 $HOME/scripts/press-enter.py
 
 super + shift + t
-    normcap
+    normcap --tray False

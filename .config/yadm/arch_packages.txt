@@ -1,4 +1,3 @@
-
 asdf-vm
 audacity
 authy
@@ -52,8 +51,8 @@ terminator
 tmux
 trash-cli
 tree
+trilium-bin
 unarchiver
-visual-studio-code-bin
 vlc
 wmctrl
 words
