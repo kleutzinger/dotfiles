@@ -32,6 +32,7 @@ nautilus-terminal
 neovim
 neovim-qt
 nodejs
+normcap
 noto-fonts-emoji
 npm
 peek

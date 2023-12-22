@@ -12,6 +12,10 @@ super + shift + k
 super + w
     xdotool search "Mozilla Firefox" windowactivate || firefox
 
+# open or cycle through trilium
+super + t
+    xdotool search "Trilium Notes" windowactivate || trilium
+
 # find my phone
 super + shift + w
     firefox 'https://www.google.com/android/find?u=0'
@@ -125,3 +129,6 @@ super + slash
 
 super + b
     python3 $HOME/scripts/press-enter.py
+
+super + shift + t
+    normcap
