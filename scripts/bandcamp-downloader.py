@@ -4,6 +4,7 @@ import subprocess
 import tempfile
 import sys
 import shutil
+import shlex
 from urllib.parse import urlsplit, urlunsplit
 
 
@@ -22,15 +23,28 @@ def main():
         DL_URL = remove_query_params_and_fragment(DL_URL)
         print(f"Removed query params: {DL_URL}")
 
-    # if user is named kevin, do the following
+    CWD = os.getcwd()
+
+    full_cmd = [
+        "yt-dlp",
+        "-f",
+        "bestaudio[ext=mp3]",
+        "--embed-thumbnail",
+        "-o",
+        "%(artist)s - %(playlist_title)s/%(playlist_index)s %(track)s.%(ext)s",
+        DL_URL,
+    ]
+    # shlex.join is used for quoting, and we replace single quotes with double quotes to pass to sqlite
+    joined_cmd = shlex.join(full_cmd).replace("'", '"')
     if os.environ.get("USER") == "kevin":
+        subprocess.run(["turso", "auth", "login"])
         subprocess.run(
             [
                 "turso",
                 "db",
                 "shell",
                 "bandcamps",
-                f"insert into downloads (url) values('{DL_URL}');",
+                f"insert into downloads (url, full_cmd, cwd) values('{DL_URL}', '{joined_cmd}', '{CWD}');",
             ]
         )
 
@@ -39,17 +53,7 @@ def main():
     start_dir = os.getcwd()
     os.chdir(tmp_dir)
 
-    subprocess.run(
-        [
-            "yt-dlp",
-            "-f",
-            "bestaudio[ext=mp3]",
-            "--embed-thumbnail",
-            "-o",
-            "%(artist)s - %(playlist_title)s/%(playlist_index)s %(track)s.%(ext)s",
-            DL_URL,
-        ]
-    )
+    subprocess.run(full_cmd)
 
     # folder with largest size
     # aka the most common artist of the album which we set as the album artist
