@@ -33,3 +33,5 @@ abbr pkg add-pkg
 abbr ij 'intellij-idea-ultimate-edition .'
 abbr t '~'
 abbr nn 'nvim .'
+
+alias define "sdcv"

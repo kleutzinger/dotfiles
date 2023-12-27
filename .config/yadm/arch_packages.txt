@@ -42,7 +42,10 @@ python-pyautogui
 python-requests-html
 radiotray-ng
 rofi
+sdcv
 slock
+stardict
+stardict-wordnet
 sxhkd
 sxhkhm-git
 tdrop-git

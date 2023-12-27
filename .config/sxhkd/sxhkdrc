@@ -54,7 +54,7 @@ shift + F1
 
 # open a new note
 super + n
-    xdotool search --class "nvim-qt" windowactivate || $HOME/scripts/note.py
+    xdotool search "Trilium Notes" windowactivate || trilium
 
 # open file manager
 super + e
