@@ -45,6 +45,7 @@ sdcv
 slock
 stardict
 stardict-wordnet
+starship
 sxhkd
 sxhkhm-git
 tdrop-git
