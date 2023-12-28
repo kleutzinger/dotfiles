@@ -14,11 +14,9 @@ geany
 gist
 htop
 jq
-keyd
 killport
 kitty
 lazygit
-libretro-vba-next-git
 lice-git
 marked
 meld
@@ -62,6 +60,7 @@ words
 xclip
 xdotool
 xsecurelock
+xsel
 yad
 yarn
 yt-dlp

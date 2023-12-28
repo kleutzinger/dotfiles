@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-yay -S (cat arch_packages.txt)
+for PKG in (cat arch_packages.txt)
+    yay --noconfirm -S --needed $PKG
+end
 fish -c 'fisher update'
-nvim +'PlugInstall --sync' +qa
-echo -e "run in nvim:\nCocInstall" (cat coc_packages.txt)

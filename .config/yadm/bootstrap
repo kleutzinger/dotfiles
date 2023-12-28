@@ -3,4 +3,5 @@
 yay -Syy
 yay -S fish
 chsh -s /usr/bin/fish
+cd $HOME/.config/yadm
 fish bootstrap.fish
