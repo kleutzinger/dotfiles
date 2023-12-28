@@ -27,7 +27,6 @@ moar
 moreutils
 mosh
 mpv
-nautilus-terminal
 neovim
 neovim-qt
 nodejs
