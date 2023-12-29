@@ -28,7 +28,6 @@ mpv
 neovim
 neovim-qt
 nodejs
-normcap
 noto-fonts-emoji
 npm
 peek
@@ -53,6 +52,7 @@ tmux
 trash-cli
 tree
 trilium-bin
+turso-cli
 unarchiver
 vlc
 wmctrl
