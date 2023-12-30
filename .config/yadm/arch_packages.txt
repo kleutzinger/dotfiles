@@ -12,6 +12,7 @@ gallery-dl-bin
 gdu
 geany
 gist
+github-cli
 htop
 jq
 killport
