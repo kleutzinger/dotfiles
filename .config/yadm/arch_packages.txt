@@ -1,3 +1,4 @@
+aria2
 asdf-vm
 audacity
 authy
@@ -38,6 +39,7 @@ python-psutil
 python-pyautogui
 python-requests-html
 radiotray-ng
+redshift
 rofi
 sdcv
 slock
