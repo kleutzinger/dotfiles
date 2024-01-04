@@ -64,6 +64,7 @@ wmctrl
 words
 xclip
 xdotool
+xfce4-taskmanager
 xsecurelock
 xsel
 yad
