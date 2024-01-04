@@ -1,5 +1,6 @@
 aria2
 asdf-vm
+atuin
 audacity
 authy
 croc
@@ -43,6 +44,7 @@ redshift
 rofi
 sdcv
 slock
+sqlitebrowser
 stardict
 stardict-wordnet
 starship

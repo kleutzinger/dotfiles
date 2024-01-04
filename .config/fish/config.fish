@@ -121,3 +121,9 @@ if test -e /opt/asdf-vm/asdf.fish
     source /opt/asdf-vm/asdf.fish
 end
 set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/ $HOME/.cargo/bin $HOME/.bin $HOME/go/bin
+
+if status is-interactive
+  if type -q atuin
+    atuin init fish | source
+  end
+end
