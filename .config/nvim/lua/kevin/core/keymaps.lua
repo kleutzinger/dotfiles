@@ -19,7 +19,7 @@ keymap.set("n", "<leader>lg", ":LazyGit<CR>", { desc = "Open LazyGit" })
 -- delete single character without copying into register
 keymap.set("n", "x", '"_x')
 
-keymap.set("n", "<leader><leader>o", ":Oil<CR>", { desc = "Open Oil File View" })
+keymap.set("n", "<leader><leader>o", ":tab Oil<CR>", { desc = "Open Oil file view in new tab" })
 
 -- window management
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically
