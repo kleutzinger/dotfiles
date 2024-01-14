@@ -5,7 +5,9 @@ this file tests that my computer is in a good state
 
 import os
 import psutil
+import urllib.request
 from subprocess import check_output
+import pytest
 
 
 def test_disk_space_not_nearly_full():
@@ -26,8 +28,33 @@ def test_no_temp_files_in_home_directory():
     assert not found, f"Temporary files found"
 
 
+@pytest.mark.skip(reason="WIP")
 def test_yadm_up_to_date():
     # yadm status is like git status
-    status = check_output(["yadm", "status"]).decode()
+    status = check_output(["yadm", "status", "-s"]).decode()
     # check no changes to tracked files
-    assert "nothing to commit" in status
+    assert not status, f"changes detected by yadm:\n{status}"
+
+
+def test_no_missing_arch_packages():
+    """
+    not covered edge case: package names that are a substring of another package name
+    """
+    desired_packages = os.path.expanduser("~/.config/yadm/arch_packages.txt")
+    with open(desired_packages) as f:
+        desired_packages = set(f.read().splitlines())
+        installed_packages = check_output(["yay", "-Q"]).decode()
+        not_installed = []
+        for package in desired_packages:
+            if package not in installed_packages:
+                not_installed.append(package)
+        assert not not_installed, f"Missing Packages:\n{not_installed}"
+
+
+def test_kevbot_xyz_reachable():
+    """
+    check that kevbot.xyz is reachable
+    this makes sure that my internet connection is working
+    """
+    resp = urllib.request.urlopen("https://kevbot.xyz", timeout=5)
+    assert resp.code == 200, f"kevbot.xyz is unreachable"
