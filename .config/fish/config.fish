@@ -124,6 +124,6 @@ set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn
 
 if status is-interactive
   if type -q atuin
-    atuin init fish | source
+    atuin init fish --disable-up-arrow | source
   end
 end
