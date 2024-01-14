@@ -16,6 +16,7 @@ geany
 gist
 github-cli
 htop
+httpie
 jq
 killport
 kitty
