@@ -5,4 +5,6 @@ set -e
 
 cd $HOME/scripts/kevtests/
 
-$HOME/.virtualenvs/++scripts+kevtests/bin/pytest --verbose
+# forwards all arguments to pytest
+#
+$HOME/.virtualenvs/++scripts+kevtests/bin/pytest $@
