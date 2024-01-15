@@ -28,7 +28,6 @@ def test_no_temp_files_in_home_directory():
     assert not found, f"Temporary files found"
 
 
-@pytest.mark.skip(reason="WIP")
 def test_yadm_up_to_date():
     # yadm status is like git status
     status = check_output(["yadm", "status", "-s"]).decode()
@@ -58,3 +57,19 @@ def test_kevbot_xyz_reachable():
     """
     resp = urllib.request.urlopen("https://kevbot.xyz", timeout=5)
     assert resp.code == 200, f"kevbot.xyz is unreachable"
+
+
+def test_swapfile_active():
+    """
+    check that a swapfile is active
+    """
+    swapfile = check_output(["swapon", "--show"]).decode()
+    swapfile = swapfile.splitlines()[1]
+    swapfile = swapfile.split()
+    assert swapfile[0] == "/swapfile", f"swapfile not active: {swapfile}"
+
+def test_homedir_is_called_kevin():
+    """
+    check that my home directory is called kevin
+    """
+    assert os.path.expanduser("~") == "/home/kevin", "home directory is not /home/kevin"
