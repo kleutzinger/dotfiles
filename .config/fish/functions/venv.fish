@@ -29,10 +29,8 @@ function venv --argument-names python_version --description 'Create virtualenv n
     echo `$venv_name`  activated
 
     if test -e 'requirements.txt'
-        echo 'requirements.txt detected, install?'
-        if read_confirm
-            python -m pip install -r requirements.txt
-        end
+      echo 'Installing requirements.txt'
+      python -m pip install -r requirements.txt
     end
 end
 

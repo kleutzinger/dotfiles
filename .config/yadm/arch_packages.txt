@@ -52,7 +52,6 @@ starship
 streamlink
 sxhkd
 sxhkhm-git
-tdrop-git
 tealdeer
 terminator
 tmux

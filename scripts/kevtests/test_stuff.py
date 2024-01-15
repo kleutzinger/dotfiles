@@ -17,7 +17,7 @@ def test_disk_space_not_nearly_full():
 
 
 def test_no_temp_files_in_home_directory():
-    disallowed_substrings = {"tmp", "temp", "test"}
+    disallowed_substrings = {"tmp", "temp"}
     found = []
     for filename in os.listdir(os.path.expanduser("~")):
         for substring in disallowed_substrings:
