@@ -15,6 +15,7 @@ gdu
 geany
 gist
 github-cli
+go-task-bin
 htop
 httpie
 jq

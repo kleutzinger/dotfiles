@@ -26,3 +26,4 @@ abbr nn 'nvim .'
 abbr ocr 'textsnatcher'
 
 alias define "sdcv"
+alias task "go-task"
