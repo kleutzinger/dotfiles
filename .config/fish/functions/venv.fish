@@ -30,7 +30,7 @@ function venv --argument-names python_version --description 'Create virtualenv n
 
     if test -e 'requirements.txt'
       echo 'Installing requirements.txt'
-      $python_bin -m pip install -r requirements.txt
+      python3 -m pip install -r requirements.txt
     end
 end
 
