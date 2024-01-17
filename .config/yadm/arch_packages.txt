@@ -61,6 +61,7 @@ tree
 trilium-bin
 turso-cli
 unarchiver
+unclutter
 vlc
 wmctrl
 words
@@ -71,6 +72,7 @@ xsecurelock
 xsel
 yad
 yarn
+youtube-music-bin
 yt-dlp
 zenity
 zoxide
