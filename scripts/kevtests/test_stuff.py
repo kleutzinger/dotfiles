@@ -48,7 +48,9 @@ def test_no_missing_arch_packages():
         for package in desired_packages:
             if package not in installed_packages:
                 not_installed.append(package)
-        assert not not_installed, f"Missing Packages:\n{not_installed}"
+        correction_command = "yay -S " + " ".join(not_installed)
+        print(correction_command)
+        assert not not_installed, f"Missing Packages:\n{correction_command}"
 
 
 def test_kevbot_xyz_reachable():
