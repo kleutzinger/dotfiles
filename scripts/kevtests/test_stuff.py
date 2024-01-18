@@ -6,7 +6,7 @@ this file tests that my computer is in a good state
 import os
 import psutil
 import urllib.request
-from subprocess import check_output
+from subprocess import check_output, run
 import pytest
 
 
@@ -30,6 +30,7 @@ def test_no_temp_files_in_home_directory():
 
 def test_yadm_up_to_date():
     # yadm status is like git status
+    run(["yadm", "fetch"])
     status = check_output(["yadm", "status", "-s"]).decode()
     # check no changes to tracked files
     assert not status, f"changes detected by yadm:\n{status}"

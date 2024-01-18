@@ -18,6 +18,7 @@ github-cli
 go-task-bin
 htop
 httpie
+intel-media-driver
 jq
 killport
 kitty
@@ -68,6 +69,7 @@ wmctrl
 words
 xclip
 xdotool
+xf86-video-nouveau
 xfce4-taskmanager
 xsecurelock
 xsel
