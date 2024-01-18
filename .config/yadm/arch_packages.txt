@@ -36,6 +36,7 @@ nodejs
 noto-fonts-emoji
 npm
 peek
+pip-tools
 python-black
 python-iterfzf
 python-psutil
