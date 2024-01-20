@@ -17,11 +17,15 @@ def test_disk_space_not_nearly_full():
 
 
 def test_no_temp_files_in_home_directory():
-    disallowed_substrings = {"tmp", "temp"}
+    """
+    I don't like having temporary files in my home directory
+    """
+    disallowed_substrings = {"tmp", "temp", "out"}
+    allowed_substrings = {"templates", ".bash_logout"}
     found = []
     for filename in os.listdir(os.path.expanduser("~")):
         for substring in disallowed_substrings:
-            if filename == "Templates":
+            if filename.lower() in allowed_substrings:
                 continue
             if substring in filename.lower():
                 found.append(filename)
@@ -32,7 +36,7 @@ def test_yadm_up_to_date():
     # yadm status is like git status
     run(["yadm", "fetch"])
     status = check_output(["yadm", "status", "-s"]).decode()
-    # check no changes to tracked files
+    # check no changes to tracked files nor remote changes
     assert not status, f"changes detected by yadm:\n{status}"
 
 
