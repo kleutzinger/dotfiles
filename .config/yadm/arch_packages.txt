@@ -38,6 +38,7 @@ noto-fonts-emoji
 npm
 peek
 pip-tools
+powertop
 python-black
 python-iterfzf
 python-psutil
@@ -57,6 +58,8 @@ sxhkd
 sxhkhm-git
 tealdeer
 terminator
+tesseract-data-eng
+textsnatcher
 tmux
 trash-cli
 tree
