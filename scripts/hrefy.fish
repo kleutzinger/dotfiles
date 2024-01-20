@@ -25,7 +25,7 @@ else
 end
 
 set HREFD "<a href=\"$LINK\">$TEXT</a>"
-set HREFDMD "[$LINK]($TEXT)"
+set HREFDMD "[$TEXT]($LINK)"
 echo -e "\t$HREFD"
 echo -e "\t$HREFDMD"
 echo "Put in clipboard?"
