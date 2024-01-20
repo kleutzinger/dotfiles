@@ -5,6 +5,10 @@ import os
 
 TRILIUM_TOKEN = os.getenv("TRILIUM_TOKEN")
 
+if not TRILIUM_TOKEN:
+    raise Exception("TRILIUM_TOKEN not set")
+    os.exit(1)
+
 server_url = "https://tril.kevbot.xyz/"
 ea = ETAPI(server_url, TRILIUM_TOKEN)
 

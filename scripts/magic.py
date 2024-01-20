@@ -40,7 +40,7 @@ def show_cast(name):
     print(KIRBY, end="")
     for star in STARS:
         print(star, end="", flush=True)
-        time.sleep(0.2)
+        time.sleep(0.1)
     print(name)
 
 
