@@ -25,7 +25,9 @@ EXAMPLE_URL_SSH = "git@github.com:kleutzinger/invidious-redirect.git"
 
 
 def to_ssh(url: str, hostname="") -> str:
-    url = url.replace("https://github.com/", "git@github.com:") + ".git"
+    url = url.replace("https://github.com/", "git@github.com:")
+    if not url.endswith(".git"):
+        url += ".git"
     return url
 
 
