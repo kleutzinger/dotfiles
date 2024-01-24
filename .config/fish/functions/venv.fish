@@ -10,9 +10,9 @@ function venv --argument-names python_version --description 'Create virtualenv n
     if not test -n "$python_version"
         # Use default python version set by asdf
         #set python_bin (asdf which python)
-        set python_bin (which python)
+        set python_bin (which python3)
     else
-        set python_bin $ASDF_DIR/installs/python/$python_version/bin/python
+        set python_bin $ASDF_DIR/installs/python/$python_version/bin/python3
         echo "activating $python_bin"
     end
 
