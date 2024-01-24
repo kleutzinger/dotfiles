@@ -7,7 +7,7 @@ import os
 import psutil
 import urllib.request
 from subprocess import check_output, run
-import pytest
+import shutil
 
 
 def test_disk_space_not_nearly_full():
@@ -44,6 +44,9 @@ def test_no_missing_arch_packages():
     """
     not covered edge case: package names that are a substring of another package name
     """
+    if not shutil.which("yay"):
+        print("yay not installed, skipping test")
+        return
     desired_packages = os.path.expanduser("~/.config/yadm/arch_packages.txt")
     with open(desired_packages) as f:
         desired_packages = set(f.read().splitlines())
