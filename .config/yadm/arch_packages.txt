@@ -63,11 +63,11 @@ textsnatcher
 tmux
 trash-cli
 tree
-trilium-bin
 turso-cli
 unarchiver
 unclutter
 vlc
+webapp-manager
 wmctrl
 words
 xclip
