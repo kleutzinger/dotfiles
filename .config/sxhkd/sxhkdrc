@@ -133,11 +133,14 @@ super + b
 super + shift + t
     normcap --tray False
 
+# volume mute
 super + 1
     amixer -q -D pulse sset Master toggle
 
+# volume down
 super + 2
     amixer -q -D pulse sset Master 5%-
 
+# volume up
 super + 3
     amixer -q -D pulse sset Master 5%+
