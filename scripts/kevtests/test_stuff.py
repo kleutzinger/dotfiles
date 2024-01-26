@@ -32,12 +32,20 @@ def test_no_temp_files_in_home_directory():
     assert not found, f"Temporary files found"
 
 
-def test_yadm_up_to_date():
+def test_local_yadm_up_to_date():
     # yadm status is like git status
+    status = check_output(["yadm", "status", "-s"]).decode()
+    # check no changes to tracked files nor remote changes
+    assert not status, f"local changes detected by yadm:\n{status}"
+
+
+def test_remote_yadm_up_to_date():
     run(["yadm", "fetch"])
     status = check_output(["yadm", "status"]).decode()
-    # check no changes to tracked files nor remote changes
-    assert not status, f"changes detected by yadm:\n{status}"
+    # check no changes upstream remote
+    assert (
+        "Your branch is up to date" in status
+    ), f"remote changes detected by yadm:\n{status}"
 
 
 def test_no_missing_arch_packages():
@@ -77,6 +85,7 @@ def test_swapfile_active():
     swapfile = swapfile.splitlines()[1]
     swapfile = swapfile.split()
     assert swapfile[0] == "/swapfile", f"swapfile not active: {swapfile}"
+
 
 def test_homedir_is_called_kevin():
     """
