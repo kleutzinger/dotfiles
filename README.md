@@ -20,7 +20,6 @@ CPU: Intel i7-6600U (4) @ 3.400GHz
 GPU: Intel Skylake GT2 [HD Graphics 520]
 Memory: 19745MiB
 Editor: neovim
-Editor: neovim
 ```
 
 ## Keybindings (OS)
