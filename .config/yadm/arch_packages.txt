@@ -6,6 +6,7 @@ authy
 croc
 fd
 ffmpeg
+find-the-command-git
 fish
 fisher
 flameshot

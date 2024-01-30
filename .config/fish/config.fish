@@ -127,3 +127,7 @@ if status is-interactive
     atuin init fish --disable-up-arrow | source
   end
 end
+
+if test -e /usr/share/doc/find-the-command/ftc.fish
+    source /usr/share/doc/find-the-command/ftc.fish noprompt
+end
