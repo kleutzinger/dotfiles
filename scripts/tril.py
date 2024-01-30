@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/kevin/.virtualenvs/++scripts/bin/python
 
 from trilium_py.client import ETAPI
 import os

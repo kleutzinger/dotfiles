@@ -32,7 +32,7 @@ def test_no_temp_files_in_home_directory():
     assert not found, f"Temporary files found"
 
 
-def test_local_yadm_up_to_date():
+def test_local_yadm_clean():
     # yadm status is like git status
     status = check_output(["yadm", "status", "-s"]).decode()
     # check no changes to tracked files nor remote changes
