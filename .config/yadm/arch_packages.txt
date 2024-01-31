@@ -39,6 +39,7 @@ noto-fonts-emoji
 npm
 peek
 pip-tools
+pkgfile
 powertop
 python-black
 python-iterfzf
