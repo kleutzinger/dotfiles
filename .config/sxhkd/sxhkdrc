@@ -144,3 +144,11 @@ super + 2
 # volume up
 super + 3
     amixer -q -D pulse sset Master 5%+
+
+# brightness down
+super + 4
+    brightnessctl s 10%-
+
+# brightness up
+super + 5
+    brightnessctl s +10%

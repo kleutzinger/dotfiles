@@ -3,6 +3,7 @@ asdf-vm
 atuin
 audacity
 authy
+brightnessctl
 croc
 fd
 ffmpeg
