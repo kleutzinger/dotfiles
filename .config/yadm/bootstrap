@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 # This is built for arch linux distros with yay preinstalled
 yay -Syy
+yay --noconfirm
 yay -S fish --needed
 chsh -s /usr/bin/fish
 cd $HOME/.config/yadm

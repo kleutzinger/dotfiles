@@ -21,6 +21,7 @@ def test_no_temp_files_in_home_directory():
     I don't like having temporary files in my home directory
     """
     disallowed_substrings = {"tmp", "temp", "out"}
+    disallowed_file_extensions = {"zip", "tar", "gz", "xz", "bz2", "7z", "rar", "tgz"}
     allowed_substrings = {"templates", ".bash_logout"}
     found = []
     for filename in os.listdir(os.path.expanduser("~")):
@@ -28,6 +29,10 @@ def test_no_temp_files_in_home_directory():
             if filename.lower() in allowed_substrings:
                 continue
             if substring in filename.lower():
+                found.append(filename)
+                continue
+        for extension in disallowed_file_extensions:
+            if filename.endswith(extension):
                 found.append(filename)
     assert not found, f"Temporary files found"
 
