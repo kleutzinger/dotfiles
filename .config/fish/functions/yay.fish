@@ -11,5 +11,4 @@ function yay
         source $TEMP_VENV/bin/activate.fish
     end
     popd
-    setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl
 end
