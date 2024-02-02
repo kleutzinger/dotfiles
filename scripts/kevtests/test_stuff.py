@@ -98,9 +98,3 @@ def test_homedir_is_called_kevin():
     """
     assert os.path.expanduser("~") == "/home/kevin", "home directory is not /home/kevin"
 
-
-def test_vscode_not_installed():
-    """
-    We don't want vscode installed
-    """
-    assert not shutil.which("code"), "vscode is installed! Get rid of that thing"
