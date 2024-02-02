@@ -24,6 +24,7 @@ abbr deploy_blog magic.py ~/gits/kleutzinger.github.io/site-generator/kevbot.xyz
 abbr pkg add-pkg
 abbr nn 'nvim .'
 abbr ocr 'textsnatcher'
+abbr yp 'yadm pull'
 
 alias define "sdcv"
 alias task "go-task"
