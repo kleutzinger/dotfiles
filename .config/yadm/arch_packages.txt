@@ -83,5 +83,6 @@ yad
 yarn
 youtube-music-bin
 yt-dlp
+zellij
 zenity
 zoxide
