@@ -1,10 +1,26 @@
-#!/usr/bin/env sh
-# This is built for arch linux distros with yay preinstalled
-yay -Syy
-yay --noconfirm
-yay -S fish --needed
-chsh -s /usr/bin/fish
+#!/usr/bin/env bash
+# This file basically installs fish and fisher, then runs the bootstrap script for the detected OS
 cd $HOME/.config/yadm
-curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
-fisher update
-fish bootstrap.fish
+# check if debian/ubuntu, check if arch, check if other
+if [ -f /etc/debian_version ]; then
+    echo "Ubuntu detected"
+    sudo apt-add-repository ppa:fish-shell/release-3
+    sudo apt update
+    sudo apt install fish
+    chsh -s /usr/bin/fish
+    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+    fisher update
+    sudo apt upgrade -y
+elif [ -f /etc/arch-release ]; then
+    echo "Arch detected"
+    yay -Syy
+    yay --noconfirm
+    yay -S fish --needed
+    chsh -s /usr/bin/fish
+    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+    fisher update
+    fish bootstrap-arch.fish
+else
+    echo "Other"
+    exit 1
+fi
