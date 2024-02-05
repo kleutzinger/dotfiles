@@ -25,6 +25,7 @@ abbr pkg add-pkg
 abbr nn 'nvim .'
 abbr ocr 'textsnatcher'
 abbr yp 'yadm pull'
+abbr ze 'zellij'
 
 alias define "sdcv"
 alias task "go-task"
