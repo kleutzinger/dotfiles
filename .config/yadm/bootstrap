@@ -5,4 +5,6 @@ yay --noconfirm
 yay -S fish --needed
 chsh -s /usr/bin/fish
 cd $HOME/.config/yadm
+curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+fisher update
 fish bootstrap.fish
