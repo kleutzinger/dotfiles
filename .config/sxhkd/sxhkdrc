@@ -152,3 +152,6 @@ super + 4
 # brightness up
 super + 5
     brightnessctl s +10%
+
+super + r
+    fish -c "radio"
