@@ -9,9 +9,11 @@ if test -d m3u-radio-music-playlists
 else
     echo "m3u-radio-music-playlists does not exist"
     git clone --depth 1 https://github.com/junguler/m3u-radio-music-playlists
+    cd m3u-radio-music-playlists
 end
 
 # pick a random m3u file and play it
 set station (random choice (fd --extension m3u))
 echo "Playing $station"
-vlc -Z $station
+notify-send "Playing $station"
+vlc --random --quiet $station
