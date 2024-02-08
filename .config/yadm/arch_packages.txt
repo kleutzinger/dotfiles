@@ -42,6 +42,7 @@ peek
 pip-tools
 pkgfile
 powertop
+pup
 python-black
 python-iterfzf
 python-psutil
