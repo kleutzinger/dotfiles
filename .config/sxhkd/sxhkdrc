@@ -40,11 +40,8 @@ Print
 shift + Print
     flameshot full -p $HOME/Pictures/scrots
 
+# toggle terminal
 F1
-    $HOME/scripts/toggle-term.sh
-
-# toggle terminal also
-Shift_R
     $HOME/scripts/toggle-term.sh
 
 # toggleable firefox
