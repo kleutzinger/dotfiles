@@ -43,6 +43,16 @@ def search_notes(search):
             print(x["noteId"], x["title"])
 
 
+@click.command()
+@click.argument("noteid", required=True, type=str)
+def get_note_content(noteid):
+    content = ea.get_note_content(
+        noteId=noteid,
+    )
+    print(content)
+    return content
+
+
 # handle multiple commands
 @click.group()
 def cli():
@@ -52,4 +62,5 @@ def cli():
 if __name__ == "__main__":
     cli.add_command(add_radio)
     cli.add_command(search_notes)
+    cli.add_command(get_note_content)
     cli()
