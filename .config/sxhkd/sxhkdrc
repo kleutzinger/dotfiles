@@ -1,9 +1,5 @@
 #!/usr/bin/env sh
 
-# reload sxhkd
-super + shift + r
-    pkill -usr1 -x sxhkd; notify-send -t 15000 'sxhkd' 'Reloaded config'
-
 # edit sxhkdrc
 super + shift + k
     $HOME/scripts/edit-hotkeys.sh
@@ -156,5 +152,14 @@ super + 4
 super + 5
     brightnessctl s +10%
 
+# choose favorite radio
+super + shift + r
+    notify-send 'getting good radios' && fish -c "radio --goodradio"
+
+# run random radio
 super + r
     fish -c "radio"
+
+# quit vlc
+super + shift + s
+    killall vlc
