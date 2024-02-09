@@ -20,7 +20,7 @@ def test_no_temp_files_in_home_directory():
     """
     I don't like having temporary files in my home directory
     """
-    disallowed_substrings = {"tmp", "temp", "out"}
+    disallowed_substrings = {"tmp", "temp", "out", "test"}
     disallowed_file_extensions = {"zip", "tar", "gz", "xz", "bz2", "7z", "rar", "tgz"}
     allowed_substrings = {"templates", ".bash_logout"}
     found = []
