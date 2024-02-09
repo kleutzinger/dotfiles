@@ -332,7 +332,7 @@ def execute_ymls(yaml_paths: list[str], preview_only=False):
             ]
         )
     )
-    cmd = f"melt {mp4list} -consumer avformat:{final_output_path}"
+    cmd = f"ls"
     print(cmd)
     run(split(cmd))
     run(["mpv", final_output_path])
@@ -357,18 +357,17 @@ def get_desc(trny: dict, vods: list[dict]) -> tuple[str, str]:
 
 
 def main():
-    if "d" in sys.argv:
-        trny = get_yaml(TRNY_YAML_NAME)
-        vods = [get_yaml(i) for i in sorted(os.listdir()) if i.endswith("mp4.yml")]
-        get_desc(trny, vods)
-        exit()
-
     if "e" in sys.argv:
         input('start render? (will overwrite stuff in "corrected" and "final)')
         ymls = [i for i in os.listdir() if i.endswith(".yml")]
         if TRNY_YAML_NAME in ymls:
             ymls.remove(TRNY_YAML_NAME)
         execute_ymls(ymls, preview_only="s" in sys.argv)
+        trny = get_yaml(TRNY_YAML_NAME)
+        vods = [get_yaml(i) for i in sorted(os.listdir()) if i.endswith("mp4.yml")]
+        desc = get_desc(trny, vods)
+        with open("description.txt", "w") as f:
+            f.write(desc[1])
 
     if not os.path.exists(TRNY_YAML_NAME):
         print(f"no {TRNY_YAML_NAME} found, creating")
