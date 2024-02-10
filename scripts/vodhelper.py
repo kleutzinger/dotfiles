@@ -210,7 +210,7 @@ def gen_perspective_ffmpeg_cmd(
         f"ffmpeg -y{' -t 3' if preview_only else ''} "
         f"-i {i_vid_path} "
         f"-vf "
-        f"perspective={points},scale=960:720,setdar=4/3,"
+        f"perspective={points},scale=876:720,setdar=73/60,"
         f"""drawtext=fontfile='{font_path}':text='{text_overlay}':fontcolor=white:fontsize=30:box=1:boxcolor=black@0.5:boxborderw=5:x=10:y=10 """
         "-s 960x720 "
         f"{o_vid_path}"
