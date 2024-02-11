@@ -9,7 +9,7 @@ style_user = "bold dimmed blue"
 # configure directory
 [directory]
 truncation_length = 20
-truncate_to_repo = true # truncates directory to root folder if in github repo
+# truncate_to_repo = true # truncates directory to root folder if in github repo
 style = "bold italic #87A752"
 
 [cmd_duration]

@@ -1,3 +1,4 @@
+
 android-tools
 aria2
 asdf-vm
@@ -49,6 +50,7 @@ python-psutil
 python-pyautogui
 python-requests-html
 radiotray-ng
+rclone
 redshift
 rofi
 sdcv
