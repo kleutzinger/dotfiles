@@ -21,13 +21,17 @@ def test_no_temp_files_in_home_directory():
     I don't like having temporary files in my home directory
     """
     disallowed_substrings = {"tmp", "temp", "out", "test"}
-    disallowed_file_extensions = {"zip", "tar", "gz", "xz", "bz2", "7z", "rar", "tgz"}
-    allowed_substrings = {"templates", ".bash_logout"}
+    img_extensions = {"jpg", "jpeg", "png", "gif", "svg", "bmp", "tiff"}
+    vid_extensions = {"mp4", "mkv", "avi", "mov", "flv", "wmv", "webm"}
+    txt_extensions = {"txt", "md", "rst", "tex", "pdf"}
+    archive_extensions = {"zip", "tar", "gz", "xz", "bz2", "7z", "rar", "tgz"}
+    disallowed_file_extensions = archive_extensions | img_extensions | txt_extensions | vid_extensions
+    allowed_filenames = {"Templates", ".bash_logout", "README.md", ".textsnatcher.txt"}
     found = []
     for filename in os.listdir(os.path.expanduser("~")):
+        if filename in allowed_filenames:
+            continue
         for substring in disallowed_substrings:
-            if filename.lower() in allowed_substrings:
-                continue
             if substring in filename.lower():
                 found.append(filename)
                 continue
@@ -98,3 +102,9 @@ def test_homedir_is_called_kevin():
     """
     assert os.path.expanduser("~") == "/home/kevin", "home directory is not /home/kevin"
 
+def test_turso_logged_in():
+    """
+    check that turso db is logged in
+    """
+    # check that `turso db list` exit code is 0
+    run(["turso", "db", "list"], check=True)
