@@ -4,6 +4,7 @@ asdf-vm
 atuin
 audacity
 authy
+bitwarden-cli-bin
 brightnessctl
 croc
 fd

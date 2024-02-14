@@ -34,11 +34,11 @@ super + q
 
 # screenshot utility
 Print
-    flameshot gui
+    flameshot gui --clipboard --path ~/Pictures/scrots
 
 # take a full screenshot
 shift + Print
-    flameshot full -p $HOME/Pictures/scrots
+    flameshot full --clipboard --path ~/Pictures/scrots
 
 # toggle terminal
 F1
@@ -129,9 +129,9 @@ super + b
 super + shift + t
     normcap --tray False
 
-# volume mute
+# also toggle terminal
 super + 1
-    amixer -q -D pulse sset Master toggle
+    $HOME/scripts/toggle-term.sh
 
 # volume down
 super + 2
