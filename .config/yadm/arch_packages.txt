@@ -69,6 +69,7 @@ textsnatcher
 tmux
 trash-cli
 tree
+trilium-bin
 turso-cli
 unarchiver
 unclutter
@@ -80,6 +81,7 @@ xclip
 xdotool
 xf86-video-nouveau
 xfce4-taskmanager
+xorg-server-xvfb
 xsecurelock
 xsel
 yad
