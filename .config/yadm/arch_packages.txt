@@ -46,6 +46,7 @@ powertop
 pup
 python-black
 python-iterfzf
+python-opencv
 python-psutil
 python-pyautogui
 python-requests-html
