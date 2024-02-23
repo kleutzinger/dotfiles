@@ -31,6 +31,10 @@ function venv --argument-names python_version --description 'Create virtualenv n
     if test -e 'requirements.txt'
       echo 'Installing requirements.txt'
       python3 -m pip install -r requirements.txt
+    else if test -e 'poetry.lock'
+      echo 'Installing via poetry'
+      python -m pip install poetry
+      python -m poetry install
     end
 end
 
