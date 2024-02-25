@@ -138,7 +138,7 @@ super + Escape
     $HOME/scripts/toggle-term.sh
 
 # toggle mute
-super + shift + 1
+super + shift + 2
     amixer -q -D pulse sset Master toggle
 
 # volume down
