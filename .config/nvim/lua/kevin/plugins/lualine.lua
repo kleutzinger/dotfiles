@@ -55,6 +55,13 @@ return {
         theme = "nord",
       },
       sections = {
+        lualine_c = {
+          {
+            "filename",
+            file_status = true,
+            path = 2,
+          },
+        },
         lualine_x = {
           {
             lazy_status.updates,
