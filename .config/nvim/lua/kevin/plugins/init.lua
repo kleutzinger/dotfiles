@@ -15,4 +15,5 @@ return {
   "rhysd/git-messenger.vim",
   "eandrju/cellular-automaton.nvim",
   "ntpeters/vim-better-whitespace",
+  "almo7aya/openingh.nvim",
 }
