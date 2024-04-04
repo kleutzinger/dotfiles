@@ -6,6 +6,7 @@ audacity
 authy
 bitwarden-cli-bin
 brightnessctl
+bun-bin
 croc
 fd
 ffmpeg
