@@ -30,6 +30,7 @@ lice-git
 marked
 meld
 micro
+mise
 moar
 moreutils
 mosh
