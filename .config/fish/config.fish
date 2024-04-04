@@ -127,9 +127,6 @@ if type -q starship
     starship init fish | source
 end
 
-if test -e /opt/asdf-vm/asdf.fish
-    source /opt/asdf-vm/asdf.fish
-end
 set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/ $HOME/.cargo/bin $HOME/.bin $HOME/go/bin
 
 if status is-interactive
@@ -140,4 +137,8 @@ end
 
 if test -e /usr/share/doc/find-the-command/ftc.fish
     source /usr/share/doc/find-the-command/ftc.fish noprompt noupdate
+end
+
+if type -q mise
+  mise activate fish | source
 end
