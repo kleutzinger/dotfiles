@@ -1,6 +1,5 @@
 android-tools
 aria2
-asdf-vm
 atuin
 audacity
 authy

@@ -102,9 +102,3 @@ def test_homedir_is_called_kevin():
     """
     assert os.path.expanduser("~") == "/home/kevin", "home directory is not /home/kevin"
 
-def test_turso_logged_in():
-    """
-    check that turso db is logged in
-    """
-    # check that `turso db list` exit code is 0
-    run(["turso", "db", "list"], check=True)
