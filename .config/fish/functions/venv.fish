@@ -16,7 +16,7 @@ function venv --argument-names python_version --description 'Create virtualenv n
         echo "activating $python_bin"
     end
 
-    set -l venv_name (dirs | tr . + | tr '/' + | tr '~' +)
+    set -l venv_name (pwd | tr . + | tr '/' + | tr '~' +)
 
     if not test -e $python_bin
         echo "Python version `$python_version` is not installed."
