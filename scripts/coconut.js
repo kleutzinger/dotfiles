@@ -17,10 +17,26 @@ const filepath = (await $`fish -c 'recent_played_vlc'`.text()).trim();
 
 // convert file:///path/to/file to /path/to/file and decode URI
 const path = decodeURI(filepath.replace("file://", ""));
+// const vidFilename = path.split("/").pop();
+
+// create thumbnail file
+const thumbnailPath = `/tmp/${crypto.randomUUID()}.jpg`;
+await $`ffmpegthumbnailer -s256 -i ${path} -o ${thumbnailPath}`;
+
+`
+yt-dlp --write-thumbnail -P thumbnail:/tmp/thumb --skip-download 'https://www.youtube.com/watch?v=9DUfx2g_R8U'
+writes thumbnail to /tmp/thumb
+
+
+const records = await pb.collection("coconuts").getFullList({
+  sort: "-created",
+});
+`;
 
 const toUpload = {
   path,
   hostname,
+  image: Bun.file(thumbnailPath, { type: "image/jpeg" }),
 };
 
 console.log(toUpload);
