@@ -13,15 +13,13 @@ await pb
   .authWithPassword(POCKETBASE_USERNAME, POCKETBASE_PASSWORD);
 
 const hostname = (await $`hostname`.text()).trim();
-const filepath = (await $`fish -c 'recent_played_vlc'`.text()).trim();
+const path = (await $`fish -c 'recent_played_vlc --file'`.text()).trim();
 
-// convert file:///path/to/file to /path/to/file and decode URI
-const path = decodeURI(filepath.replace("file://", ""));
 // const vidFilename = path.split("/").pop();
 
 // create thumbnail file
 const thumbnailPath = `/tmp/${crypto.randomUUID()}.jpg`;
-await $`ffmpegthumbnailer -s256 -i ${path} -o ${thumbnailPath}`;
+await $`ffmpegthumbnailer -t30% -s256 -i ${path} -o ${thumbnailPath}`;
 
 `
 yt-dlp --write-thumbnail -P thumbnail:/tmp/thumb --skip-download 'https://www.youtube.com/watch?v=9DUfx2g_R8U'
