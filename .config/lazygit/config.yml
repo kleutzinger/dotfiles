@@ -14,3 +14,7 @@ gui:
     #   - black
     selectedLineBgColor:
       - reverse
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never
