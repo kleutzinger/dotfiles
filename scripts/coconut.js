@@ -12,6 +12,19 @@ await pb
   .collection("users")
   .authWithPassword(POCKETBASE_USERNAME, POCKETBASE_PASSWORD);
 
+// check if list in argv
+if (process.argv.includes("list") || process.argv.includes("--list")) {
+  const records = await pb.collection("coconuts").getFullList({
+    sort: "-created",
+  });
+  // add imageUrl to each record
+  for (const record of records) {
+    record.imageUrl = pb.files.getUrl(record, record.image);
+  }
+  console.log(JSON.stringify(records, null, 2));
+  process.exit(0);
+}
+
 const hostname = (await $`hostname`.text()).trim();
 const path = (await $`fish -c 'recent_played_vlc --file'`.text()).trim();
 
@@ -25,10 +38,6 @@ await $`ffmpegthumbnailer -t30% -s256 -i ${path} -o ${thumbnailPath}`;
 yt-dlp --write-thumbnail -P thumbnail:/tmp/thumb --skip-download 'https://www.youtube.com/watch?v=9DUfx2g_R8U'
 writes thumbnail to /tmp/thumb
 
-
-const records = await pb.collection("coconuts").getFullList({
-  sort: "-created",
-});
 `;
 
 const toUpload = {
