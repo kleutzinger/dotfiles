@@ -5,6 +5,7 @@ function venv --argument-names python_version --description 'Create virtualenv n
     #    does fzf for existing venvs
     #    finds existing venvs
     #    symlinks cur dir to existing venv
+
     set -l python_bin
 
     if not test -n "$python_version"
@@ -15,8 +16,7 @@ function venv --argument-names python_version --description 'Create virtualenv n
         set python_bin $ASDF_DIR/installs/python/$python_version/bin/python3
         echo "activating $python_bin"
     end
-
-    set -l venv_name (pwd | tr . + | tr '/' + | tr '~' +)
+    set -l venv_name (prompt_pwd --dir-length=0 --full-length-dirs=99 | tr . + | tr '/' + | tr '~' +)
 
     if not test -e $python_bin
         echo "Python version `$python_version` is not installed."
@@ -26,7 +26,7 @@ function venv --argument-names python_version --description 'Create virtualenv n
     echo Creating virtualenv `$venv_name`
     $python_bin -m venv $HOME/.virtualenvs/$venv_name
     source $HOME/.virtualenvs/$venv_name/bin/activate.fish
-    echo `$venv_name`  activated
+    echo `$venv_name` activated
 
     if test -e 'requirements.txt'
       echo 'Installing requirements.txt'
