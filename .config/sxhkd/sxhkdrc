@@ -143,11 +143,11 @@ super + shift + 2
 
 # volume down
 super + 2
-    amixer -q -D pulse sset Master 2%-
+    amixer -q -D pulse sset Master 3%-
 
 # volume up
 super + 3
-    amixer -q -D pulse sset Master 2%+
+    amixer -q -D pulse sset Master 3%+
 
 # brightness down
 super + 4
