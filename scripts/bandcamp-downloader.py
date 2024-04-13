@@ -1,18 +1,59 @@
-#!/usr/bin/env python3
+#!/home/kevin/.virtualenvs/++scripts/bin/python
+import asyncio
 import os
-import subprocess
-import tempfile
-import sys
-import shutil
 import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
 from urllib.parse import urlsplit, urlunsplit
+from pprint import pprint
+
+from pocketbase import PocketBase  # Client also works the same
+
+
+def insertIntoPB(record: dict = {}) -> None:
+    """
+    Insert a record into PocketBase, specifically the bandcamps collection
+
+    params:
+        record: dict - the record to insert
+            example:
+                {
+                    "url": "https://kevin.bandcamp.com/album/album",
+                    "full_cmd": "yt-dlp...",
+                    "cwd": "/home/kevin/Downloads",
+                    "hostname": "kevin-arch"
+                }
+    """
+    POCKETBASE_URL = os.getenv("POCKETBASE_URL")
+    POCKETBASE_USERNAME = os.getenv("POCKETBASE_ADMIN_USERNAME")
+    POCKETBASE_PASSWORD = os.getenv("POCKETBASE_ADMIN_PASSWORD")
+
+    if not all([POCKETBASE_URL, POCKETBASE_USERNAME, POCKETBASE_PASSWORD]):
+        print("Missing environment variables")
+        sys.exit(1)
+
+    pb = PocketBase(POCKETBASE_URL)
+
+    async def inner(params=record):
+        await pb.admins.auth.with_password(
+            email=POCKETBASE_USERNAME, password=POCKETBASE_PASSWORD
+        )
+
+        collection = pb.collection("bandcamps")
+        created = await collection.create(params=params)
+        # print what was created
+        pprint(created)
+
+    asyncio.run(inner(record))
 
 
 def remove_query_params_and_fragment(url):
     return urlunsplit(urlsplit(url)._replace(query="", fragment=""))
 
 
-def main():
+def main() -> None:
     DL_URL = sys.argv[1] if len(sys.argv) > 1 else None
 
     if not DL_URL:
@@ -35,18 +76,11 @@ def main():
         DL_URL,
     ]
     # shlex.join is used for quoting, and we replace single quotes with double quotes to pass to sqlite
-    joined_cmd = shlex.join(full_cmd).replace("'", '"')
-    if os.environ.get("USER") == "kevin":
-        subprocess.run(["turso", "auth", "login"])
-        subprocess.run(
-            [
-                "turso",
-                "db",
-                "shell",
-                "bandcamps",
-                f"insert into downloads (url, full_cmd, cwd) values('{DL_URL}', '{joined_cmd}', '{CWD}');",
-            ]
-        )
+    joined_cmd = shlex.join(full_cmd)
+    hostname = os.uname().nodename
+    insertIntoPB(
+        {"url": DL_URL, "full_cmd": joined_cmd, "cwd": CWD, "hostname": hostname}
+    )
 
     # put download here to start
     tmp_dir = tempfile.mkdtemp(prefix="bandcamp-")
