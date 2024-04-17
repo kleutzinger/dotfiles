@@ -52,6 +52,7 @@ python-iterfzf
 python-opencv
 python-psutil
 python-pyautogui
+python-pygame
 python-requests-html
 radiotray-ng
 rclone
