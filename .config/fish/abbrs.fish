@@ -26,6 +26,7 @@ abbr nn 'nvim .'
 abbr ocr 'textsnatcher'
 abbr yp 'yadm pull'
 abbr ze 'zellij'
+abbr yh 'GIT_DIR=~/.local/share/yadm/repo.git gh'
 
 alias define "sdcv"
 alias task "go-task"
