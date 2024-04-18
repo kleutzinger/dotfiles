@@ -26,13 +26,20 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
 }
 
 const hostname = (await $`hostname`.text()).trim();
-const path = (await $`fish -c 'recent_played_vlc --file'`.text()).trim();
+const { uri, sec, path } = JSON.parse(
+  await $`fish -c 'recent_played_vlc.py --json'`.text(),
+);
 
-// const vidFilename = path.split("/").pop();
+const seekTo = sec > 0 ? `00:00:${sec}` : "30%";
 
 // create thumbnail file
 const thumbnailPath = `/tmp/${crypto.randomUUID()}.jpg`;
-await $`ffmpegthumbnailer -t30% -s256 -i ${path} -o ${thumbnailPath}`;
+await $`ffmpegthumbnailer -t${seekTo} -s256 -i ${path} -o ${thumbnailPath}`;
+try {
+  await $`kitten icat --align left --scale-up ${thumbnailPath}`;
+} catch (e) {
+  console.error(e);
+}
 
 `
 yt-dlp --write-thumbnail -P thumbnail:/tmp/thumb --skip-download 'https://www.youtube.com/watch?v=9DUfx2g_R8U'
@@ -43,6 +50,7 @@ writes thumbnail to /tmp/thumb
 const toUpload = {
   path,
   hostname,
+  sec: sec,
   image: Bun.file(thumbnailPath, { type: "image/jpeg" }),
 };
 
@@ -53,6 +61,8 @@ for (let i = 5; i > 0; i--) {
   process.stdout.write(`${i} `);
   await new Promise((r) => setTimeout(r, 1000));
 }
+
+await $`clear`;
 console.log("uploading...");
 
 const out = await pb.collection("coconuts").create(toUpload);
