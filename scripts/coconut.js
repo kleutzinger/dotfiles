@@ -15,7 +15,7 @@ await pb
 // check if list in argv
 if (process.argv.includes("list") || process.argv.includes("--list")) {
   const records = await pb.collection("coconuts").getFullList({
-    sort: "-created",
+    sort: "created",
   });
   // add imageUrl to each record
   for (const record of records) {
