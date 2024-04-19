@@ -42,14 +42,11 @@ def recent_played_vlc(json):
     )
     path = re.sub(r"^file://", "", unquote(recents[0]))
 
-    duration_cmd = shlex.split(
-        f'ffprobe -i {path} -show_entries format=duration -v quiet -of csv="p=0"'
-    )
+    duration_cmd = ["ffprobe", "-i", path, "-show_entries", "format=duration", "-v", "quiet", "-of", "csv=p=0"]
     try:
         duration = float(subprocess.check_output(duration_cmd).decode("utf-8").strip())
     except Exception as e:
-        print(e)
-        print("Error: Unable to get the duration of the file.")
+        print(e, file=sys.stderr)
         duration = -1
     file_size = os.path.getsize(path)
 
