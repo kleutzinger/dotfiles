@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame
 import sys
 
@@ -25,6 +26,19 @@ MAX_IMAGES_PER_ROW = (SCREEN_WIDTH - GAP) // (IMAGE_SIZE + GAP)
 def load_images(image_paths):
     images = []
     for path in image_paths:
+        # detect if image is url
+        # use io
+        if path.startswith("http"):
+            import requests
+            from PIL import Image
+            import io
+
+            response = requests.get(path)
+            image = Image.open(io.BytesIO(response.content))
+            image = image.resize((IMAGE_SIZE, IMAGE_SIZE))
+            image = pygame.image.fromstring(image.tobytes(), image.size, image.mode)
+            images.append(image)
+            continue
         image = pygame.image.load(path)
         image = pygame.transform.scale(image, (IMAGE_SIZE, IMAGE_SIZE))
         images.append(image)
