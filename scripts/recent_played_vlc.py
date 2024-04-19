@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 import os
-import sys
-import click
 import re
-from urllib.parse import unquote
+import shlex
+import subprocess
+import sys
 from json import dumps
+from urllib.parse import unquote
+
+import click
 
 
 @click.command()
@@ -39,11 +42,24 @@ def recent_played_vlc(json):
     )
     path = re.sub(r"^file://", "", unquote(recents[0]))
 
+    duration_cmd = shlex.split(
+        f'ffprobe -i {path} -show_entries format=duration -v quiet -of csv="p=0"'
+    )
+    try:
+        duration = float(subprocess.check_output(duration_cmd).decode("utf-8").strip())
+    except Exception as e:
+        print(e)
+        print("Error: Unable to get the duration of the file.")
+        duration = -1
+    file_size = os.path.getsize(path)
+
     if json:
         output = {
             "uri": recents[0],
             "sec": times[0],
             "path": path,
+            "size": file_size,
+            "duration": duration,
         }
         click.echo(dumps(output, indent=2))
     else:
