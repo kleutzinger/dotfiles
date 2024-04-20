@@ -3,7 +3,7 @@
 set BLOG_DIR $HOME/gits/lektor-blog
 cd $BLOG_DIR
 set LEKTOR_PORT 9001
-alias lektor /home/kevin/.virtualenvs/lektor-blog/bin/lektor
+alias lektor /home/kevin/.virtualenvs/++gits+lektor-blog/bin/lektor
 # ping cannot check ports, use curl
 curl localhost:$LEKTOR_PORT -s > /dev/null
 if test $status -eq 0
