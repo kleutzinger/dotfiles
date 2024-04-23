@@ -4,3 +4,5 @@ click
 rokucli
 pocketbase-async
 pygame
+beautifulsoup4
+requests

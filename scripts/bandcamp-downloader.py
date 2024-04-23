@@ -11,6 +11,17 @@ from pprint import pprint
 
 from pocketbase import PocketBase  # Client also works the same
 
+# python function to download a webpage by url and find the <title> tag conents without any libraries
+
+
+def get_title(url):
+    import requests
+    from bs4 import BeautifulSoup
+
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    return soup.title.string
+
 
 def insertIntoPB(record: dict = {}) -> None:
     """
@@ -78,8 +89,15 @@ def main() -> None:
     # shlex.join is used for quoting, and we replace single quotes with double quotes to pass to sqlite
     joined_cmd = shlex.join(full_cmd)
     hostname = os.uname().nodename
+    page_title = get_title(DL_URL)
     insertIntoPB(
-        {"url": DL_URL, "full_cmd": joined_cmd, "cwd": CWD, "hostname": hostname}
+        {
+            "url": DL_URL,
+            "title": page_title,
+            "full_cmd": joined_cmd,
+            "cwd": CWD,
+            "hostname": hostname,
+        }
     )
 
     # put download here to start
