@@ -25,10 +25,26 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
   process.exit(0);
 }
 
+function hhmmssToSec(str) {
+  // string can be in format hh:mm:ss or mm:ss or ss
+  const parts = str.split(":").map((x) => parseInt(x));
+  return parts.reduce((acc, x) => acc * 60 + x);
+}
+
 const hostname = (await $`hostname`.text()).trim();
-const { uri, sec, path } = JSON.parse(
+let { uri, sec, path } = JSON.parse(
   await $`fish -c 'recent_played_vlc.py --json'`.text(),
 );
+
+if (sec <= 0) {
+  const prompt = "What sec?\n";
+  console.log(uri);
+  process.stdout.write(prompt);
+  for await (const line of console) {
+    sec = hhmmssToSec(line.trim());
+    break;
+  }
+}
 
 const seekTo = sec > 0 ? `00:00:${sec}` : "30%";
 
