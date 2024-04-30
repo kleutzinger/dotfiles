@@ -1,2 +1,5 @@
 [tools]
 usage = "latest"
+
+[settings]
+experimental = true
