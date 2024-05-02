@@ -127,7 +127,7 @@ if type -q starship
     starship init fish | source
 end
 
-set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/ $HOME/.cargo/bin $HOME/.bin $HOME/go/bin
+set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/ $HOME/.cargo/bin $HOME/.bin $HOME/go/bin $HOME/.virtualenvs/++gits+ebcli/bin
 
 if status is-interactive
   if type -q atuin
