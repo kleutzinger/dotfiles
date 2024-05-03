@@ -102,3 +102,10 @@ def test_homedir_is_called_kevin():
     """
     assert os.path.expanduser("~") == "/home/kevin", "home directory is not /home/kevin"
 
+
+def test_local_bin_dir_exists():
+    """
+    check that my local bin directory exists
+    """
+    assert os.path.isdir(os.path.expanduser("~/.local/bin")), "~/.local/bin directory does not exist"
+
