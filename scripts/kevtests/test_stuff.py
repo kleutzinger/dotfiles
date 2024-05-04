@@ -38,6 +38,7 @@ def test_no_temp_files_in_home_directory():
         for extension in disallowed_file_extensions:
             if filename.endswith(extension):
                 found.append(filename)
+    found = list(set(found))
     assert not found, f"Temporary files found"
 
 
