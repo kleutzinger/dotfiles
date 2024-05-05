@@ -13,6 +13,7 @@ ffmpeg
 ffmpegthumbnailer
 find-the-command-git
 fish
+fisher
 flameshot
 fzf
 gallery-dl-bin
