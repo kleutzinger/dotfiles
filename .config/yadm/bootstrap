@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+mkdir -p ~/.local/bin
 # This file basically installs fish and fisher, then runs the bootstrap script for the detected OS
 cd $HOME/.config/yadm
 # check if debian/ubuntu, check if arch, check if other
