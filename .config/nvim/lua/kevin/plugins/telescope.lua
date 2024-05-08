@@ -24,6 +24,7 @@ return {
     })
 
     telescope.load_extension("fzf")
+    telescope.load_extension("persisted")
 
     -- set keymaps
     local keymap = vim.keymap -- for conciseness

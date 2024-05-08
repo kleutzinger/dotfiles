@@ -1,1 +1,4 @@
 https://til.simonwillison.net/tils/feed.atom
+https://fmhy.net/feed.rss
+https://kevbot.xyz/feed.xml
+
