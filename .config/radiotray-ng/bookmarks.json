@@ -99,6 +99,7 @@
 			},
 			{
 				"name" : "ambient radio",
+				"notifications" : false,
 				"url" : "https://uk2.internet-radio.com/proxy/ambientradio/stream"
 			}
 		]
