@@ -36,7 +36,13 @@ let { uri, sec, path } = JSON.parse(
   await $`fish -c 'recent_played_vlc.py --json'`.text(),
 );
 
-if (sec <= 0) {
+const secIndex = process.argv.indexOf("--sec");
+
+if (secIndex > -1) {
+  sec = hhmmssToSec(process.argv[secIndex + 1]);
+}
+
+if (sec <= 0 && !secIndex) {
   const prompt = "What sec?\n";
   console.log(uri);
   process.stdout.write(prompt);
