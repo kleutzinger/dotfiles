@@ -168,3 +168,7 @@ super + r
 # quit vlc
 super + shift + s
     killall vlc
+
+# OCR grab text
+super + t
+    textsnatcher

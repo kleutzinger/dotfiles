@@ -7,6 +7,9 @@ bitwarden-cli-bin
 brightnessctl
 bun-bin
 croc
+docker
+docker-compose
+docker-rootless-extras
 eget-bin
 fd
 ffmpeg
