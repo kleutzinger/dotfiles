@@ -2,7 +2,6 @@ set -gx GEM_HOME $HOME/.local/share/gem/ruby/3.0.0
 set -gx SCRIPTS_DIR $HOME/scripts/
 #xmodmap $HOME/.Xmodmap
 set -gx NOTE_DIR $HOME/notes
-set -gx DOCKER_HOST unix://$XDG_RUNTIME_DIR/docker.sock
 set -gx EDITOR nvim
 set -gx PAGER moar
 set -gx MOAR '--statusbar=inverse --no-linenumbers'
@@ -134,6 +133,9 @@ set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn
 if test (hostname) = kevbot.xyz
   set --export BUN_INSTALL "$HOME/.bun"
   set --export PATH $BUN_INSTALL/bin $PATH
+else
+  # this is for rootless docker
+  set -gx DOCKER_HOST unix://$XDG_RUNTIME_DIR/docker.sock
 end
 
 if status is-interactive
