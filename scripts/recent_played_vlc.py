@@ -41,6 +41,8 @@ def recent_played_vlc(json):
         map(lambda t: int(t) // 1000, times_line.split("times=")[1].split(", "))
     )
     path = re.sub(r"^file://", "", unquote(recents[0]))
+    # replace any instances of '/./' with '/'
+    path = re.sub(r"/\./", "/", path)
 
     duration_cmd = ["ffprobe", "-i", path, "-show_entries", "format=duration", "-v", "quiet", "-of", "csv=p=0"]
     try:
