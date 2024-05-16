@@ -134,6 +134,7 @@ set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn
 if test (hostname) = kevbot.xyz
   set --export BUN_INSTALL "$HOME/.bun"
   set --export PATH $BUN_INSTALL/bin $PATH
+end
 
 if status is-interactive
   if type -q atuin
