@@ -130,7 +130,7 @@ end
 set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/ $HOME/.cargo/bin $HOME/.bin $HOME/go/bin $HOME/.virtualenvs/++gits+ebcli/bin
 
 # bun on ubuntu
-if test (hostname) = kevbot.xyz
+if test (uname -n) = kevbot.xyz
   set --export BUN_INSTALL "$HOME/.bun"
   set --export PATH $BUN_INSTALL/bin $PATH
 else
