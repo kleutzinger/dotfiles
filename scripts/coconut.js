@@ -2,6 +2,13 @@
 import { $ } from "bun";
 import PocketBase from "pocketbase";
 
+import TimeAgo from "javascript-time-ago";
+// English.
+import en from "javascript-time-ago/locale/en";
+TimeAgo.addDefaultLocale(en);
+// Create formatter (English).
+const timeAgo = new TimeAgo("en-US");
+
 const POCKETBASE_URL = process.env.POCKETBASE_URL;
 const POCKETBASE_USERNAME = process.env.POCKETBASE_USERNAME;
 const POCKETBASE_PASSWORD = process.env.POCKETBASE_PASSWORD;
@@ -20,7 +27,9 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
   // add imageUrl to each record
   for (const record of records) {
     record.imageUrl = pb.files.getUrl(record, record.image);
+    record.timeAgo = timeAgo.format(new Date(record.created), "twitter");
   }
+
   console.log(JSON.stringify(records, null, 2));
   process.exit(0);
 }
