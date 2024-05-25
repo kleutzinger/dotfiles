@@ -1,6 +1,8 @@
+#__JUKEBOX__# /home/kevin/.virtualenvs/++scripts+music-history/bin/python3 #__file__# jukebox
 # read sqlite db at music_history.db and parse the data
 # https://dfir.pubpub.org/pub/xbvsrjt5/release/1
 
+import os
 import sqlite3
 import subprocess
 import webbrowser
@@ -12,7 +14,10 @@ import click
 from blackboxprotobuf.lib.exceptions import DecoderException
 
 TABLE_NAME = "recognition_history"
-MUSIC_HISTORY_DB = "music_history.db"
+MUSIC_HISTORY_DB = "history_db"
+
+# change dir to script's
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 def flatten(dictionary, parent_key=False, separator="."):
@@ -73,7 +78,7 @@ def get_all_rows(no_adjacent_dupes=True) -> list[Entry]:
     cur = conn.cursor()
 
     # get all the data
-    cur.execute(f"SELECT {','.join(columns_we_care_about)} FROM {TABLE_NAME}")
+    cur.execute(f"SELECT {','.join(columns_we_care_about)} FROM {TABLE_NAME} ORDER BY timestamp ASC;")
     rows = cur.fetchall()
     # zip the column names and the data
     rows = [Entry(**dict(zip(columns_we_care_about, row))) for row in rows]
@@ -86,6 +91,12 @@ def get_all_rows(no_adjacent_dupes=True) -> list[Entry]:
 @click.group()
 def cli():
     pass
+
+@click.command()
+def get_rows():
+    rows = get_all_rows()
+    for row in rows:
+        click.echo(row)
 
 
 # click command to select random song
@@ -109,6 +120,7 @@ def jukebox():
         webbrowser.open(url)
 
 
+cli.add_command(get_rows)
 cli.add_command(jukebox)
 
 if __name__ == "__main__":

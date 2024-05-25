@@ -38,9 +38,7 @@ def show_cast(name):
     import time
 
     print(KIRBY, end="")
-    for star in STARS:
-        print(star, end="", flush=True)
-        time.sleep(0.1)
+    print(STARS, end="", flush=True)
     print(name)
 
 
