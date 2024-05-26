@@ -110,3 +110,9 @@ def test_local_bin_dir_exists():
     """
     assert os.path.isdir(os.path.expanduser("~/.local/bin")), "~/.local/bin directory does not exist"
 
+
+def test_no_pacman_lockfile():
+    """
+    check that there is no pacman lockfile
+    """
+    assert not os.path.isfile("/var/lib/pacman/db.lck"), "pacman lockfile exists"
