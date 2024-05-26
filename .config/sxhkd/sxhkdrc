@@ -138,16 +138,22 @@ super + Escape
     $HOME/scripts/toggle-term.sh
 
 # toggle mute
-super + shift + 2
+super + shift + 1
     amixer -q -D pulse sset Master toggle
 
 # volume down
 super + 2
     amixer -q -D pulse sset Master 3%-
 
+super + shift + 2
+    playerctl --player YoutubeMusic previous
+
 # volume up
 super + 3
     amixer -q -D pulse sset Master 3%+
+
+super + shift + 3
+    playerctl --player YoutubeMusic next
 
 # brightness down
 super + 4
