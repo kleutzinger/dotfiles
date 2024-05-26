@@ -1,4 +1,4 @@
-#__JUKEBOX__# /home/kevin/.virtualenvs/++scripts+music-history/bin/python3 #__file__# jukebox
+# #__JUKEBOX__# /home/kevin/.virtualenvs/++scripts+music-history/bin/python3 #__file__# jukebox
 # read sqlite db at music_history.db and parse the data
 # https://dfir.pubpub.org/pub/xbvsrjt5/release/1
 
@@ -8,6 +8,7 @@ import subprocess
 import webbrowser
 from collections.abc import MutableMapping
 from typing import TypedDict
+from lib import play_youtube_music_url
 
 import blackboxprotobuf
 import click
@@ -78,7 +79,9 @@ def get_all_rows(no_adjacent_dupes=True) -> list[Entry]:
     cur = conn.cursor()
 
     # get all the data
-    cur.execute(f"SELECT {','.join(columns_we_care_about)} FROM {TABLE_NAME} ORDER BY timestamp ASC;")
+    cur.execute(
+        f"SELECT {','.join(columns_we_care_about)} FROM {TABLE_NAME} ORDER BY timestamp ASC;"
+    )
     rows = cur.fetchall()
     # zip the column names and the data
     rows = [Entry(**dict(zip(columns_we_care_about, row))) for row in rows]
@@ -91,6 +94,7 @@ def get_all_rows(no_adjacent_dupes=True) -> list[Entry]:
 @click.group()
 def cli():
     pass
+
 
 @click.command()
 def get_rows():
@@ -112,12 +116,7 @@ def jukebox():
     # find value that has music.youtube.com in it
     url = [v for _, v in parsed.items() if "music.youtube.com" in str(v)][0]
     click.echo(url)
-    try:
-        subprocess.run(
-            ["playerctl", "--player", "YoutubeMusic", "open", url], check=True
-        )
-    except subprocess.CalledProcessError:
-        webbrowser.open(url)
+    play_youtube_music_url(url)
 
 
 cli.add_command(get_rows)

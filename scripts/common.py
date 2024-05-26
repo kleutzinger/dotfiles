@@ -1,12 +1,26 @@
-from typing import Any, Callable, Iterable, Optional
-from requests_html import HTMLSession, HTMLResponse
-import requests
-from iterfzf import iterfzf
 import subprocess
+import requests
+from typing import Any, Callable, Iterable, Optional
+
 
 
 def identity(x: Any) -> Any:
     return x
+
+
+def fzf_iterable(iterable: Iterable) -> str:
+    """
+    Given an iterable, shells out to fzf with all the values and returns the chosen value.
+    """
+    fzf_command = ["fzf"]
+
+    # Prepare the input for fzf
+    input_str = "\n".join(str(item) for item in iterable)
+
+    # Call fzf and get the chosen value
+    with subprocess.Popen(fzf_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) as proc:
+        stdout, _ = proc.communicate(input_str)
+        return stdout.strip()
 
 
 def fzf_choose(
@@ -25,15 +39,16 @@ def fzf_choose(
     choices = []
     for idx, val in enumerate(inp):
         choices.append(f"{idx:2} {display_func(val)}")
-    choice_idx = int(iterfzf(choices, **kwargs).strip().split(" ")[0])
+    choice_idx = int(fzf_iterable(choices, **kwargs).strip().split(" ")[0])
     return output_func(inp[choice_idx])
 
 
-def get_url(url: str, execute_js: bool = False) -> HTMLResponse:
+def get_url(url: str, execute_js: bool = False):
     """
     get a webpage's html, optionally render javascript
     thanks to https://pypi.org/project/requests-html/
     """
+    from requests_html import HTMLResponse, HTMLSession
     html_session = HTMLSession()
     req = html_session.get(url)
     if execute_js:
