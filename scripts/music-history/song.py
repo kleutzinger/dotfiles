@@ -1,5 +1,6 @@
 #!/home/kevin/.virtualenvs/++scripts+music-history/bin/python3
 import os
+import time
 import subprocess
 
 from importmonkey import add_path
@@ -37,3 +38,4 @@ print(url)
 play_youtube_music_url(url=url)
 largest_thumbnail = song["thumbnails"][-1]["url"]
 subprocess.run(["timg", largest_thumbnail])
+time.sleep(3)

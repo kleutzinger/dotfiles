@@ -82,6 +82,7 @@ tmux
 trash-cli
 tree
 trilium-bin
+ttf-fira-code
 unarchiver
 unclutter
 vlc

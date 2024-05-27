@@ -62,7 +62,7 @@ super + shift + b
 
 # play a song
 super + shift + m
-    terminator -m -e "~/scripts/music-history/song.py"
+    terminator -e "~/scripts/music-history/song.py"
 
 # launch a a game
 super + o
@@ -107,9 +107,6 @@ super + v
 super + shift + v
     terminator -e "~/scripts/edit-clipboard.sh"
 
-# insert today's date (while in google docs)
-super + h
-    $HOME/scripts/google-doc-insert-today-header.sh
 
 # grid overlay on screen
 super + shift + h
