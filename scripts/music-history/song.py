@@ -1,5 +1,6 @@
 #!/home/kevin/.virtualenvs/++scripts+music-history/bin/python3
 import os
+import subprocess
 
 from importmonkey import add_path
 from ytmusicapi import YTMusic
@@ -34,3 +35,5 @@ print(json.dumps(song, indent=2))
 url = f"https://music.youtube.com/watch?v={video_id}"
 print(url)
 play_youtube_music_url(url=url)
+largest_thumbnail = song["thumbnails"][-1]["url"]
+subprocess.run(["timg", largest_thumbnail])

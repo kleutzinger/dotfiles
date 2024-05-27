@@ -60,6 +60,10 @@ super + e
 super + shift + b
     fish -c 'blog.fish'
 
+# play a song
+super + shift + m
+    terminator -m -e "~/scripts/music-history/song.py"
+
 # launch a a game
 super + o
     terminator -m -e "game.sh"
@@ -123,6 +127,7 @@ super + u
 super + slash
     sxhkhmenu
 
+# press the enter key
 super + b
     python3 $HOME/scripts/press-enter.py
 
@@ -137,21 +142,23 @@ super + 1
 super + Escape
     $HOME/scripts/toggle-term.sh
 
-# toggle mute
+# pause music
 super + shift + 1
-    amixer -q -D pulse sset Master toggle
+    playerctl --player YoutubeMusic play-pause
 
 # volume down
 super + 2
     amixer -q -D pulse sset Master 3%-
 
+# mute
 super + shift + 2
-    playerctl --player YoutubeMusic previous
+    amixer -q -D pulse sset Master toggle
 
 # volume up
 super + 3
     amixer -q -D pulse sset Master 3%+
 
+# next song
 super + shift + 3
     playerctl --player YoutubeMusic next
 
