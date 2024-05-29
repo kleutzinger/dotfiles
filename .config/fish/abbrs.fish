@@ -26,6 +26,7 @@ abbr ze 'zellij'
 abbr yh 'GIT_DIR=~/.local/share/yadm/repo.git gh'
 abbr yy 'yadm pull && yay'
 abbr nn 'nvim'
+abbr cc 'coconut.js'
 
 alias define "sdcv"
 alias task "go-task"
