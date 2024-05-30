@@ -28,6 +28,7 @@ github-cli
 go-task-bin
 htop
 httpie
+hub
 intel-media-driver
 jq
 killport
