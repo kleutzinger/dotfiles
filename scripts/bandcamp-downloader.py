@@ -6,8 +6,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from urllib.parse import urlsplit, urlunsplit
 from pprint import pprint
+from urllib.parse import urlsplit, urlunsplit
 
 from pocketbase import PocketBase  # Client also works the same
 
@@ -71,7 +71,7 @@ def main() -> None:
         DL_URL = subprocess.check_output(["xsel", "-ob"]).decode().strip()
         print(f"No args, using clipboard: {DL_URL}")
 
-    if "?" in DL_URL or "#" in DL_URL:
+    if "bandcamp.com" in DL_URL and ("?" in DL_URL or "#" in DL_URL):
         DL_URL = remove_query_params_and_fragment(DL_URL)
         print(f"Removed query params: {DL_URL}")
 
@@ -80,7 +80,7 @@ def main() -> None:
     full_cmd = [
         "yt-dlp",
         "-f",
-        "bestaudio[ext=mp3]",
+        "bestaudio",
         "--embed-thumbnail",
         "-o",
         "%(artist)s - %(playlist_title)s/%(playlist_index)s %(track)s.%(ext)s",

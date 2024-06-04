@@ -15,20 +15,22 @@ from common import fzf_choose
 
 ytmusic = YTMusic()
 search_query = input("Enter the song name: ")
-search_results = ytmusic.search(search_query, filter="songs")
+search_results_music = ytmusic.search(search_query, filter="songs")
+search_results_video = ytmusic.search(search_query, filter="videos")
 
 
 def display_func(s):
     title = s.get("title", "?")
     try:
         artist = s.get("artists", ["?"])[0].get("name", "?")
-    except (IndexError, KeyError) as e:
+    except:
         artist = "?"
     album = s.get("album", {}).get("name", "?")
     return f"{title} - {artist} - {album}"
 
+separator = dict(title="-"*20)
 
-song = fzf_choose(search_results, display_func)
+song = fzf_choose(search_results_music + [separator] + search_results_video, display_func)
 
 
 video_id = song["videoId"]
