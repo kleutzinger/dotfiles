@@ -25,7 +25,10 @@ def display_func(s):
         artist = s.get("artists", ["?"])[0].get("name", "?")
     except:
         artist = "?"
-    album = s.get("album", {}).get("name", "?")
+    try:
+        album = s.get("album", {}).get("name", "?")
+    except:
+        album = "?"
     return f"{title} - {artist} - {album}"
 
 separator = dict(title="-"*20)
