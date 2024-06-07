@@ -11,6 +11,7 @@ docker
 docker-compose
 docker-rootless-extras
 eget-bin
+entr
 fd
 ffmpeg
 ffmpegthumbnailer

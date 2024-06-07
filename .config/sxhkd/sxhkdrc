@@ -132,7 +132,7 @@ super + shift + t
     normcap --tray False
 
 # also toggle terminal
-super + 1
+super + shift + 1
     $HOME/scripts/toggle-term.sh
 
 # also toggle terminal
@@ -140,7 +140,7 @@ super + Escape
     $HOME/scripts/toggle-term.sh
 
 # pause music
-super + shift + 1
+super + 1
     playerctl --player YoutubeMusic play-pause
 
 # volume down

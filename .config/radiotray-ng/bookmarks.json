@@ -101,6 +101,10 @@
 				"name" : "ambient radio",
 				"notifications" : false,
 				"url" : "https://uk2.internet-radio.com/proxy/ambientradio/stream"
+			},
+			{
+				"name" : "KVHS (Clayton)",
+				"url" : "http://cast1.sql2.smrn.com:5561/live"
 			}
 		]
 	}
