@@ -9,7 +9,7 @@ import tempfile
 from pprint import pprint
 from urllib.parse import urlsplit, urlunsplit
 
-from pocketbase import PocketBase  # Client also works the same
+from common import insertIntoPocketBase
 
 # python function to download a webpage by url and find the <title> tag conents without any libraries
 
@@ -90,14 +90,15 @@ def main() -> None:
     joined_cmd = shlex.join(full_cmd)
     hostname = os.uname().nodename
     page_title = get_title(DL_URL)
-    insertIntoPB(
+    insertIntoPocketBase(
         {
             "url": DL_URL,
             "title": page_title,
             "full_cmd": joined_cmd,
             "cwd": CWD,
             "hostname": hostname,
-        }
+        },
+        db_name="bandcamps",
     )
 
     # put download here to start

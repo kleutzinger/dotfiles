@@ -1,6 +1,10 @@
 import subprocess
 import requests
 from typing import Any, Callable, Iterable, Optional
+import os
+import sys
+import asyncio
+from pprint import pprint
 
 
 
@@ -102,3 +106,50 @@ def fetch_url_with_retry(
                 time.sleep(retry_timeout)
 
     return None  # Return None if all retry attempts fail
+
+
+def insertIntoPocketBase(record: dict = {}, db_name: str = '') -> None:
+    """
+    Insert a record into PocketBase, specifically the bandcamps collection
+
+    params:
+        record: dict - the record to insert
+            example:
+                {
+                    "url": "https://kevin.bandcamp.com/album/album",
+                    "full_cmd": "yt-dlp...",
+                    "cwd": "/home/kevin/Downloads",
+                    "hostname": "kevin-arch"
+                }
+    """
+    from pocketbase import PocketBase
+
+    POCKETBASE_URL = os.getenv("POCKETBASE_URL")
+    POCKETBASE_USERNAME = os.getenv("POCKETBASE_ADMIN_USERNAME")
+    POCKETBASE_PASSWORD = os.getenv("POCKETBASE_ADMIN_PASSWORD")
+
+    if not all([POCKETBASE_URL, POCKETBASE_USERNAME, POCKETBASE_PASSWORD]):
+        print("Missing environment variables")
+        sys.exit(1)
+
+    if not db_name:
+        print("No database name provided")
+        sys.exit(1)
+
+    if not all([POCKETBASE_URL, POCKETBASE_USERNAME, POCKETBASE_PASSWORD]):
+        print("Missing environment variables")
+        sys.exit(1)
+
+    pb = PocketBase(POCKETBASE_URL)
+
+    async def inner(params=record):
+        await pb.admins.auth.with_password(
+            email=POCKETBASE_USERNAME, password=POCKETBASE_PASSWORD
+        )
+
+        collection = pb.collection("bandcamps")
+        created = await collection.create(params=params)
+        # print what was created
+        pprint(created)
+
+    asyncio.run(inner(record))
