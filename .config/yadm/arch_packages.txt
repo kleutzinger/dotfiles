@@ -3,7 +3,6 @@ aria2
 atuin
 audacity
 authy
-bitwarden-cli-bin
 brightnessctl
 bun-bin
 croc
@@ -52,6 +51,7 @@ npm
 peek
 pip-tools
 pkgfile
+playerctl
 powertop
 pup
 python-black
@@ -61,7 +61,6 @@ python-psutil
 python-pyautogui
 python-pygame
 python-pywebview
-python-requests-html
 radiotray-ng
 rclone
 redshift
