@@ -9,6 +9,9 @@ TimeAgo.addDefaultLocale(en);
 // Create formatter (English).
 const timeAgo = new TimeAgo("en-US");
 
+var Cache = require("sync-disk-cache");
+var cache = new Cache("my-cache");
+
 const POCKETBASE_URL = process.env.POCKETBASE_URL;
 const POCKETBASE_USERNAME = process.env.POCKETBASE_USERNAME;
 const POCKETBASE_PASSWORD = process.env.POCKETBASE_PASSWORD;
@@ -26,7 +29,14 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
   });
   // add imageUrl to each record
   for (const record of records) {
-    record.imageUrl = pb.files.getUrl(record, record.image);
+    const { updated, id } = record;
+    const key = `${id}-${updated}-imageUrl`;
+    if (cache.has(key)) {
+      record.imageUrl = cache.get(key).value;
+    } else {
+      record.imageUrl = pb.files.getUrl(record, record.image);
+      cache.set(key, record.imageUrl);
+    }
     record.timeAgo = timeAgo.format(new Date(record.created), "twitter");
   }
 
