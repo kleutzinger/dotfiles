@@ -75,7 +75,7 @@ const seekTo = sec > 0 ? `00:00:${sec}` : "30%";
 
 // create thumbnail file
 const thumbnailPath = `/tmp/${crypto.randomUUID()}.jpg`;
-await $`ffmpegthumbnailer -t${seekTo} -s256 -i ${path} -o ${thumbnailPath}`;
+await $`ffmpegthumbnailer -t${seekTo} -s512 -i ${path} -o ${thumbnailPath}`;
 try {
   await $`kitten icat --align left --scale-up ${thumbnailPath}`;
 } catch (e) {
