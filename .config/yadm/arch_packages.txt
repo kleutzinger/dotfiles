@@ -65,6 +65,7 @@ radiotray-ng
 rclone
 redshift
 rofi
+ruff
 sdcv
 slock
 sqlitebrowser
