@@ -118,6 +118,9 @@ def init_tourney_yaml() -> str:
         nTime = guess_time
     print("assuming trny date today", nTime)
     trny_url = input("start.gg url:")
+    # get number of vods in directory, aka the number of opponents
+    mp4_count = len(get_ts_mp4_paths())
+    print(f"found {mp4_count} vods")
     opponents = input("comma separated opponents:").split(",")
     base_yaml = dict(tournament_url=trny_url, date=nTime, opponents=opponents)
     write_yaml(base_yaml, TRNY_YAML_NAME)
