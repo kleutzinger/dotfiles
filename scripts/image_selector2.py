@@ -36,6 +36,20 @@ html = f"""
       <h2>Links</h2>
         {image_html}
     </body>
+    <style>
+        body {{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+        }}
+        img {{
+            max-height: 256px;
+            margin: 10px;
+            cursor: pointer;
+        }}
+    </style>
   </html>
 """
 
