@@ -53,6 +53,7 @@ pip-tools
 pkgfile
 playerctl
 powertop
+pre-commit
 pup
 python-black
 python-iterfzf
