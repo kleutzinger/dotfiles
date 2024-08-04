@@ -91,6 +91,7 @@ unarchiver
 unclutter
 vlc
 webapp-manager
+wget
 wmctrl
 words
 xclip
