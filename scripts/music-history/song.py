@@ -1,5 +1,7 @@
 #!/home/kevin/.virtualenvs/++scripts+music-history/bin/python3
 import os
+import sys
+import shutil
 import time
 import subprocess
 
@@ -31,15 +33,25 @@ def display_func(s):
         album = "?"
     return f"{title} - {artist} - {album}"
 
-separator = dict(title="-"*20)
 
-song = fzf_choose(search_results_music + [separator] + search_results_video, display_func)
+separator = dict(title="-" * 20)
+
+song = fzf_choose(
+    search_results_music + [separator] + search_results_video, display_func
+)
 
 
 video_id = song["videoId"]
-print(json.dumps(song, indent=2))
 url = f"https://music.youtube.com/watch?v={video_id}"
 print(url)
+if "--url" in sys.argv:
+    # put in clipboard via xsel
+    if shutil.which("xsel"):
+        subprocess.run(["xsel", "-b"], input=url.encode())
+    if shutil.which("notify-send"):
+        subprocess.run(["notify-send", "URL copied to clipboard " + url])
+    exit(0)
+print(json.dumps(song, indent=2))
 play_youtube_music_url(url=url)
 largest_thumbnail = song["thumbnails"][-1]["url"]
 subprocess.run(["timg", largest_thumbnail])

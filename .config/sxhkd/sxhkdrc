@@ -60,6 +60,10 @@ super + shift + b
 super + shift + m
     terminator -e "~/scripts/music-history/song.py"
 
+# play a song
+super + shift + l
+    terminator -e "~/scripts/music-history/song.py --url"
+
 # launch a a game
 super + o
     terminator -m -e "game.sh"
