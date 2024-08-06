@@ -34,7 +34,7 @@ TODOs:
     [x] concat all vids into one big 720p video
 [x] add text overlay on video
     2022-03-24 Kevbot vs XYZ
-[] automatic adding of youtube description
+[x] automatic adding of youtube description
 [] automate youtube upload
     [] generate youtube [x] description [] title
     [] use youtubeuploader script
@@ -341,7 +341,7 @@ def execute_ymls(yaml_paths: list[str], preview_only=False):
     run(["mpv", final_output_path])
 
 
-def get_desc(trny: dict, vods: list[dict]) -> tuple[str, str]:
+def get_desc(trny: dict, vods: list[dict], pic_offset: int = 5) -> tuple[str, str]:
     "return title of video, description for youtube"
 
     desc = ""
@@ -354,7 +354,7 @@ def get_desc(trny: dict, vods: list[dict]) -> tuple[str, str]:
         desc += f"{sec2ts(cur_sec)} "
         desc += f"{vod['p1']} vs {vod['p2']}\n"
         cur_sec += round(vod["duration_ms"] / 1000)
-        cur_sec += 5
+        cur_sec += pic_offset
     print(desc)
     return "title", desc
 
@@ -369,8 +369,12 @@ def main():
         trny = get_yaml(TRNY_YAML_NAME)
         vods = [get_yaml(i) for i in sorted(os.listdir()) if i.endswith("mp4.yml")]
         desc = get_desc(trny, vods)
-        with open("description.txt", "w") as f:
+        with open("description-5-offset.txt", "w") as f:
             f.write(desc[1])
+        desc = get_desc(trny, vods, pic_offset=0)
+        with open("description-no-offset.txt", "w") as f:
+            f.write(desc[1])
+        exit(0)
 
     if not os.path.exists(TRNY_YAML_NAME):
         print(f"no {TRNY_YAML_NAME} found, creating")
