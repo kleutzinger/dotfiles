@@ -3,3 +3,4 @@ output/
 well*
 __pycache__/*
 vids/*
+.venv/*
