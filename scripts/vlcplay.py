@@ -10,7 +10,7 @@ import subprocess
 import click
 
 VID_EXTENSIONS = {".mkv", ".webm", ".mp4", ".m4v", ".webm", ".gif", ".m4a", ".wmv"}
-PLAYLIST_FILE = "/tmp/vids.m3u"
+PLAYLIST_FILE = os.path.join('/tmp', 'vids.m3u8')
 
 
 @click.command(help="Play all videos in the current directory recursively in VLC")
