@@ -6,6 +6,7 @@ vlc (fd -a -e mkv -e webm -e mp4 -e m4v -e webm -e gif -e m4a -e wmv --follow | 
 
 import os
 import subprocess
+import urllib.parse
 
 import click
 
@@ -24,6 +25,9 @@ def main():
                 abspath = os.path.abspath(os.path.join(root, file))
                 vids.append(abspath)
     vids = sorted(vids, key=lambda x: x.lower())
+    # urlencode all vids
+    vids = [urllib.parse.quote(vid) for vid in vids]
+
     with open(PLAYLIST_FILE, "w") as f:
         f.write("\n".join(vids))
     click.echo(f"Playing {len(vids)} videos in VLC")
