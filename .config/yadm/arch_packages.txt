@@ -9,6 +9,7 @@ croc
 docker
 docker-compose
 docker-rootless-extras
+dust
 eget-bin
 entr
 fd
