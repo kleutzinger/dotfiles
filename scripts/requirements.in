@@ -5,3 +5,5 @@ pocketbase-async
 pygame
 beautifulsoup4
 requests
+requests-html
+lxml-html-clean
