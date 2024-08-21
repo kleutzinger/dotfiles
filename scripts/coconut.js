@@ -2,13 +2,6 @@
 import { $ } from "bun";
 import PocketBase from "pocketbase";
 
-import TimeAgo from "javascript-time-ago";
-// English.
-import en from "javascript-time-ago/locale/en";
-TimeAgo.addDefaultLocale(en);
-// Create formatter (English).
-const timeAgo = new TimeAgo("en-US");
-
 var Cache = require("sync-disk-cache");
 var cache = new Cache("my-cache");
 
@@ -21,6 +14,44 @@ const pb = new PocketBase(POCKETBASE_URL);
 await pb
   .collection("users")
   .authWithPassword(POCKETBASE_USERNAME, POCKETBASE_PASSWORD);
+
+function relativeTime(date) {
+  // e.g. 1 year, 2 months, 3 days, 4 hours ago
+  const now = new Date();
+  const elapsed = now - date;
+
+  const units = [
+    { label: "year", milliseconds: 1000 * 60 * 60 * 24 * 365 },
+    { label: "month", milliseconds: 1000 * 60 * 60 * 24 * 30 },
+    { label: "day", milliseconds: 1000 * 60 * 60 * 24 },
+    { label: "hour", milliseconds: 1000 * 60 * 60 },
+  ];
+
+  const result = [];
+
+  let remainingTime = elapsed;
+
+  for (let i = 0; i < units.length; i++) {
+    const unitTime = Math.floor(remainingTime / units[i].milliseconds);
+    if (unitTime > 0) {
+      result.push(`${unitTime} ${units[i].label}${unitTime > 1 ? "s" : ""}`);
+      remainingTime -= unitTime * units[i].milliseconds;
+    }
+  }
+
+  if (result.length === 0) {
+    return "0 hours ago";
+  }
+
+  return result.join(", ") + " ago";
+}
+
+function hoursAgo(date) {
+  const now = new Date();
+  const elapsed = now - date; // difference in milliseconds
+  const hours = Math.floor(elapsed / (1000 * 60 * 60)); // convert milliseconds to hours
+  return `${hours}hr`;
+}
 
 // check if list in argv
 if (process.argv.includes("list") || process.argv.includes("--list")) {
@@ -37,7 +68,8 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
       record.imageUrl = pb.files.getUrl(record, record.image);
       cache.set(key, record.imageUrl);
     }
-    record.timeAgo = timeAgo.format(new Date(record.created), "twitter");
+    const createdDateTime = new Date(record.created);
+    record.timeAgo = `${relativeTime(createdDateTime)} (${hoursAgo(createdDateTime)})`;
   }
 
   console.log(JSON.stringify(records, null, 2));
