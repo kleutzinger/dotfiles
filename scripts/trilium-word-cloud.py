@@ -5,6 +5,37 @@ from bs4 import BeautifulSoup
 from collections import Counter
 import re
 
+exclude_words = set(
+    [
+        "to",
+        "the",
+        "and",
+        "of",
+        "at",
+        "a",
+        "my",
+        "in",
+        "com",
+        "that",
+        "it",
+        "but",
+        "is",
+        "was",
+        "i",
+        "do",
+        "be",
+        "get",
+        "for",
+        "on",
+        "with",
+        "as",
+        "you",
+        "this",
+        "me",
+        "you",
+    ]
+)
+
 with open("/usr/share/dict/words", "r") as myfile:
     data = myfile.readlines()
     allwords = set([x.strip().lower() for x in data])
@@ -17,7 +48,8 @@ cursor.execute("""
     SELECT blobs.content
     FROM notes
     JOIN blobs ON notes.blobId = blobs.blobId
-    WHERE notes.isDeleted = 0 AND notes.type = 'text';
+    WHERE notes.isDeleted = 0 AND notes.type = 'text'
+    -- AND notes.title NOT LIKE "note-20%";
 """)
 rows = cursor.fetchall()
 
@@ -35,12 +67,14 @@ for row in rows:
     # Tokenize the text and count words
     words = re.findall(r"\w+", text.lower())  # Convert to lowercase and find words
     words = [
-        word for word in words if word in allwords and len(word) >= 2
-    ]  # Filter out non-words
+        word
+        for word in words
+        if word in allwords and len(word) >= 2 and word not in exclude_words
+    ]  # Filter out non interesting words
     word_counter.update(words)
 
 # Output the most common words
-most_common_words = word_counter.most_common(100)  # Get the top 100 most common words
+most_common_words = word_counter.most_common(200)  # Get the top 100 most common words
 print(most_common_words)
 
 # Close the connection
@@ -54,7 +88,7 @@ word_freq = dict(most_common_words)
 
 # Generate the word cloud
 wordcloud = WordCloud(
-    width=800, height=400, background_color="white"
+    width=1600, height=800, background_color="white"
 ).generate_from_frequencies(word_freq)
 
 # Plot the word cloud
