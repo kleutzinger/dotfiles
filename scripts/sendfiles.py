@@ -51,6 +51,8 @@ def send(files):
     cmd = ["croc", "send"] + files
     print(cmd)
     subprocess.run(cmd)
+    # clean up manifest file
+    os.remove(MANIFEST_NAME)
 
 
 @click.command()
