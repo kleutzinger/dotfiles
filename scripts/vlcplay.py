@@ -11,17 +11,30 @@ import urllib.parse
 import click
 
 VID_EXTENSIONS = {".mkv", ".webm", ".mp4", ".m4v", ".webm", ".gif", ".m4a", ".wmv"}
-PLAYLIST_FILE = os.path.join('/tmp', 'vids.m3u8')
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp"}
+PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 
 
 @click.command(help="Play all videos in the current directory recursively in VLC")
-def main():
+@click.option("--videos", is_flag=True, help="Include videos in the playlist (default)")
+@click.option("--images", is_flag=True, help="Include images in the playlist")
+def main(videos: bool, images: bool) -> None:
+    valid_extensions = set()
+    if images:
+        click.echo("adding images")
+        valid_extensions.update(IMAGE_EXTENSIONS)
+    if videos:
+        click.echo("adding videos")
+        valid_extensions.update(VID_EXTENSIONS)
+    if not valid_extensions:
+        click.echo("defaulting to videos")
+        valid_extensions.update(VID_EXTENSIONS)
     if os.path.exists(PLAYLIST_FILE):
         os.remove(PLAYLIST_FILE)
     vids = []
     for root, _dirs, files in os.walk("."):
         for file in files:
-            if os.path.splitext(file)[-1].lower() in VID_EXTENSIONS:
+            if os.path.splitext(file)[-1].lower() in valid_extensions:
                 abspath = os.path.abspath(os.path.join(root, file))
                 vids.append(abspath)
     vids = sorted(vids, key=lambda x: x.lower())
