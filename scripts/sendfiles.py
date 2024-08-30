@@ -82,11 +82,16 @@ def rec(code):
         os.makedirs(os.path.dirname(my_abspath), exist_ok=True)
         # copy the file
         copies.append((file, my_abspath))
-    pprint([path for _, path in copies])
+    print(json.dumps([path for _, path in copies], indent=4))
     input("Press enter to write above files")
     for file, my_abspath in copies:
         shutil.copy(file["name"], my_abspath)
         print("Copied: ", file["name"], " to ", my_abspath)
+    # remove tempdir
+    input(f"Press enter to remove tempdir {tempdir}")
+    shutil.rmtree(tempdir)
+    print(f"Removed tempdir: {tempdir}")
+    print("done")
 
 
 @click.group()
