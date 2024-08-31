@@ -93,7 +93,7 @@ super + y
 
 # lock screen
 super + l
-    slock
+    betterlockscreen --lock
 
 # manage multiple monitors
 super + p

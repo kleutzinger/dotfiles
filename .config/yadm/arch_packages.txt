@@ -3,6 +3,7 @@ aria2
 atuin
 audacity
 authy
+betterlockscreen
 brightnessctl
 bun-bin
 croc
