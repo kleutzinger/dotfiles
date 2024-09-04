@@ -6,10 +6,10 @@
 BAT=$(echo /sys/class/power_supply/BAT*)
 BAT_STATUS="$BAT/status"
 BAT_CAP="$BAT/capacity"
-LOW_BAT_PERCENT=0
+LOW_BAT_PERCENT=95
 
 AC_PROFILE="performance"
-BAT_PROFILE="power-saver"
+BAT_PROFILE="performance"
 LOW_BAT_PROFILE="power-saver"
 
 # wait a while if needed
