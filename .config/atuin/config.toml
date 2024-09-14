@@ -69,7 +69,7 @@ filter_mode_shell_up_key_binding = "session"
 
 ## what to do when the escape key is pressed when searching
 ## possible values: return-original, return-query
-# exit_mode = "return-original"
+exit_mode = "return-query"
 
 ## possible values: emacs, subl
 # word_jump_mode = "emacs"
@@ -136,7 +136,7 @@ enter_accept = false
 #  "pnpm",
 #  "kubectl",
 #]
-# 
+
 # Set commands that should be totally stripped and ignored from stats
 #common_prefix = ["sudo"]
 
