@@ -18,8 +18,9 @@ PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 @click.command(help="Play all videos in the current directory recursively in VLC")
 @click.option("--videos", is_flag=True, help="Include videos in the playlist (default)")
 @click.option("--images", is_flag=True, help="Include images in the playlist")
+@click.option("--all", is_flag=True, help="Include all filetypes in the playlist")
 @click.option("--latest", is_flag=True, help="Sort by latest modified date")
-def main(videos: bool, images: bool, latest: bool) -> None:
+def main(videos: bool, images: bool, all: bool, latest: bool) -> None:
     valid_extensions = set()
     if images:
         click.echo("adding images")
@@ -27,6 +28,10 @@ def main(videos: bool, images: bool, latest: bool) -> None:
     if videos:
         click.echo("adding videos")
         valid_extensions.update(VID_EXTENSIONS)
+    if all:
+        click.echo("adding all")
+        valid_extensions.update(VID_EXTENSIONS)
+        valid_extensions.update(IMAGE_EXTENSIONS)
     if not valid_extensions:
         click.echo("defaulting to videos")
         valid_extensions.update(VID_EXTENSIONS)
