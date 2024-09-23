@@ -1,5 +1,5 @@
 ﻿###
-###  vlc 3.0.20
+###  vlc 3.0.21
 ###
 
 ###
@@ -2609,7 +2609,7 @@ qt-privacy-ask=0
 #sout-avi-subject=
 
 # Encoder (string)
-#sout-avi-encoder=VLC Media Player - 3.0.20 Vetinari
+#sout-avi-encoder=VLC Media Player - 3.0.21 Vetinari
 
 # Keywords (string)
 #sout-avi-keywords=
@@ -3390,7 +3390,7 @@ freetype-font=Droid Sans [1ASC]
 [transform] # Video transformation filter
 
 # Transform type (string)
-#transform-type=90
+transform-type=transpose
 
 [bridge] # Bridge stream output
 

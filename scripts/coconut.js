@@ -127,15 +127,6 @@ const toUpload = {
   image: Bun.file(thumbnailPath, { type: "image/jpeg" }),
 };
 
-// check if path ends with jpg, jpeg, png, gif
-// if it's an image, just upload the image directly
-let ext = path.split(".").pop();
-if (ext == "jpg") ext = "jpeg";
-if (["jpg", "jpeg", "png", "gif"].includes(ext)) {
-  toUpload.image = Bun.file(path, { type: `image/${ext}` });
-}
-
-console.log(toUpload);
 console.log("upload? ctrl+c to cancel");
 // count down form 5 4 3 2 1 seconds all on same line
 for (let i = 5; i > 0; i--) {
