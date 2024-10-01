@@ -44,10 +44,10 @@ def main(videos: bool, images: bool, all: bool, latest: bool, query: str) -> Non
             if os.path.splitext(file)[-1].lower() in valid_extensions:
                 abspath = os.path.abspath(os.path.join(root, file))
                 vids.append(abspath)
-    if latest:
-        vids = sorted(vids, key=os.path.getmtime, reverse=True)
     if query:
         vids = [vid for vid in vids if query.lower() in vid.lower()]
+    if latest:
+        vids = sorted(vids, key=os.path.getmtime, reverse=True)
     else:
         vids = sorted(vids, key=lambda x: x.lower())
     # urlencode all vids
