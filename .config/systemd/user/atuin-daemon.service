@@ -1,0 +1,13 @@
+[Unit]
+Description=Atuin Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/atuin daemon
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=10
+
+[Install]
+WantedBy=default.target
