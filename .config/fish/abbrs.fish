@@ -27,6 +27,8 @@ abbr yh 'GIT_DIR=~/.local/share/yadm/repo.git gh'
 abbr yy 'yadm pull && yay'
 abbr nn 'nvim'
 abbr cc 'coconut.js'
+abbr ccc 'coconut.js --sec 0'
+abbr ccl 'coconut.js --list'
 
 alias define "sdcv"
 alias task "go-task"
