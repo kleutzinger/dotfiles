@@ -4,6 +4,8 @@ import PocketBase from "pocketbase";
 
 var Cache = require("sync-disk-cache");
 var cache = new Cache("my-cache");
+const os = require("os");
+const fs = require("fs");
 
 const POCKETBASE_URL = process.env.POCKETBASE_URL;
 const POCKETBASE_USERNAME = process.env.POCKETBASE_USERNAME;
@@ -53,13 +55,21 @@ function hoursAgo(date) {
   return `${hours}hr`;
 }
 
+// these are the paths that have the  the same stuff on my machines
+const EQUIV_PATH_ARR = [
+  os.homedir(),
+  "/home/kevin",
+  "/run/media/kevin/orico",
+  "/run/media/kevin/tosh",
+];
+
 // check if list in argv
 if (process.argv.includes("list") || process.argv.includes("--list")) {
   const records = await pb.collection("coconuts").getFullList({
     sort: "created",
   });
   // add imageUrl to each record
-  for (const record of records) {
+  for (let record of records) {
     const { updated, id } = record;
     const key = `${id}-${updated}-imageUrl`;
     if (cache.has(key)) {
@@ -70,10 +80,42 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
     }
     const createdDateTime = new Date(record.created);
     record.timeAgo = `${relativeTime(createdDateTime)} (${hoursAgo(createdDateTime)})`;
+    record = pathfinder(record);
   }
 
   console.log(JSON.stringify(records, null, 2));
   process.exit(0);
+}
+
+function pathfinder(record) {
+  /*
+   * Given a record with a path, check if the file exists.
+   * If it does, return the record as is.
+   * If it doesn't, check if the file exists in any of the EQUIV_PATH_ARR directories.
+   * If it does, return the record with the new path.
+   */
+  const { path } = record;
+  console.log(path);
+  if (fs.existsSync(path)) {
+    record.exists = true;
+    return record;
+  }
+  const present_prefix = EQUIV_PATH_ARR.find((x) => path.startsWith(x));
+  // now try to see if the file exists replacing the current path's prefix with the present_prefix
+  if (present_prefix) {
+    for (const equivalent_path of EQUIV_PATH_ARR) {
+      const new_path = path.replace(present_prefix, equivalent_path);
+      console.log(new_path);
+      if (fs.existsSync(new_path)) {
+        record.path = new_path;
+        record.exists = true;
+        console.table(record);
+        return record;
+      }
+    }
+  }
+  record.exists = false;
+  return record;
 }
 
 function hhmmssToSec(str) {
