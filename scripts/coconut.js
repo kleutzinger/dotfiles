@@ -95,7 +95,6 @@ function pathfinder(record) {
    * If it does, return the record with the new path.
    */
   const { path } = record;
-  console.log(path);
   if (fs.existsSync(path)) {
     record.exists = true;
     return record;
@@ -105,11 +104,9 @@ function pathfinder(record) {
   if (present_prefix) {
     for (const equivalent_path of EQUIV_PATH_ARR) {
       const new_path = path.replace(present_prefix, equivalent_path);
-      console.log(new_path);
       if (fs.existsSync(new_path)) {
         record.path = new_path;
         record.exists = true;
-        console.table(record);
         return record;
       }
     }
