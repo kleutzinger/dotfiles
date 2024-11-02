@@ -12,7 +12,8 @@ def get_coconut_list():
     out, err = p.communicate()
     if p.returncode != 0:
         raise Exception("Error: {}".format(err))
-    return json.loads(out)
+    out_str = out.decode("utf-8", errors="ignore")
+    return json.loads(out_str)
 
 
 def filter_coconut(coconuts):
