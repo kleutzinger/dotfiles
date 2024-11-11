@@ -27,8 +27,8 @@ end
 set TEXT (echo $TEXT | perl -MHTML::Entities -pe 'decode_entities($_);')
 
 set HREFD "<a href=\"$LINK\">$TEXT</a>"
-# set HREFDMD "[$TEXT]($LINK)"
-# echo -e "\t$HREFD"
-echo -e "\t$HREFDMD"
-echo $HREFD | xclip -selection clipboard -in
+
+# todo: set plaintext target as well to bare url
+echo $HREFD | xclip -selection clipboard -i -t text/html
+echo -e "copied \t$HREFD"
 notify-send "Copied to clipboard: $HREFD"
