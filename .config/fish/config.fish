@@ -7,7 +7,7 @@ set -gx PAGER moar
 set -gx MOAR '--statusbar=inverse --no-linenumbers'
 set -gx MOZ_X11_EGL 1
 set fish_greeting
-set pipenv_fish_fancy yes 
+set pipenv_fish_fancy yes
 set -gx FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usage
 set -gx DOKKU_HOST kevbot.xyz
 # set -gx PYTHONBREAKPOINT pdb.set_trace
@@ -17,6 +17,9 @@ set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
 set -gx GDK_SCALE 1
 set -gx QT_AUTO_SCREEN_SCALE_FACTOR 1
 set -gx QT_SCALE_FACTOR 2
+set -gx FZF_DEFAULT_OPTS '--height 75% --layout=reverse --border'
+
+
 alias p="xsel -ob"
 alias bunx="bun x"
 source $HOME/.config/fish/abbrs.fish
