@@ -60,9 +60,9 @@ super + shift + b
 super + shift + m
     terminator -e "~/scripts/music-history/song.py"
 
-# play a song
+# change url in clipboard into html link
 super + shift + l
-    terminator -e "~/scripts/music-history/song.py --url"
+    fish -c 'hrefy.fish'
 
 # launch a a game
 super + o
