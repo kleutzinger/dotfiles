@@ -21,7 +21,7 @@ def filter_coconut(coconuts):
 
 
 if __name__ == "__main__":
-    coconuts = filter_coconut(get_coconut_list())
+    coconuts = filter_coconut(get_coconut_list())[::-1]
     imageUrls = [c["imageUrl"] for c in coconuts]
     cmd = ["image_selector2.py"] + imageUrls
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

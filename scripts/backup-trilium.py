@@ -19,7 +19,11 @@ def main():
     output = subprocess.check_output(["yay", "-Q", "trilium-bin"])
     version = output.decode().split(" ")[1].strip().split("-")[0]
     today = datetime.date.today()
-    output_filepath = f"trilium-{version}-{today}.sql"
+    time = datetime.datetime.now().strftime("%H-%M-%S")
+    output_filepath = f"trilium-{version}-{today}-{time}.sql"
+    if os.path.exists(output_filepath) or os.path.exists(output_filepath + ".gz"):
+        print(f"{output_filepath} already exists")
+        exit(1)
     size_before = os.path.getsize(trilium_db)
     print(f"Size before: {size_before / 1024 / 1024:.2f} MB")
 
