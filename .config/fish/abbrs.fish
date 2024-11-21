@@ -30,6 +30,7 @@ abbr cc 'coconut.js'
 abbr ccc 'coconut.js --sec 0'
 abbr ccl 'coconut.js --list'
 abbr yayy 'yay --noconfirm'
+abbr cdt 'cd ~/.threads && gallery-dl (p)'
 
 alias define "sdcv"
 alias task "go-task"
