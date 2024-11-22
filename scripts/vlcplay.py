@@ -20,8 +20,9 @@ PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 @click.option("--images", is_flag=True, help="Include images in the playlist")
 @click.option("--all", is_flag=True, help="Include all filetypes in the playlist")
 @click.option("--latest", is_flag=True, help="Sort by latest modified date")
+@click.option("--largest", is_flag=True, help="Sort by largest first")
 @click.option("--query", help="Search for files with a given query")
-def main(videos: bool, images: bool, all: bool, latest: bool, query: str) -> None:
+def main(videos: bool, images: bool, all: bool, latest: bool, largest: bool, query: str) -> None:
     valid_extensions = set()
     if images:
         click.echo("adding images")
@@ -48,6 +49,8 @@ def main(videos: bool, images: bool, all: bool, latest: bool, query: str) -> Non
         vids = [vid for vid in vids if query.lower() in vid.lower()]
     if latest:
         vids = sorted(vids, key=os.path.getmtime, reverse=True)
+    if largest:
+        vids = sorted(vids, key=os.path.getsize, reverse=True)
     else:
         vids = sorted(vids, key=lambda x: x.lower())
     # urlencode all vids
