@@ -126,7 +126,7 @@ super + slash
 
 # press the enter key
 super + b
-    python3 $HOME/scripts/press-enter.py
+    xdotool search "Visual Studio Code" windowactivate || code
 
 super + shift + t
     normcap --tray False
