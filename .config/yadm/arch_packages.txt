@@ -11,6 +11,7 @@ croc
 docker
 docker-compose
 docker-rootless-extras
+dra
 dust
 eget-bin
 entr
@@ -90,7 +91,6 @@ timg
 tmux
 trash-cli
 tree
-trilium-bin
 ttf-fira-code
 unarchiver
 unclutter

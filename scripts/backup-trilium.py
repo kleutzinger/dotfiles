@@ -16,8 +16,7 @@ def main():
         print(f"{trilium_db} does not exist")
         exit(1)
     print(f"Backing up {trilium_db}")
-    output = subprocess.check_output(["yay", "-Q", "trilium-bin"])
-    version = output.decode().split(" ")[1].strip().split("-")[0]
+    version = 'next'
     today = datetime.date.today()
     time = datetime.datetime.now().strftime("%H-%M-%S")
     output_filepath = f"trilium-{version}-{today}-{time}.sql"
