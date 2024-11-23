@@ -47,10 +47,10 @@ def main(videos: bool, images: bool, all: bool, latest: bool, largest: bool, que
                 vids.append(abspath)
     if query:
         vids = [vid for vid in vids if query.lower() in vid.lower()]
-    if latest:
-        vids = sorted(vids, key=os.path.getmtime, reverse=True)
     if largest:
         vids = sorted(vids, key=os.path.getsize, reverse=True)
+    if latest:
+        vids = sorted(vids, key=os.path.getmtime, reverse=True)
     else:
         vids = sorted(vids, key=lambda x: x.lower())
     # urlencode all vids
