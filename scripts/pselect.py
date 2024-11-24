@@ -17,11 +17,12 @@ def get_coconut_list():
 
 
 def filter_coconut(coconuts):
-    return [c for c in coconuts if os.path.exists(c["path"])]
+    return [c for c in coconuts if c.get("exists")]
 
 
 if __name__ == "__main__":
-    coconuts = filter_coconut(get_coconut_list())[::-1]
+    coconuts = get_coconut_list()[::-1]
+    coconuts = filter_coconut(coconuts)  # rm non-existent coconuts
     imageUrls = [c["imageUrl"] for c in coconuts]
     cmd = ["image_selector2.py"] + imageUrls
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
