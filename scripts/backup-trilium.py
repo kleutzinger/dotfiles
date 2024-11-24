@@ -6,6 +6,11 @@ back up my local trilium db to a gzipped file
 import os
 import subprocess
 import datetime
+import urllib.request
+import json
+
+LOCAL_ENDPOINT = "http://127.0.0.1:37840/custom/version"
+DEPLOYED_ENDPOINT = "https://tril.kevbot.xyz/custom/version"
 
 
 def main():
@@ -16,10 +21,17 @@ def main():
         print(f"{trilium_db} does not exist")
         exit(1)
     print(f"Backing up {trilium_db}")
-    version = 'next'
+    version = "unknown"
+    for endpoint in [LOCAL_ENDPOINT, DEPLOYED_ENDPOINT]:
+        try:
+            with urllib.request.urlopen(endpoint) as response:
+                version = json.loads(response.read())
+                break
+        except Exception:
+            continue
     today = datetime.date.today()
     time = datetime.datetime.now().strftime("%H-%M-%S")
-    output_filepath = f"trilium-{version}-{today}-{time}.sql"
+    output_filepath = f"trilium-next-{version}-{today}-{time}.sql"
     if os.path.exists(output_filepath) or os.path.exists(output_filepath + ".gz"):
         print(f"{output_filepath} already exists")
         exit(1)
