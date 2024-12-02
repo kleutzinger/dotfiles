@@ -24,7 +24,11 @@ while true; do
 		if [[ $(cat "$BAT_CAP") -gt $LOW_BAT_PERCENT ]]; then
 			profile=$BAT_PROFILE
 		else
-			profile=$LOW_BAT_PROFILE
+      # check if /tmp/performance file does not exist
+      # only then apply the low battery profile
+      if [ ! -f /tmp/performance ]; then
+        profile=$LOW_BAT_PROFILE
+      fi
 		fi
 	else
 		profile=$AC_PROFILE

@@ -75,7 +75,7 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
     if (cache.has(key)) {
       record.imageUrl = cache.get(key).value;
     } else {
-      record.imageUrl = pb.files.getUrl(record, record.image);
+      record.imageUrl = pb.files.getURL(record, record.image);
       cache.set(key, record.imageUrl);
     }
     const createdDateTime = new Date(record.created);
