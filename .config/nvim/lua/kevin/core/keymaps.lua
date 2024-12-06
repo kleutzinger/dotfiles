@@ -1,4 +1,4 @@
--- set leader key to space
+-- set leader key to comma
 vim.g.mapleader = ","
 
 local keymap = vim.keymap -- for conciseness
@@ -36,8 +36,6 @@ vim.keymap.set("n", "gD", function()
 end, bufopts)
 
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
-
-keymap.set("n", "<leader>lg", ":LazyGit<CR>", { desc = "Open LazyGit" })
 
 -- delete single character without copying into register
 keymap.set("n", "x", '"_x')

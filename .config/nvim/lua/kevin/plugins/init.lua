@@ -5,7 +5,6 @@ return {
   "sbdchd/neoformat",
   "weilbith/nvim-code-action-menu",
   "mattn/emmet-vim",
-  "kdheepak/lazygit.nvim",
   "mfussenegger/nvim-dap",
   "folke/neodev.nvim",
   "ravenxrz/DAPInstall.nvim",
