@@ -41,6 +41,8 @@ keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
 keymap.set("n", "x", '"_x')
 
 keymap.set("n", "<leader><leader>o", ":tab Oil<CR>", { desc = "Open Oil file view in new tab" })
+-- yank entire document to clipboard
+keymap.set("n", "<leader><leader>Y", ":%y+<CR>", { desc = "Yank entire document to clipboard" })
 
 -- window management
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically

@@ -35,3 +35,5 @@
   cmd = code --wait $MERGED
 [init]
 	defaultBranch = main
+[core]
+	longpaths = true

@@ -79,7 +79,7 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
       cache.set(key, record.imageUrl);
     }
     const createdDateTime = new Date(record.created);
-    record.timeAgo = `${relativeTime(createdDateTime)} (${hoursAgo(createdDateTime)})`;
+    record.timeAgo = `(${hoursAgo(createdDateTime)}) ${relativeTime(createdDateTime)}`;
     record = pathfinder(record);
   }
 

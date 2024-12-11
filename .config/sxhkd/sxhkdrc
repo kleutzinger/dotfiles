@@ -126,7 +126,7 @@ super + slash
 
 # press the enter key
 super + b
-    xdotool search "Visual Studio Code" windowactivate || code
+    xdotool search "Visual Studio Code" windowactivate
 
 super + shift + t
     normcap --tray False
