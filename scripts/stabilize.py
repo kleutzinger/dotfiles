@@ -32,11 +32,16 @@ def stabilize_video(video_path, output_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python stabilize.py <video_path> <output_path>")
+    if len(sys.argv) < 2:
+        print("Usage: python stabilize.py <video_path> <output_path>(optional)")
         sys.exit(1)
 
     video_path = sys.argv[1]
-    output_path = sys.argv[2]
+    # check no output path provided
+    if len(sys.argv) == 2:
+        name, extension = os.path.splitext(video_path)
+        output_path = f"{name}-stable{extension}"
+    else:
+        output_path = sys.argv[2]
 
     stabilize_video(video_path, output_path)
