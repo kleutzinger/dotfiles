@@ -30,7 +30,7 @@ abbr cc 'coconut.js'
 abbr ccc 'coconut.js --sec 0'
 abbr ccl 'coconut.js --list'
 abbr yayy 'yay --noconfirm'
-abbr cdt 'cd ~/.threads && gallery-dl (p)'
+abbr cdt 'cd ~/.threads && gallery-dl (p) --sleep 5'
 abbr -a L --position anywhere --set-cursor "% | less"
 
 alias define "sdcv"
