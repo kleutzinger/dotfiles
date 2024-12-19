@@ -121,7 +121,14 @@ def init_tourney_yaml() -> str:
     # get number of vods in directory, aka the number of opponents
     mp4_count = len(get_ts_mp4_paths())
     print(f"found {mp4_count} vods")
-    opponents = input("comma separated opponents:").split(",")
+    #verify there's at least one slash in each filename
+    for i in get_ts_mp4_paths():
+        if i.count("-") < 1:
+            print(f"bad filename, should be in the form VIDEONAME-opponent.mp4: {i}")
+            exit(1)
+    # VIDEONAME-opponent.mp4
+    getname = lambda x: os.path.splitext(os.path.basename(x))[0].split("-")[-1]
+    opponents = [getname(i) for i in get_ts_mp4_paths()]
     base_yaml = dict(tournament_url=trny_url, date=nTime, opponents=opponents)
     write_yaml(base_yaml, TRNY_YAML_NAME)
     return base_yaml
