@@ -11,6 +11,7 @@ vim.api.nvim_set_keymap("n", "\\", ",", { noremap = true })
 
 -- use hk to exit insert mode
 keymap.set("i", "hk", "<ESC>", { desc = "Exit insert mode with hk" })
+keymap.set("i", "HK", "<ESC>", { desc = "Exit insert mode with HK" })
 
 vim.keymap.set("n", "gD", function()
   local org_path = vim.api.nvim_buf_get_name(0)
