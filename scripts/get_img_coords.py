@@ -4,6 +4,7 @@
 [x] extract image 5 seconds in
 [x] display image
 [x] get image points
+[x] click cli
 [] connect image
 """
 
@@ -15,6 +16,8 @@ import cv2 as cv
 import numpy as np
 from typing import List, Tuple
 
+import click
+
 # a list of (x,y) coordinates
 PointList = List[Tuple[int, int]]
 
@@ -22,16 +25,13 @@ PointList = List[Tuple[int, int]]
 # beyond the edge of the original image
 BORDER_SIZE_PX = 300
 
-# print(dir(cv2))
 
-
-def choose_points(path: str) -> PointList:
+def choose_points(path: str, ordered: bool = True) -> PointList:
     """
     make a popup to allow user input of corners of crt. use right click to set 4 points
     points may exist ouside the original image
     """
     filename = path
-    print(path)
     img = cv.imread(filename)
     white = [255, 255, 255]
     with_border = cv.copyMakeBorder(
@@ -81,7 +81,10 @@ def choose_points(path: str) -> PointList:
             out.append((x - BORDER_SIZE_PX, y - BORDER_SIZE_PX))
         return out
 
-    return order_pts(fix_border_coords(pts))
+    pts = fix_border_coords(pts)
+    if ordered:
+        return order_pts(pts)
+    return pts
 
 
 def order_pts(pts: PointList) -> PointList:
@@ -96,10 +99,8 @@ def order_pts(pts: PointList) -> PointList:
     2........3
     i could have used polar coords or something here, but this'll work fine
     """
-    # assert len(pts) == 4
     if len(pts) != 4:
-        print("bad len of pts")
-        return []
+        raise ValueError("need 4 points")
 
     left2 = set(sorted(pts, key=lambda p: p[0])[:2])
     right2 = set(sorted(pts, key=lambda p: p[0])[2:])
@@ -121,7 +122,10 @@ def test_order_pts():
     assert order_pts(pts[::-1]) == [(0, 0), (1, 0), (0, 1), (1, 1)]
 
 
-def main(num_points: int, path: str) -> PointList:
+def main(num_points: int, path: str, ordered: bool = True) -> PointList:
+    # check if path is an image
+    if path.endswith(".png"):
+        return choose_points(path, ordered=ordered)
     frame_second = int(get_vod_duration_ms(path) * random.random() / 1000)
     framepath = extract_vid_frame_to_file(
         path, path + ".png", seek_sec=frame_second, overwrite=True
@@ -135,5 +139,17 @@ def get_perspective_points(path: str) -> PointList:
     return order_pts(pts)
 
 
-# if __name__ == "__main__":
-#     main()
+# click interface for number of points and path
+
+
+@click.command()
+@click.option("--num_points", default=-1, help="number of points to select")
+@click.option("--path", default="test.mp4", help="path to video or png")
+@click.option("--ordered", default=False, help="order points for ffmpeg")
+def cli(num_points, path, ordered):
+    pts = main(num_points, path)
+    print(pts)
+
+
+if __name__ == "__main__":
+    cli()
