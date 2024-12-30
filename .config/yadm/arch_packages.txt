@@ -30,6 +30,7 @@ gist
 git-delta
 github-cli
 go-task-bin
+html2md
 htop
 httpie
 hub
