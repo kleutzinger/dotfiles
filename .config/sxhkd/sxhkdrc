@@ -8,6 +8,10 @@ super + shift + k
 super + w
     xdotool search "Mozilla Firefox" windowactivate || firefox
 
+# log food
+super + shift + f
+    food --notification $(zenity --text=food --entry)
+
 # find my phone
 super + shift + w
     firefox 'https://www.google.com/android/find?u=0'

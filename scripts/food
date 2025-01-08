@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+"""
+usage:
+
+submit a food:
+    ./food thing i ate
+
+get today's food:
+    ./food
+
+example response:
+    Food Journal
+    2025-01-07 12:51 chicken thigh
+    2025-01-07 12:55 more chicken thigh
+"""
+
+import requests
+import click
+import subprocess
+
+ENDPOINT = "http://127.0.0.1:37840/custom/food"
+
+
+def ul_li_to_nice(htmlstr: str):
+    "convert html list to plain text"
+    replaceme = ["<li>", "</li>", "<ul>", "</ul>"]
+    out = ""
+    for line in htmlstr.split("<li>"):
+        for r in replaceme:
+            line = line.replace(r, "")
+        out += line + "\n"
+    return out
+
+
+@click.command()
+@click.option("--notification", "-n", is_flag=True, help="send a notification after")
+@click.option("--list", "-l", is_flag=True, help="list all food")
+@click.argument("food", required=False, nargs=-1)
+def main(notification, list, food):
+    if food is None or list:
+        response = requests.get(ENDPOINT)
+    else:
+        food = " ".join(food)
+        response = requests.post(ENDPOINT, data={"food": food})
+    if notification:
+        subprocess.run(["notify-send", "Food Journal", ul_li_to_nice(response.text)])
+    print(ul_li_to_nice(response.text))
+
+
+main()
