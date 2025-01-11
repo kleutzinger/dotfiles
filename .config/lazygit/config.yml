@@ -6,7 +6,7 @@ keybinding:
     nextBlock-alt: "l" # goto the next block / panel
 gui:
   sidePanelWidth: 0.3
-  windowSize: "half"
+  screenMode: "half"
   theme:
     # selectedLineBgColor:
     #   - black # set to `default` to have no background colour

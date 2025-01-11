@@ -117,6 +117,8 @@ function pathfinder(record) {
 
 function hhmmssToSec(str) {
   // string can be in format hh:mm:ss or mm:ss or ss
+  // replace . with :
+  str = str.replace(".", ":");
   const parts = str.split(":").map((x) => parseInt(x));
   return parts.reduce((acc, x) => acc * 60 + x);
 }
