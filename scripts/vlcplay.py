@@ -10,7 +10,7 @@ import urllib.parse
 
 import click
 
-VID_EXTENSIONS = {".mkv", ".webm", ".mp4", ".m4v", ".webm", ".gif", ".m4a", ".wmv"}
+VID_EXTENSIONS = {".mkv", ".webm", ".mp4", ".m4v", ".webm", ".gif", ".m4a", ".wmv", ".mov"}
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp"}
 PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 
