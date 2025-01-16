@@ -145,3 +145,7 @@ records = true
 
 [keys]
 scroll_exits = false
+
+
+[dotfiles]
+enabled = true
