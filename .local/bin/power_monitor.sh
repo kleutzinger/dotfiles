@@ -38,7 +38,6 @@ while true; do
 	if [[ $prev != "$profile" ]]; then
 		echo setting power profile to $profile
 		powerprofilesctl set $profile
-    notify-send --expire-time=2000 "Power profile set to $profile"
 	fi
 
 	prev=$profile
