@@ -9,7 +9,7 @@ set -x
 DIRNAME=trilium-next
 
 cd $(mktemp --directory --suffix=trilium-update)
-dra download TriliumNext/Notes --tag v0.91.3-beta --automatic
+dra download TriliumNext/Notes --tag v0.91.4-beta --automatic
 unzip *.zip
 rm *.zip
 rm -rf ~/$DIRNAME
