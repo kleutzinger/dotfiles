@@ -10,8 +10,18 @@ import urllib.parse
 
 import click
 
-VID_EXTENSIONS = {".mkv", ".webm", ".mp4", ".m4v", ".webm", ".gif", ".m4a", ".wmv", ".mov"}
-IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp"}
+VID_EXTENSIONS = {
+    ".mkv",
+    ".webm",
+    ".mp4",
+    ".m4v",
+    ".webm",
+    ".gif",
+    ".m4a",
+    ".wmv",
+    ".mov",
+}
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".webp", ".svg"}
 PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 
 
@@ -22,20 +32,35 @@ PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 @click.option("--latest", is_flag=True, help="Sort by latest modified date")
 @click.option("--largest", is_flag=True, help="Sort by largest first")
 @click.option("--query", help="Search for files with a given query")
-def main(videos: bool, images: bool, all: bool, latest: bool, largest: bool, query: str) -> None:
+@click.option(
+    "--stdout", is_flag=True, help="just print the paths, one per line, do not play"
+)
+def main(
+    videos: bool,
+    images: bool,
+    all: bool,
+    latest: bool,
+    largest: bool,
+    query: str,
+    stdout: bool,
+) -> None:
+    def conditional_print(s: str) -> None:
+        if not stdout:
+            print(s)
+
     valid_extensions = set()
     if images:
-        click.echo("adding images")
+        conditional_print("adding images")
         valid_extensions.update(IMAGE_EXTENSIONS)
     if videos:
-        click.echo("adding videos")
+        conditional_print("adding videos")
         valid_extensions.update(VID_EXTENSIONS)
     if all:
-        click.echo("adding all")
+        conditional_print("adding all")
         valid_extensions.update(VID_EXTENSIONS)
         valid_extensions.update(IMAGE_EXTENSIONS)
     if not valid_extensions:
-        click.echo("defaulting to videos")
+        conditional_print("defaulting to videos")
         valid_extensions.update(VID_EXTENSIONS)
     if os.path.exists(PLAYLIST_FILE):
         os.remove(PLAYLIST_FILE)
@@ -57,9 +82,13 @@ def main(videos: bool, images: bool, all: bool, latest: bool, largest: bool, que
     vids = [urllib.parse.quote(vid) for vid in vids]
 
     with open(PLAYLIST_FILE, "w") as f:
-        f.write("\n".join(vids))
-    click.echo(f"Playing {len(vids)} videos in VLC")
-    subprocess.run(["vlc", "--quiet", "--playlist-autostart", PLAYLIST_FILE])
+        joined_paths = "\n".join(vids)
+        f.write(joined_paths)
+        if stdout:
+            print(joined_paths)
+    conditional_print(f"Playing {len(vids)} videos in VLC")
+    if not stdout:
+        subprocess.run(["vlc", "--quiet", "--playlist-autostart", PLAYLIST_FILE])
 
 
 if __name__ == "__main__":
