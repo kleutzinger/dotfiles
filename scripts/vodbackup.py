@@ -28,7 +28,7 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 @click.command()
 @click.argument("url")
 def main(url):
-    with tempfile.TemporaryDirectory(delete=False) as tmpdirname:
+    with tempfile.TemporaryDirectory() as tmpdirname:
         print("Created temporary directory", tmpdirname)
         os.chdir(tmpdirname)
         subprocess.run(["yt-dlp", url])
