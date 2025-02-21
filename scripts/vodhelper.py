@@ -368,8 +368,9 @@ def get_desc(trny: dict, vods: list[dict], pic_offset: int = 5) -> tuple[str, st
 
 def main():
     if "e" in sys.argv:
-        input('start render? (will overwrite stuff in "corrected" and "final)')
+        # execute populated yamls and kick off rendering
         ymls = [i for i in os.listdir() if i.endswith(".yml")]
+        input(f'start render? (will overwrite stuff in "corrected" and "final).\n{len(ymls)} ymls files found')
         if TRNY_YAML_NAME in ymls:
             ymls.remove(TRNY_YAML_NAME)
         execute_ymls(ymls, preview_only="s" in sys.argv)
@@ -383,6 +384,7 @@ def main():
             f.write(desc[1])
         exit(0)
 
+    # preprocess videos, add metadata. Idempotent probably.
     if not os.path.exists(TRNY_YAML_NAME):
         print(f"no {TRNY_YAML_NAME} found, creating")
         init_tourney_yaml()
