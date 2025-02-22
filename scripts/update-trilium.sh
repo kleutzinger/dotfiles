@@ -9,7 +9,7 @@ set -x
 DIRNAME=trilium-next
 
 cd $(mktemp --directory --suffix=trilium-update)
-dra download TriliumNext/Notes --tag v0.91.6 # TODO: restore non-interactivity
+dra download TriliumNext/Notes --tag v0.92.2-beta # TODO: restore non-interactivity
 unzip *.zip
 rm *.zip
 rm -rf ~/$DIRNAME
