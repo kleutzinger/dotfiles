@@ -5,11 +5,14 @@
 set -e
 set -x
 
+TAG="v0.92.2-beta"
+
 # this is the dir in the home directory where the trilium-next will be installed
 DIRNAME=trilium-next
+DL_URL="https://github.com/TriliumNext/Notes/releases/download/$TAG/TriliumNextNotes-$TAG-linux-x64.zip"
 
 cd $(mktemp --directory --suffix=trilium-update)
-dra download TriliumNext/Notes --tag v0.92.2-beta # TODO: restore non-interactivity
+wget --verbose $DL_URL
 unzip *.zip
 rm *.zip
 rm -rf ~/$DIRNAME
