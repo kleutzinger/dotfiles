@@ -45,11 +45,11 @@ def send(files):
     with open(MANIFEST_NAME, "w") as f:
         json.dump(manifest, f, indent=4)
     print(json.dumps(manifest, indent=4))
-    files += [MANIFEST_NAME]
     print("Sending files: ", files)
     files += [MANIFEST_NAME]
     cmd = ["croc", "send"] + files
     print(cmd)
+    print("on the other end run `sendfiles.py rec <code>`")
     subprocess.run(cmd)
     # clean up manifest file
     os.remove(MANIFEST_NAME)
