@@ -1,14 +1,17 @@
 import subprocess
 import requests
-from typing import Any, Callable, Iterable, Optional
+from typing import Any, Callable, Iterable, Optional, TypeVar
 import os
 import sys
 import asyncio
 from pprint import pprint
 
 
+T = TypeVar("T")
 
-def identity(x: Any) -> Any:
+
+def identity(x: T) -> T:
+    "return the input unchanged"
     return x
 
 
@@ -22,7 +25,9 @@ def fzf_iterable(iterable: Iterable) -> str:
     input_str = "\n".join(str(item) for item in iterable)
 
     # Call fzf and get the chosen value
-    with subprocess.Popen(fzf_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True) as proc:
+    with subprocess.Popen(
+        fzf_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True
+    ) as proc:
         stdout, _ = proc.communicate(input_str)
         return stdout.strip()
 
@@ -53,6 +58,7 @@ def get_url(url: str, execute_js: bool = False):
     thanks to https://pypi.org/project/requests-html/
     """
     from requests_html import HTMLResponse, HTMLSession
+
     html_session = HTMLSession()
     req = html_session.get(url)
     if execute_js:
@@ -108,7 +114,7 @@ def fetch_url_with_retry(
     return None  # Return None if all retry attempts fail
 
 
-def insertIntoPocketBase(record: dict = {}, db_name: str = '') -> None:
+def insertIntoPocketBase(record: dict = {}, db_name: str = "") -> None:
     """
     Insert a record into PocketBase, specifically the bandcamps collection
 
