@@ -3,7 +3,7 @@
 #__RUN0__# pushd ~/scripts/vods; vodhelper.py; popd
 #__RUN1__# pushd ~/scripts/vods/vods2; vodhelper.py; popd
 
-This is for super smash bros melee replay vod collection to get onto youtube. 
+This is for super smash bros melee replay vod collection to get onto youtube.
 
 see my side streams here:
 https://www.youtube.com/watch?v=GE6oQ_OQUjc&list=PL6XKQrv4qTdM8IZMSjCJXn5AXFo601x3J
@@ -104,11 +104,18 @@ def get_vod_duration_ms(vodpath: str) -> float:
     # example: 515367
 
 
-def init_tourney_yaml() -> str:
+def init_tourney_yaml() -> dict:
     """
     returns path of yaml
     """
 
+    for i in get_ts_mp4_paths():
+        if i.count("-") < 1:
+            print(
+                f"bad video filename, should be in the form VIDEONAME-opponent.mp4: {i}"
+            )
+            exit(1)
+    # VIDEONAME-opponent.mp4
     now = datetime.datetime.today() - datetime.timedelta(hours=20)
     guess_time = now.strftime("%Y-%m-%d")
     nTime = input(
@@ -121,12 +128,6 @@ def init_tourney_yaml() -> str:
     # get number of vods in directory, aka the number of opponents
     mp4_count = len(get_ts_mp4_paths())
     print(f"found {mp4_count} vods")
-    #verify there's at least one slash in each filename
-    for i in get_ts_mp4_paths():
-        if i.count("-") < 1:
-            print(f"bad filename, should be in the form VIDEONAME-opponent.mp4: {i}")
-            exit(1)
-    # VIDEONAME-opponent.mp4
     getname = lambda x: os.path.splitext(os.path.basename(x))[0].split("-")[-1]
     opponents = [getname(i) for i in get_ts_mp4_paths()]
     base_yaml = dict(tournament_url=trny_url, date=nTime, opponents=opponents)
@@ -370,7 +371,9 @@ def main():
     if "e" in sys.argv:
         # execute populated yamls and kick off rendering
         ymls = [i for i in os.listdir() if i.endswith(".yml")]
-        input(f'start render? (will overwrite stuff in "corrected" and "final).\n{len(ymls)} ymls files found')
+        input(
+            f'start render? (will overwrite stuff in "corrected" and "final).\n{len(ymls)} ymls files found'
+        )
         if TRNY_YAML_NAME in ymls:
             ymls.remove(TRNY_YAML_NAME)
         execute_ymls(ymls, preview_only="s" in sys.argv)
