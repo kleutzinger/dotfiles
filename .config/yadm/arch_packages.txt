@@ -111,6 +111,7 @@ yad
 yarn
 yaycache-hook
 youtube-music-bin
+youtubeuploader-bin
 yt-dlp
 zellij
 zenity
