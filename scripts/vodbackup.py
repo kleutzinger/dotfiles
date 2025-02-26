@@ -28,25 +28,26 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 @click.command()
 @click.argument("url")
 def main(url):
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        print("Created temporary directory", tmpdirname)
-        os.chdir(tmpdirname)
-        subprocess.run(["yt-dlp", url])
-        # copy secrets to current dir
-        shutil.copy(CLIENT_SECRETS_PATH, tmpdirname)
-        shutil.copy(CLIENT_TOKEN_PATH, tmpdirname)
-        for file in os.listdir(tmpdirname):
-            if file.endswith(".mp4"):
-                print("Uploading", file)
-                subprocess.run(
-                    [
-                        "youtubeuploader",
-                        "-filename",
-                        file,
-                        "-privacy",
-                        "unlisted",
-                    ]
-                )
+    alnum_url = "".join([c for c in url if c.isalnum()])
+    tmpdirname = tempfile.mkdtemp(prefix=f"vodbackup-{alnum_url}-")
+    print("Created temporary directory", tmpdirname)
+    os.chdir(tmpdirname)
+    subprocess.run(["yt-dlp", url])
+    # copy secrets to current dir
+    shutil.copy(CLIENT_SECRETS_PATH, tmpdirname)
+    shutil.copy(CLIENT_TOKEN_PATH, tmpdirname)
+    for file in os.listdir(tmpdirname):
+        if file.endswith(".mp4"):
+            print("Uploading", file)
+            subprocess.run(
+                [
+                    "youtubeuploader",
+                    "-filename",
+                    file,
+                    "-privacy",
+                    "unlisted",
+                ]
+            )
 
 
 if __name__ == "__main__":
