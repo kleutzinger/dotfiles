@@ -26,13 +26,22 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 
 
 @click.command()
-@click.argument("url")
-def main(url):
-    alnum_url = "".join([c for c in url if c.isalnum()])
+@click.argument("url_or_path")
+@click.option(
+    "--cleanup", is_flag=True, help="Delete the downloaded file after uploading"
+)
+def main(url_or_path: str, cleanup: bool = False):
+    alnum_url = "".join([c for c in url_or_path if c.isalnum()])
     tmpdirname = tempfile.mkdtemp(prefix=f"vodbackup-{alnum_url}-")
     print("Created temporary directory", tmpdirname)
-    os.chdir(tmpdirname)
-    subprocess.run(["yt-dlp", url])
+    # check if url is is a local absolute path that exists
+    if os.path.exists(url_or_path):
+        shutil.copy(url_or_path, tmpdirname)
+        print(f"Copied local file {url_or_path} to {tmpdirname}")
+        os.chdir(tmpdirname)
+    else:
+        os.chdir(tmpdirname)
+        subprocess.run(["yt-dlp", url_or_path])
     # copy secrets to current dir
     shutil.copy(CLIENT_SECRETS_PATH, tmpdirname)
     shutil.copy(CLIENT_TOKEN_PATH, tmpdirname)
@@ -46,8 +55,15 @@ def main(url):
                     file,
                     "-privacy",
                     "unlisted",
+                    "-description",
+                    "Find all my vods at https://vods.kevbot.xyz",
                 ]
             )
+    if cleanup:
+        # delete all files in tempdir
+        for file in os.listdir(tmpdirname):
+            os.remove(file)
+        print(f"Deleted all files in {tmpdirname}")
 
 
 if __name__ == "__main__":
