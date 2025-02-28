@@ -128,9 +128,13 @@ super + u
 super + slash
     sxhkhmenu
 
-# press the enter key
+# activate vscode
 super + b
     xdotool search "Visual Studio Code" windowactivate
+
+# activate or launch discord
+super + d
+    xdotool search --name " Discord" windowactivate || discord
 
 super + shift + t
     normcap --tray False
