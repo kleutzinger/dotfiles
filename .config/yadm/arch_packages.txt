@@ -38,6 +38,7 @@ intel-media-driver
 jq
 killport
 kitty
+lazydocker-bin
 lazygit
 lice-git
 marked
