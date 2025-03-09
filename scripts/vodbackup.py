@@ -32,21 +32,22 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 )
 def main(url_or_path: str, cleanup: bool = False):
     alnum_url = "".join([c for c in url_or_path if c.isalnum()])
-    tmpdirname = f"vodbackup-{alnum_url}"
-    os.mkdir(tmpdirname)
-    print("Created temporary directory", tmpdirname)
+    tmpdirpath = f"vodbackup-{alnum_url}"
+    os.mkdir(tmpdirpath)
+    tmpdirpath = os.path.abspath(tmpdirpath)
+    print("Created temporary directory", tmpdirpath)
     # check if url is is a local absolute path that exists
     if os.path.exists(url_or_path):
-        shutil.copy(url_or_path, tmpdirname)
-        print(f"Copied local file {url_or_path} to {tmpdirname}")
-        os.chdir(tmpdirname)
+        shutil.copy(url_or_path, tmpdirpath)
+        print(f"Copied local file {url_or_path} to {tmpdirpath}")
+        os.chdir(tmpdirpath)
     else:
-        os.chdir(tmpdirname)
+        os.chdir(tmpdirpath)
         subprocess.run(["yt-dlp", url_or_path])
     # copy secrets to current dir
-    shutil.copy(CLIENT_SECRETS_PATH, tmpdirname)
-    shutil.copy(CLIENT_TOKEN_PATH, tmpdirname)
-    for file in os.listdir(tmpdirname):
+    shutil.copy(CLIENT_SECRETS_PATH, tmpdirpath)
+    shutil.copy(CLIENT_TOKEN_PATH, tmpdirpath)
+    for file in os.listdir(tmpdirpath):
         if file.endswith(".mp4"):
             print("Uploading", file)
             subprocess.run(
@@ -62,9 +63,9 @@ def main(url_or_path: str, cleanup: bool = False):
             )
     if cleanup:
         # delete all files in tempdir
-        for file in os.listdir(tmpdirname):
+        for file in os.listdir(tmpdirpath):
             os.remove(file)
-        print(f"Deleted all files in {tmpdirname}")
+        print(f"Deleted all files in {tmpdirpath}")
 
 
 if __name__ == "__main__":
