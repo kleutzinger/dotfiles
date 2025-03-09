@@ -331,22 +331,6 @@ def execute_ymls(yaml_paths: list[str], preview_only=False):
         run(split(ffmpeg_cmd))
         with open(vids_txt, "a") as f:
             f.write(f"file {vod['output_path']}\n")
-    os.makedirs("final", exist_ok=True)
-    final_output_path = os.path.join("final", f"final_{time.time()}.mp4")
-    # cmd = f"ffmpeg -f concat -safe 0 -i {vids_txt} {final_output_path}"
-    mp4list = " ".join(
-        sorted(
-            [
-                os.path.join("corrected", i)
-                for i in os.listdir("corrected")
-                if i.endswith("mp4")
-            ]
-        )
-    )
-    cmd = f"ls"
-    print(cmd)
-    run(split(cmd))
-    run(["mpv", final_output_path])
 
 
 def get_desc(trny: dict, vods: list[dict], pic_offset: int = 5) -> tuple[str, str]:
@@ -370,9 +354,9 @@ def get_desc(trny: dict, vods: list[dict], pic_offset: int = 5) -> tuple[str, st
 def main():
     if "e" in sys.argv:
         # execute populated yamls and kick off rendering
-        ymls = [i for i in os.listdir() if i.endswith(".yml")]
+        ymls = [i for i in os.listdir() if i.endswith(".yml") and i != TRNY_YAML_NAME]
         input(
-            f'start render? (will overwrite stuff in "corrected" and "final).\n{len(ymls)} ymls files found'
+            f'start render? (will overwrite stuff in "./corrected").\n{len(ymls)} ymls files found'
         )
         if TRNY_YAML_NAME in ymls:
             ymls.remove(TRNY_YAML_NAME)
