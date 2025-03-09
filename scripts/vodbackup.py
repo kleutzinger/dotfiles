@@ -32,7 +32,8 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 )
 def main(url_or_path: str, cleanup: bool = False):
     alnum_url = "".join([c for c in url_or_path if c.isalnum()])
-    tmpdirname = tempfile.mkdtemp(prefix=f"vodbackup-{alnum_url}-")
+    tmpdirname = f"vodbackup-{alnum_url}"
+    os.mkdir(tmpdirname)
     print("Created temporary directory", tmpdirname)
     # check if url is is a local absolute path that exists
     if os.path.exists(url_or_path):
