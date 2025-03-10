@@ -5,7 +5,7 @@
 set -e
 set -x
 
-TAG="v0.92.2-beta"
+TAG="v0.92.3-beta"
 
 # this is the dir in the home directory where the trilium-next will be installed
 DIRNAME=trilium-next
