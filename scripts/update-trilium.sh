@@ -6,6 +6,10 @@ set -e
 set -x
 
 TAG=$(gh release list --repo TriliumNext/Notes --json tagName,publishedAt --jq '.[] | .tagName + "      " + .publishedAt' | fzf | awk '{print $1}')
+if [ -z "$TAG" ]; then
+    # tag unset, exit
+    exit 1
+fi
 
 # this is the dir in the home directory where the trilium-next will be installed
 INSTALL_DIR=trilium-next
