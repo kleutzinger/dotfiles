@@ -33,6 +33,11 @@ def ul_li_to_nice(htmlstr: str):
     return out
 
 
+def trim_line(text: str):
+    "for each line remove everything before first space including the space"
+    return "\n".join([line[line.find(" ") + 1 :] for line in text.split("\n")])
+
+
 @click.command()
 @click.option("--notification", "-n", is_flag=True, help="send a notification after")
 @click.option("--list", "-l", is_flag=True, help="list all food")
@@ -43,9 +48,11 @@ def main(notification, list, food):
     else:
         food = " ".join(food)
         response = requests.post(ENDPOINT, data={"food": food})
+    output = ul_li_to_nice(response.text)
+    output = trim_line(output)
     if notification:
-        subprocess.run(["notify-send", "Food Journal", ul_li_to_nice(response.text)])
-    print(ul_li_to_nice(response.text))
+        subprocess.run(["notify-send", "Food Journal", output])
+    print(output)
 
 
 main()
