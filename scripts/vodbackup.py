@@ -30,7 +30,12 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 @click.option(
     "--cleanup", is_flag=True, help="Delete the downloaded file after uploading"
 )
-def main(url_or_path: str, cleanup: bool = False):
+# add an option to specify bracket-url
+@click.option(
+    "--bracket-url",
+    help="Bracket URL to use for the upload, if not specified, will use the default bracket URL",
+)
+def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
     alnum_url = "".join([c for c in url_or_path if c.isalnum()])
     tmpdirpath = f"vodbackup-{alnum_url}"
     os.mkdir(tmpdirpath)
@@ -50,6 +55,9 @@ def main(url_or_path: str, cleanup: bool = False):
     for file in os.listdir(tmpdirpath):
         if file.endswith(".mp4"):
             print("Uploading", file)
+            description_text = "Find all my vods at https://vods.kevbot.xyz"
+            if bracket_url:
+                description_text += f"\nBracket URL: {bracket_url}"
             subprocess.run(
                 [
                     "youtubeuploader",
@@ -58,7 +66,7 @@ def main(url_or_path: str, cleanup: bool = False):
                     "-privacy",
                     "unlisted",
                     "-description",
-                    "Find all my vods at https://vods.kevbot.xyz",
+                    description_text,
                 ]
             )
     if cleanup:
