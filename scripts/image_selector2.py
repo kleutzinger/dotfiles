@@ -22,7 +22,11 @@ class Api:
         self._window = window
 
     def log(self, value):
-        print(value)
+        import subprocess
+
+        # notify-send the output
+        subprocess.run(["notify-send", "Image selected", value])
+        print(value, flush=True)
         exit()
 
     def quit(self):
