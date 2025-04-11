@@ -60,9 +60,10 @@ function hoursAgo(date) {
 const EQUIV_PATH_ARR = [
   os.homedir(),
   "/home/kevin",
+  "/Volumes/orico",
   "/run/media/kevin/orico",
   "/run/media/kevin/tosh",
-].filter(fs.existsSync); // only keep the directories that exist
+];
 
 // check if list in argv
 if (process.argv.includes("list") || process.argv.includes("--list")) {
