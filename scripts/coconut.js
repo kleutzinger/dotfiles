@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { $ } from "bun";
 import PocketBase from "pocketbase";
+import PQueue from "p-queue";
 
 var Cache = require("sync-disk-cache");
 var cache = new Cache("my-cache");
@@ -61,7 +62,7 @@ const EQUIV_PATH_ARR = [
   "/home/kevin",
   "/run/media/kevin/orico",
   "/run/media/kevin/tosh",
-];
+].filter(fs.existsSync); // only keep the directories that exist
 
 // check if list in argv
 if (process.argv.includes("list") || process.argv.includes("--list")) {
@@ -80,39 +81,56 @@ if (process.argv.includes("list") || process.argv.includes("--list")) {
     }
     const createdDateTime = new Date(record.created);
     record.timeAgo = `(${hoursAgo(createdDateTime)}) ${relativeTime(createdDateTime)}`;
-    record = pathfinder(record);
   }
+  const resolved_records = await concurrentPathFinder(records);
 
-  console.log(JSON.stringify(records, null, 2));
+  console.log(JSON.stringify(resolved_records, null, 2));
   process.exit(0);
 }
 
-function pathfinder(record) {
-  /*
-   * Given a record with a path, check if the file exists.
-   * If it does, return the record as is.
-   * If it doesn't, check if the file exists in any of the EQUIV_PATH_ARR directories.
-   * If it does, return the record with the new path.
-   */
-  const { path } = record;
-  if (fs.existsSync(path)) {
-    record.exists = true;
-    return record;
-  }
-  const present_prefix = EQUIV_PATH_ARR.find((x) => path.startsWith(x));
-  // now try to see if the file exists replacing the current path's prefix with the present_prefix
-  if (present_prefix) {
-    for (const equivalent_path of EQUIV_PATH_ARR) {
-      const new_path = path.replace(present_prefix, equivalent_path);
-      if (fs.existsSync(new_path)) {
-        record.path = new_path;
-        record.exists = true;
-        return record;
+async function concurrentPathFinder(records) {
+  const queue = new PQueue({ concurrency: 20 }); // Adjust concurrency as needed
+  const pathMap = new Map(); // Map to store resolved paths
+  const uniquePaths = new Set(records.map((record) => record.path)); // Deduplicate paths
+
+  // Helper function to resolve a path
+  async function resolvePath(originalPath) {
+    if (pathMap.has(originalPath)) {
+      return pathMap.get(originalPath);
+    }
+
+    if (fs.existsSync(originalPath)) {
+      pathMap.set(originalPath, { path: originalPath, exists: true });
+      return pathMap.get(originalPath);
+    }
+
+    const presentPrefix = EQUIV_PATH_ARR.find((x) =>
+      originalPath.startsWith(x),
+    );
+    if (presentPrefix) {
+      for (const equivalentPath of EQUIV_PATH_ARR) {
+        const newPath = originalPath.replace(presentPrefix, equivalentPath);
+        if (fs.existsSync(newPath)) {
+          pathMap.set(originalPath, { path: newPath, exists: true });
+          return pathMap.get(originalPath);
+        }
       }
     }
+
+    pathMap.set(originalPath, { path: originalPath, exists: false });
+    return pathMap.get(originalPath);
   }
-  record.exists = false;
-  return record;
+
+  // Queue tasks for resolving paths
+  await Promise.all(
+    Array.from(uniquePaths).map((path) => queue.add(() => resolvePath(path))),
+  );
+
+  // Update records with resolved paths
+  return records.map((record) => {
+    const resolved = pathMap.get(record.path);
+    return { ...record, ...resolved };
+  });
 }
 
 function hhmmssToSec(str) {
