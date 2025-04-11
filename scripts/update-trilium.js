@@ -34,6 +34,27 @@ console.dir(release.name);
 
 let installDir;
 let asset;
+if (currentOS.isOSX) {
+  const assetName = `TriliumNextNotes-${tagName}-macos-arm64.dmg`;
+  asset = release.assets.find((a) => {
+    return a.name === assetName;
+  });
+  if (!asset) {
+    console.error("no asset found " + assetName);
+    process.exit(1);
+  }
+  const DL_URL = asset.browser_download_url;
+  await Bun.spawnSync({
+    cmd: ["curl", "-L", "-o", assetName, DL_URL],
+    cwd: os.homedir() + "/Desktop",
+  });
+  const outputPath = os.homedir() + "/Desktop/" + assetName;
+  await Bun.spawnSync({
+    cmd: ["open", outputPath],
+    cwd: os.homedir() + "/Desktop",
+  });
+}
+
 if (currentOS.isWindows) {
   // download the latest windows release to Desktop
   /*
