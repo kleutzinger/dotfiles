@@ -6,6 +6,7 @@ back up my local trilium db to a gzipped file
 import os
 import subprocess
 import datetime
+from pprint import pprint
 import urllib.request
 import json
 
@@ -16,9 +17,19 @@ DEPLOYED_ENDPOINT = "https://tril.kevbot.xyz/custom/version"
 def main():
     # check if /home/kevin/.local/share/trilium-data/document.db exists
     home = os.path.expanduser("~")
-    trilium_db = os.path.join(home, ".local/share/trilium-data/document.db")
-    if not os.path.exists(trilium_db):
-        print(f"{trilium_db} does not exist")
+    possible_paths = [
+        os.path.join(home, ".local/share/trilium-data/document.db"),  # linux
+        os.path.join(
+            home, "Library/Application Support/trilium-data/document.db"  # mac
+        ),
+    ]
+    for pathmaybe in possible_paths:
+        if os.path.exists(pathmaybe):
+            trilium_db = pathmaybe
+            break
+    else:
+        print("could not find trilium db at any of the following paths")
+        pprint(possible_paths)
         exit(1)
     print(f"Backing up {trilium_db}")
     version = "unknown"
