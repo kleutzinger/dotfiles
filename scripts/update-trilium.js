@@ -18,39 +18,45 @@ function iterPicker(iterable, displayFunc) {
   for (let i = 0; i < arr.length; i++) {
     console.log(i, displayFunc(arr[i]));
   }
-  const index = parseInt(prompt("choose index: "));
+  const index = parseInt(prompt("choose index:") || 0);
   return arr[index];
 }
 
 // use json api to get all releases
 const response = await fetch(
-  `https://api.github.com/repos/TriliumNext/Notes/releases`,
+  `https://api.github.com/repos/TriliumNext/Notes/releases`
 );
 
-const data = (await response.json()).slice(0, 10);
+const data = (await response.json()).slice(0, 5);
 const release = iterPicker(data, (r) => `${r.tag_name} \t\t ${r.published_at}`);
 const tagName = release.tag_name;
 console.dir(release.name);
 
 let installDir;
 let asset;
-if (currentOS.isLinux) {
-  `
-  cd $(mktemp --directory --suffix=trilium-update)
-  wget --verbose $DL_URL
-  unzip *.zip
-  rm *.zip
-  rm -rf ~/$INSTALL_DIR
-  mv * ~/trilium-next
-  # ensure symlink to ~/.local/bin/trilium
-  rm -f ~/.local/bin/trilium
-  ln -sf ~/$INSTALL_DIR/trilium ~/.local/bin/trilium
-  `;
-
-  // get asset with name of form TriliumNextNotes-v0.92.7-linux-x64.zip
-  const zipname = `TriliumNextNotes-${tagName}-linux-x64.zip`;
+if (currentOS.isWindows) {
+  // download the latest windows release to Desktop
+  /*
+  cd C:\Users\kevin\Documents\GitHub\dotfiles\ ; git pull ; bun run scripts\update-trilium.js
+  */
+  const assetName = `TriliumNextNotes-${tagName}-windows-x64.exe`;
   asset = release.assets.find((a) => {
-    return a.name === zipname;
+    return a.name === assetName;
+  });
+  const DL_URL = asset.browser_download_url;
+  Bun.spawnSync({
+    cmd: ["curl", "-L", "-o", assetName, DL_URL],
+    cwd: os.homedir() + "/Desktop",
+  });
+  // open the new executable
+  // Bun.spawnSync({ cmd: ["./" + assetName], cwd: os.homedir() + "/Desktop" });
+  console.log("done! please double click the file on your desktop to install.");
+}
+if (currentOS.isLinux) {
+  // get asset with name of form TriliumNextNotes-v0.92.7-linux-x64.zip
+  const assetName = `TriliumNextNotes-${tagName}-linux-x64.zip`;
+  asset = release.assets.find((a) => {
+    return a.name === assetName;
   });
 
   installDir = os.homedir() + "/trilium-next";
@@ -62,8 +68,8 @@ if (currentOS.isLinux) {
   const path = tmpobj.name + "/" + DL_FILE;
   Bun.spawnSync({ cmd: ["wget", "--verbose", DL_URL], cwd: tmpobj.name });
   Bun.spawnSync({ cmd: ["unzip", path], cwd: tmpobj.name });
-  Bun.spawnSync({ cmd: ['rm', '*.zip'], cwd: tmpobj.name });
+  Bun.spawnSync({ cmd: ["rm", "*.zip"], cwd: tmpobj.name });
   await $`rm -rf ${installDir}`;
-  Bun.spawnSync({ cmd: ["mv", "*", installDir], cwd: tmpobj.name });
+  Bun.spawnSync({ cmd: ["mv", "*", installDir], cwd: tmpobj.name }); // this is broken
   console.log("done");
 }
