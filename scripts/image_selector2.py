@@ -27,10 +27,10 @@ class Api:
         # notify-send the output
         subprocess.run(["notify-send", "Image selected", value])
         print(value, flush=True)
-        exit()
 
     def quit(self):
         self._window.destroy()
+        exit()
 
 
 html = f"""
