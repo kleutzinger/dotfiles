@@ -136,7 +136,7 @@ set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn
 if test (uname -n) = kevbot.xyz
   set --export BUN_INSTALL "$HOME/.bun"
   set --export PATH $BUN_INSTALL/bin $PATH
-elseif test (uname -s) = Linux
+else if test (uname -s) = Linux
   # this is for rootless docker
   set -gx DOCKER_HOST unix://$XDG_RUNTIME_DIR/docker.sock
   set -gx PATH $HOME/.bun/bin $PATH
