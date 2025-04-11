@@ -1,12 +1,29 @@
 #!/usr/bin/env bun
+/*
 
-// this file only kind of sort of works on linux, don't use
+usage:
+  bun run update-trilium.js
+
+dependencies:
+  bun.js: https://bun.sh/docs/installation
+
+The point of this script is to download the latest release of TriliumNext
+and facilitate the installation process.
+
+Check out TrilumNext here: https://github.com/TriliumNext/Notes
+
+This script should work on macOS (m-series), Windows, and Linux.
+
+The reason I don't just use a package manager to install TriliumNext is
+because I want to be able to install pre-releases as soon as they come out
+on GitHub. Package managers don't usually have pre-releases.
+
+*/
 
 var currentOS = require("current-os");
 const os = require("os");
 const tmp = require("tmp");
 import { $ } from "bun";
-const mvdir = require("mvdir");
 
 function iterPicker(iterable, displayFunc) {
   // print all elements in the iterable, have user provide index, and return the
