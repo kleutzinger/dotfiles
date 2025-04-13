@@ -109,10 +109,13 @@ super + shift + b
 
 # grid overlay on screen
 super + shift + h
-  $HOME/scripts/grid_overlay.py
+    $HOME/scripts/grid_overlay.py
 
-# select a window
 super + Tab
+    skippy-xd --expose
+
+# select a window by typing
+super + shift + Tab
     $HOME/scripts/window-select.sh
 
 # toggle caps lock
