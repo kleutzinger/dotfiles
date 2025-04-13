@@ -96,6 +96,9 @@ super + l
 super + p
     lxrandr
 
+super + v
+    notify-send "super + shift + V"
+
 # open clipboard history
 super + shift + v
     xfce4-clipman-history
