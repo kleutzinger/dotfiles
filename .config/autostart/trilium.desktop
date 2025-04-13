@@ -2,12 +2,12 @@
 Encoding=UTF-8
 Version=0.9.4
 Type=Application
-Name=syncthing
+Name=trilium
 Comment=
-Exec=syncthing --no-browser
+Exec=trilium
 OnlyShowIn=XFCE;
 RunHook=0
 StartupNotify=false
 Terminal=false
-Hidden=true
+Hidden=false
 
