@@ -74,9 +74,11 @@ radiotray-ng
 rclone
 redshift
 rofi
+ruby-fusuma
 ruff
 scrot
 sdcv
+skippy-xd-git
 slock
 sqlitebrowser
 stardict

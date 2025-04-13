@@ -1,0 +1,6 @@
+swipe:
+  3:
+    up:
+      command: "skippy-xd --expose"
+    down:
+      command: "skippy-xd --paging"
