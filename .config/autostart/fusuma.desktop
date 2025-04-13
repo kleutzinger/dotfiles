@@ -4,7 +4,7 @@ Version=0.9.4
 Type=Application
 Name=fusuma
 Comment=fusuma
-Exec=fusuma --daemon
+Exec=fusuma --daemon --log=/tmp/fusuma.log
 OnlyShowIn=XFCE;
 RunHook=0
 StartupNotify=false
