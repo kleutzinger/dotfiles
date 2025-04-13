@@ -56,10 +56,6 @@ super + n
 super + e
     thunar
 
-# open blog
-super + shift + b
-    fish -c 'blog.fish'
-
 # play a song
 super + shift + m
     terminator -e "~/scripts/music-history/song.py"
@@ -83,9 +79,6 @@ super + c
 super + shift + c
     setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl && notify-send 'colemak enabled'
 
-# Disconnect from PS4 controller
-super + shift + b
-    bluetoothctl -- disconnect 1C:66:6D:C4:DD:FA && notify-send -t 1000 "Disconnected from Dualshock 4"
 
 # Put computer to sleep
 super + s
@@ -104,13 +97,12 @@ super + p
     lxrandr
 
 # open clipboard history
-super + v
+super + shift + v
     xfce4-clipman-history
 
 # modify clipboard in editor
-super + shift + v
+super + shift + b
     terminator -e "~/scripts/edit-clipboard.sh"
-
 
 # grid overlay on screen
 super + shift + h
