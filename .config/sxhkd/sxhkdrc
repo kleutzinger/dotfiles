@@ -10,7 +10,7 @@ super + w
 
 # log food
 super + shift + f
-    food --notification $(zenity --text=food --entry)
+    food --notification $(yad --text=food --entry)
 
 # find my phone
 super + shift + w
