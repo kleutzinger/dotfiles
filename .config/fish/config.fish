@@ -20,7 +20,6 @@ set -gx QT_SCALE_FACTOR 2
 set -gx FZF_DEFAULT_OPTS '--height 75% --layout=reverse --border'
 
 
-alias p="xsel -ob"
 alias bunx="bun x"
 source $HOME/.config/fish/abbrs.fish
 if test -e $HOME/rescale/env.fish
