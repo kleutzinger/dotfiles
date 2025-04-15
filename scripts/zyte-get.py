@@ -25,6 +25,7 @@ api_response = requests.post(
         "browserHtml": True,
     },
 )
+print(api_response.json())
 browser_html: str = api_response.json()["browserHtml"]
 with open(OUTPUT_FILE, "w") as fp:
     fp.write(browser_html)
