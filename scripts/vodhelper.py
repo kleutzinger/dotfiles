@@ -124,20 +124,25 @@ def init_tourney_yaml() -> dict:
     if not nTime:
         nTime = guess_time
     print("assuming trny date today", nTime)
-    endpoint = 'https://tril.kevbot.xyz/custom/brackets'
+    endpoint = "https://tril.kevbot.xyz/custom/brackets"
     # fetch endpoint with vanilla python
     import urllib.request
     import json
+
     req = urllib.request.urlopen(endpoint)
-    brackets = json.loads(req.read().decode('utf-8'))
+    brackets = json.loads(req.read().decode("utf-8"))
     # brackets is an array of dicts,  find dict with "date" == nTame
-    bracket = brackets.find(lambda x: x["date"] == nTime)
-    if not bracket:
-        print(f"no start.gg url found for {nTime}")
-        trny_url = input("start.gg url:")
-    else:
-        trny_url = bracket["url"]
-        print(f"found start.gg url: {trny_url}")
+    try:
+        bracket = list(filter(lambda x: x.get("Date") == nTime, brackets))[0]
+    except IndexError:
+        bracket = None
+        guess_trny_url = None
+    if bracket:
+        guess_trny_url = bracket.get("BracketUrl")
+        print(f"found start.gg url: {guess_trny_url}")
+    trny_url = input(
+        f"what is the tournament url? \nmy guess is {guess_trny_url}\ninput something else if not:\n"
+    )
     # get number of vods in directory, aka the number of opponents
     mp4_count = len(get_ts_mp4_paths())
     print(f"found {mp4_count} vods")
