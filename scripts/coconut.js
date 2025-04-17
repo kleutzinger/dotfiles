@@ -63,6 +63,7 @@ const EQUIV_PATH_ARR = [
   "/Volumes/orico",
   "/run/media/kevin/orico",
   "/run/media/kevin/tosh",
+  "/Users/kevin",
 ];
 
 // check if list in argv
