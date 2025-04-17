@@ -3,18 +3,19 @@ import os
 import plistlib
 import re
 import subprocess
+import pathlib
 import sys
 from json import dumps
 from urllib.parse import unquote
 
 LINUX_CONFIG_PATH = os.path.expanduser("~/.config/vlc/vlc-qt-interface.conf")
 MAC_CONFIG_PATH = os.path.expanduser("~/Library/Preferences/org.videolan.vlc.plist")
+WINDOWS_CONFIG_PATH = os.path.expanduser(r"~\AppData\Roaming\vlc\vlc-qt-interface.ini")
 
 
-def recent_and_time_linux() -> tuple[str, int]:
-    config_file_path = os.path.expanduser(LINUX_CONFIG_PATH)
+def recent_and_time_linux_or_win(config_file_path:str) -> tuple[str, int]:
     if not os.path.exists(config_file_path):
-        print("VLC configuration file not found.")
+        print(f"VLC configuration file not found at {config_file_path}")
         sys.exit(1)
 
     recent_line, times_line = "", ""
@@ -63,18 +64,28 @@ def get_recent_played_vlc() -> tuple[str, int]:
     if sys.platform == "darwin":
         return recent_and_time_mac()
     elif sys.platform.startswith("linux"):
-        return recent_and_time_linux()
+        return recent_and_time_linux_or_win(LINUX_CONFIG_PATH)
+    elif sys.platform.startswith("win"):
+        return recent_and_time_linux_or_win(WINDOWS_CONFIG_PATH)
     else:
-        print("Unsupported operating system.")
+        print(f"Unsupported operating system. {sys.platform} detected")
         sys.exit(1)
 
 
 def recent_played_vlc():
     json = "--json" in sys.argv
     recent, time = get_recent_played_vlc()
-    path = re.sub(r"^file://", "", unquote(recent))
-    # replace any instances of '/./' with '/'
-    path = re.sub(r"/\./", "/", path)
+    if sys.platform.startswith("win"):
+        # example: file:///C:/Users/kevin/Videos/2025-04-13%2016-23-15.mp4
+        raw_path = re.sub(r"^file:///", "", unquote(recent))
+    else:
+        raw_path = re.sub(r"^file://", "", unquote(recent))
+        # replace any instances of '/./' with '/'
+        raw_path = re.sub(r"/\./", "/", raw_path)
+    path = pathlib.Path(raw_path)
+    if not os.path.exists(path):
+        print(f"File not found: {path}")
+        sys.exit(1)
 
     duration_cmd = [
         "ffprobe",
@@ -98,13 +109,13 @@ def recent_played_vlc():
         output = {
             "uri": recent,
             "sec": time,
-            "path": path,
+            "path": raw_path,
             "size": file_size,
             "duration": duration,
         }
         print(dumps(output, indent=2))
     else:
-        print(path)
+        print(raw_path)
 
 
 if __name__ == "__main__":
