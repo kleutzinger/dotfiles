@@ -16,6 +16,9 @@ INSTALL_DIR=trilium-next
 DL_URL="https://github.com/TriliumNext/Notes/releases/download/$TAG/TriliumNextNotes-$TAG-linux-x64.zip"
 
 cd $(mktemp --directory --suffix=trilium-update)
+pushd /tmp/
+backup-trilium.py
+popd
 wget --verbose $DL_URL
 unzip *.zip
 rm *.zip
