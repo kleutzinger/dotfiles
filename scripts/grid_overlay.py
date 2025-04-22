@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script --with pillow
 """
 When collaborating with someone over screenshare, the person on the other end
 may want to "point" somewhere at your screen.
@@ -33,8 +33,21 @@ from PIL import Image, ImageDraw, ImageFont
 # how many pixels apart should the gridlines be?
 # smaller numbers may affect performance
 GRID_STEP_SIZE = 100
+IS_MAC = os.uname().sysname == "Darwin"
 
-FONT_PATH = "/usr/share/fonts/TTF/FiraCode-Bold.ttf"
+potential_fonts = [
+    "/usr/share/fonts/TTF/FiraCode-Regular.ttf",
+    "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+]
+
+for font in potential_fonts:
+    if os.path.exists(font):
+        FONT_PATH = font
+        break
+else:
+    print("no font found")
+    print("tried", potential_fonts)
+    exit(1)
 
 if not (os.path.exists(FONT_PATH)):
     print(f"no font found at {FONT_PATH}")
@@ -61,10 +74,10 @@ def grid_on_img(img: Image.Image) -> str:
     # draw grid labels
     for y in range(0, H, GRID_STEP_SIZE):
         for x in range(0, W, GRID_STEP_SIZE):
-            coord_str = f"{x//GRID_STEP_SIZE},{y//GRID_STEP_SIZE}"
+            coord_str = f"{x // GRID_STEP_SIZE},{y // GRID_STEP_SIZE}"
             # hardcoding text size for now
             # ideally we would calculate this based on font size
-            text_size = [4,4]
+            text_size = [4, 4]
             draw.rectangle((x, y, x + text_size[0], y + text_size[1]), fill=128)
             draw.text((x, y), coord_str, font=font)
 
@@ -75,11 +88,18 @@ def grid_on_img(img: Image.Image) -> str:
 def main() -> None:
     screenshot_path = "/tmp/screenshot.png"
     # take a fullscreen screenshot
-    subprocess.run(["scrot", "--overwrite", screenshot_path])
+    # if mac
+    if IS_MAC:
+        subprocess.run(["screencapture", "-x", screenshot_path])
+    else:
+        subprocess.run(["scrot", "--overwrite", screenshot_path])
     with Image.open(screenshot_path) as img:
         out_path = grid_on_img(img)
-    # dispaly image in fullscreen
-    subprocess.run(["feh", "--fullscreen", out_path])
+    # display image in fullscreen
+    if IS_MAC:
+        subprocess.run(["open", "-a", "Preview", out_path])
+    else:
+        subprocess.run(["feh", "--fullscreen", out_path])
 
 
 if __name__ == "__main__":
