@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script --with click
 
 """
 https://github.com/porjo/youtubeuploader
@@ -8,7 +8,6 @@ where URL is the URL of the video to download, usually a twitch VOD.
 """
 
 import subprocess
-import tempfile
 import os
 import click
 import shutil
