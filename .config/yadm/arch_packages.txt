@@ -98,6 +98,7 @@ tree
 ttf-fira-code
 unarchiver
 unclutter
+uv
 vlc
 webapp-manager
 wget
