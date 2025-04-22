@@ -1,4 +1,4 @@
-#!/home/kevin/.virtualenvs/++scripts/bin/python
+#!/usr/bin/env -S uv run --script --with click --with trilium_py
 
 from trilium_py.client import ETAPI
 import click
