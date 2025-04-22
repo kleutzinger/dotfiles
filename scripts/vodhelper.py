@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env -S uv run --script --with click --with numpy --with opencv-python --with pyyaml
 """
 #__RUN0__# pushd ~/scripts/vods; vodhelper.py; popd
 #__RUN1__# pushd ~/scripts/vods/vods2; vodhelper.py; popd
@@ -42,6 +42,7 @@ TODOs:
 """
 
 from copy import deepcopy
+import shutil
 import datetime
 from pprint import pprint
 
@@ -282,7 +283,12 @@ def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
     # cmd = f"ffmpeg -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4u3 out.mp4"
 
     run(split(cmd))
-    run(["mpv", outputpath])
+    if shutil.which("mpv") is not None:
+        run(["mpv", "--no-border", outputpath])
+    elif shutil.which("vlc") is not None:
+        run(["vlc", "--play-and-exit", "--no-video-title-show", outputpath])
+    else:
+        print("no video preview player found")
     return points
 
 
