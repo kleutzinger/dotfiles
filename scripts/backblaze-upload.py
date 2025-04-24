@@ -49,7 +49,7 @@ def upload_thumbnail(image_path):
     # replace file extension if present with jpg
     if not filename.endswith(".jpg"):
         filename = os.path.splitext(filename)[0] + ".jpg"
-    filename = f"{time.time()}_{filename}"
+    filename = f"{int(time.time())}_{filename}"
     b2_path = UPLOAD_PATH_PREFIX + filename
     file_info = {"Content-Type": "image/jpeg"}
 
