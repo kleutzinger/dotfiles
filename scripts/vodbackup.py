@@ -11,6 +11,8 @@ import subprocess
 import os
 import click
 import shutil
+import signal
+import sys
 
 
 CLIENT_SECRETS_PATH = os.path.join(
@@ -35,25 +37,51 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
     help="Bracket URL to use for the upload, if not specified, will use the default bracket URL",
 )
 def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
-    alnum_url = "".join([c for c in url_or_path if c.isalnum()])
-    tmpdirpath = f"vodbackup-{alnum_url}"
-    os.mkdir(tmpdirpath)
-    tmpdirpath = os.path.abspath(tmpdirpath)
-    print("Created temporary directory", tmpdirpath)
-    # check if url is is a local absolute path that exists
-    if os.path.exists(url_or_path):
-        shutil.copy(url_or_path, tmpdirpath)
-        print(f"Copied local file {url_or_path} to {tmpdirpath}")
-        os.chdir(tmpdirpath)
-    else:
-        os.chdir(tmpdirpath)
-        subprocess.run(["yt-dlp", url_or_path])
-    # copy secrets to current dir
-    shutil.copy(CLIENT_SECRETS_PATH, tmpdirpath)
-    shutil.copy(CLIENT_TOKEN_PATH, tmpdirpath)
-    for file in os.listdir(tmpdirpath):
-        # check if video file
-        if file.endswith(".mp4") or file.endswith(".mkv"):
+    # Copy secrets to current dir
+    secrets = [
+        (CLIENT_SECRETS_PATH, os.path.basename(CLIENT_SECRETS_PATH)),
+        (CLIENT_TOKEN_PATH, os.path.basename(CLIENT_TOKEN_PATH)),
+    ]
+
+    def cleanup_secrets(*_):
+        for _, dest in secrets:
+            try:
+                if os.path.exists(dest):
+                    os.remove(dest)
+            except Exception as e:
+                print(f"Warning: could not delete {dest}: {e}")
+
+    # Register cleanup for signals
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        signal.signal(sig, lambda signum, frame: (cleanup_secrets(), sys.exit(1)))
+    for src, dest in secrets:
+        shutil.copy(src, dest)
+    try:
+        # check if url is a local absolute path that exists
+        if os.path.exists(url_or_path):
+            local_file = os.path.basename(url_or_path)
+            shutil.copy(url_or_path, local_file)
+            print(
+                f"Copied local file {url_or_path} to current directory as {local_file}"
+            )
+            video_files = [local_file]
+        else:
+            # Use yt-dlp to download and print the output filename
+            result = subprocess.run(
+                ["yt-dlp", "--print", "after_move:filepath", url_or_path],
+                capture_output=True,
+                text=True,
+            )
+            downloaded_file = (
+                result.stdout.strip().splitlines()[-1]
+                if result.stdout.strip()
+                else None
+            )
+            if not downloaded_file or not os.path.exists(downloaded_file):
+                print("Error: No file was downloaded.")
+                return
+            video_files = [downloaded_file]
+        for file in video_files:
             print("Uploading", file)
             description_text = "Find all my vods at https://vods.kevbot.xyz"
             if bracket_url:
@@ -74,11 +102,15 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
                     alphanumeric_title,
                 ]
             )
-    if cleanup:
-        # delete all files in tempdir
-        for file in os.listdir(tmpdirpath):
-            os.remove(file)
-        print(f"Deleted all files in {tmpdirpath}")
+        if cleanup:
+            for file in video_files:
+                try:
+                    os.remove(file)
+                except Exception as e:
+                    print(f"Warning: could not delete {file}: {e}")
+            print(f"Deleted all video files in current directory")
+    finally:
+        cleanup_secrets()
 
 
 if __name__ == "__main__":
