@@ -58,6 +58,9 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
             description_text = "Find all my vods at https://vods.kevbot.xyz"
             if bracket_url:
                 description_text += f"\nBracket URL: {bracket_url}"
+            alphanumeric_title = "".join(
+                [c for c in file if c.isalnum() or c in [" ", "-", "_", "."]]
+            )
             subprocess.run(
                 [
                     "youtubeuploader",
@@ -67,6 +70,8 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
                     "unlisted",
                     "-description",
                     description_text,
+                    "-title",
+                    alphanumeric_title,
                 ]
             )
     if cleanup:
