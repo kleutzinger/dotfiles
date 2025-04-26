@@ -52,7 +52,8 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
     shutil.copy(CLIENT_SECRETS_PATH, tmpdirpath)
     shutil.copy(CLIENT_TOKEN_PATH, tmpdirpath)
     for file in os.listdir(tmpdirpath):
-        if file.endswith(".mp4"):
+        # check if video file
+        if file.endswith(".mp4") or file.endswith(".mkv"):
             print("Uploading", file)
             description_text = "Find all my vods at https://vods.kevbot.xyz"
             if bracket_url:
