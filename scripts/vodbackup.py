@@ -60,10 +60,6 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
         # check if url is a local absolute path that exists
         if os.path.exists(url_or_path):
             local_file = os.path.basename(url_or_path)
-            shutil.copy(url_or_path, local_file)
-            print(
-                f"Copied local file {url_or_path} to current directory as {local_file}"
-            )
             video_files = [local_file]
         else:
             # Use yt-dlp to download and print the output filename
