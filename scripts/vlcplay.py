@@ -48,6 +48,11 @@ def main(
         if not stdout:
             print(s)
 
+    # ensure not running from $HOME
+    if os.path.abspath(os.getcwd()) == os.path.expanduser("~"):
+        print("Error: Do not run this from your home directory")
+        exit(1)
+
     valid_extensions = set()
     if images:
         conditional_print("adding images")
