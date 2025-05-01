@@ -152,6 +152,23 @@ if test -e /usr/share/doc/find-the-command/ftc.fish
     source /usr/share/doc/find-the-command/ftc.fish noprompt noupdate
 end
 
+
+if type -q yadm
+  set -l YADM_CHECK_FILE /tmp/yadm_check_time
+  set -l YADM_CHECK_TIME (cat $YADM_CHECK_FILE 2>/dev/null)
+  set -l YADM_CHECK_INTERVAL 1800 # 30 minutes
+
+  if test (math "$YADM_CHECK_TIME + $YADM_CHECK_INTERVAL") -lt (date +%s)
+    echo "Checking yadm status..."
+    yadm fetch --all
+    yadm status --porcelain | grep -q '^ M' && echo "Local yadm changes detected"
+    yadm remote update
+    yadm status --porcelain | grep -q '^ M' && echo "Remote yadm changes detected"
+    date +%s > $YADM_CHECK_FILE
+  end
+end
+
+
 if type -q mise
   mise activate fish | source
 end
