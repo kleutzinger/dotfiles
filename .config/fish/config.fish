@@ -161,9 +161,8 @@ if type -q yadm
   if test (math "$YADM_CHECK_TIME + $YADM_CHECK_INTERVAL") -lt (date +%s)
     echo "Checking yadm status..."
     yadm fetch --all
-    yadm status --porcelain | grep -q '^ M' && echo "Local yadm changes detected"
-    yadm remote update
-    yadm status --porcelain | grep -q '^ M' && echo "Remote yadm changes detected"
+    echo 'fetched...'
+    yadm status -s
     date +%s > $YADM_CHECK_FILE
   end
 end
