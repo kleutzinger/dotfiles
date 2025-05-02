@@ -162,7 +162,7 @@ if type -q yadm
     echo "Checking yadm status..."
     yadm fetch --all
     echo 'fetched...'
-    yadm status -s
+    yadm status
     date +%s > $YADM_CHECK_FILE
   end
 end
