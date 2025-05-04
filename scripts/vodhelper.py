@@ -144,6 +144,11 @@ def init_tourney_yaml() -> dict:
     trny_url = input(
         f"what is the tournament url? \nmy guess is {guess_trny_url}\ninput something else if not:\n"
     )
+    if guess_trny_url and not trny_url:
+        trny_url = guess_trny_url
+    if not trny_url:
+        print("no tournament url provided, exiting")
+        exit(1)
     # get number of vods in directory, aka the number of opponents
     mp4_count = len(get_ts_mp4_paths())
     print(f"found {mp4_count} vods")
