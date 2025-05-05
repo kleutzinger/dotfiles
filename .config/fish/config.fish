@@ -12,13 +12,12 @@ set -gx FZF_LEGACY_KEYBINDINGS 0 # set fzf https://github.com/jethrokuan/fzf#usa
 set -gx DOKKU_HOST kevbot.xyz
 # set -gx PYTHONBREAKPOINT pdb.set_trace
 set -gx MYVIMRC $HOME/.config/nvim/init.vim
-set -gx SXHKD_SHELL '/usr/bin/sh'
+set -gx SXHKD_SHELL /usr/bin/sh
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
 set -gx GDK_SCALE 1
 set -gx QT_AUTO_SCREEN_SCALE_FACTOR 1
 set -gx QT_SCALE_FACTOR 2
 set -gx FZF_DEFAULT_OPTS '--height 75% --layout=reverse --border'
-
 
 alias bunx="bun x"
 source $HOME/.config/fish/abbrs.fish
@@ -45,41 +44,41 @@ complete -c yay -w yay
 complete -c yadm -e
 
 function fed
-	$EDITOR ~/.config/fish/config.fish
-	$EDITOR ~/.config/fish/abbrs.fish
-	exec fish
+    $EDITOR ~/.config/fish/config.fish
+    $EDITOR ~/.config/fish/abbrs.fish
+    exec fish
 end
 
 function ved
-  pushd ~/.config/nvim
-  GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR ./
-  popd
+    pushd ~/.config/nvim
+    GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR ./
+    popd
 end
 
 function yedit --description "edit with yadm as git dir"
-  # if no args, search for  a file with yadm ls-files
-  if count $argv > /dev/null
-    set FILE $argv
-  else
-    set FILE (yadm ls-files | fzf)
-    if test -z $FILE
-      echo "No file selected"
-      return 1
+    # if no args, search for  a file with yadm ls-files
+    if count $argv >/dev/null
+        set FILE $argv
+    else
+        set FILE (yadm ls-files | fzf)
+        if test -z $FILE
+            echo "No file selected"
+            return 1
+        end
     end
-  end
-  set FILE "$HOME/$FILE"
-  GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR $FILE
-  # if file exitst, add
-  if test -e $FILE
-    yadm add $FILE
-  end
+    set FILE "$HOME/$FILE"
+    GIT_DIR=~/.local/share/yadm/repo.git GIT_WORK_TREE=~ $EDITOR $FILE
+    # if file exitst, add
+    if test -e $FILE
+        yadm add $FILE
+    end
 end
 
 function e -d "open a file in a text editor"
     $EDITOR $argv
 end
 function fish_user_key_bindings
-	bind \cH backward-kill-path-component
+    bind \cH backward-kill-path-component
 end
 
 function rr
@@ -91,16 +90,16 @@ function rr
 end
 
 function read_confirm
-  while true
-    read -l -P 'Do you want to continue? [y/N] ' confirm
+    while true
+        read -l -P 'Do you want to continue? [y/N] ' confirm
 
-    switch $confirm
-      case Y y
-        return 0
-      case '' N n
-        return 1
+        switch $confirm
+            case Y y
+                return 0
+            case '' N n
+                return 1
+        end
     end
-  end
 end
 
 function cdg --description "cd to root of git project"
@@ -133,41 +132,43 @@ set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn
 
 # bun on ubuntu
 if test (uname -n) = kevbot.xyz
-  set --export BUN_INSTALL "$HOME/.bun"
-  set --export PATH $BUN_INSTALL/bin $PATH
+    set --export BUN_INSTALL "$HOME/.bun"
+    set --export PATH $BUN_INSTALL/bin $PATH
 else if test (uname -s) = Linux
-  # this is for rootless docker
-  set -gx DOCKER_HOST unix://$XDG_RUNTIME_DIR/docker.sock
-  set -gx PATH $HOME/.bun/bin $PATH
-# elseif test (uname -s) = Darwin  # MacOS
+    # this is for rootless docker
+    set -gx DOCKER_HOST unix://$XDG_RUNTIME_DIR/docker.sock
+    set -gx PATH $HOME/.bun/bin $PATH
+    # elseif test (uname -s) = Darwin  # MacOS
 end
 
 if status is-interactive
-  if type -q atuin
-    atuin init fish --disable-up-arrow | source
-  end
+    if type -q atuin
+        atuin init fish --disable-up-arrow | source
+    end
 end
 
 if test -e /usr/share/doc/find-the-command/ftc.fish
     source /usr/share/doc/find-the-command/ftc.fish noprompt noupdate
 end
 
+function check_yadm --description 'check yadm for changes'
+    if type -q yadm
+        set -l YADM_CHECK_FILE /tmp/yadm_check_time
+        set -l YADM_CHECK_TIME (cat $YADM_CHECK_FILE 2>/dev/null)
+        set -l YADM_CHECK_INTERVAL 7200 # 2 hours
 
-if type -q yadm
-  set -l YADM_CHECK_FILE /tmp/yadm_check_time
-  set -l YADM_CHECK_TIME (cat $YADM_CHECK_FILE 2>/dev/null)
-  set -l YADM_CHECK_INTERVAL 7200 # 2 hours
-
-  if test (math "$YADM_CHECK_TIME + $YADM_CHECK_INTERVAL") -lt (date +%s)
-    echo "Checking yadm status..."
-    yadm fetch --all
-    echo 'fetched...'
-    yadm status
-    date +%s > $YADM_CHECK_FILE
-  end
+        if test (math "$YADM_CHECK_TIME + $YADM_CHECK_INTERVAL") -lt (date +%s)
+            echo "Checking yadm status..."
+            yadm fetch --all
+            echo 'fetched...'
+            yadm status
+            date +%s >$YADM_CHECK_FILE
+        end
+    end
 end
 
+check_yadm
 
 if type -q mise
-  mise activate fish | source
+    mise activate fish | source
 end
