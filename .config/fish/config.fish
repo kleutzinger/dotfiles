@@ -159,8 +159,8 @@ function check_yadm --description 'check yadm for changes'
 
         if test (math "$YADM_CHECK_TIME + $YADM_CHECK_INTERVAL") -lt (date +%s)
             echo "Checking yadm status..."
-            yadm fetch --all
-            echo 'fetched...'
+            yadm pull
+            echo 'pulled...'
             yadm status
             date +%s >$YADM_CHECK_FILE
         end
