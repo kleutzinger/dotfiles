@@ -1,5 +1,11 @@
 Hi, this is my computer's config. I use the <a href="https://colemak.com/">colemak</a> keyboard layout  
-I'm using [yadm](https://yadm.io/) to manage my dotfiles and I like it because it doesn't make a bunch of symlinks everywhere.
+I'm using [yadm](https://yadm.io/) to manage my dotfiles and I like it because it doesn't make a bunch of symlinks everywhere.  
+
+These configs are somewhat specific to arch linux, but I also use them on Ubuntu and macOS. I use them to configure
+my whole system, so they are tuned to my preferences. I'd caution against applying all these configs to your machine as a whole.  
+
+Check out the [scripts](/scripts) folder for useful self-contained script files. These may be worth copying to your own machine.  
+I also have more scripts in the form of fish functions at [.config/fish/functions](/.config/fish/functions).  
 
 ```
 kevin@think0
