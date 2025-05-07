@@ -83,7 +83,11 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
             if bracket_url:
                 description_text += f"\nBracket URL: {bracket_url}"
             alphanumeric_title = "".join(
-                [c for c in file if c.isalnum() or c in [" ", "-", "_", "."]]
+                [
+                    c
+                    for c in os.path.basename(file)
+                    if c.isalnum() or c in [" ", "-", "_", "."]
+                ]
             )
             subprocess.run(
                 [
