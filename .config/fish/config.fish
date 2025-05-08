@@ -155,7 +155,7 @@ function check_yadm --description 'check yadm for changes'
     if type -q yadm
         set -l YADM_CHECK_FILE /tmp/yadm_check_time
         set -l YADM_CHECK_TIME (cat $YADM_CHECK_FILE 2>/dev/null)
-        set -l YADM_CHECK_INTERVAL 7200 # 2 hours
+        set -l YADM_CHECK_INTERVAL (math '60 * 60 * 6') # 6 hours
 
         if test (math "$YADM_CHECK_TIME + $YADM_CHECK_INTERVAL") -lt (date +%s)
             echo "Checking yadm status..."
