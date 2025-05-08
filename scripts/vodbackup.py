@@ -29,10 +29,11 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 @click.command()
 @click.argument("url_or_path")
 @click.option(
-    "--cleanup", is_flag=True, help="Delete the downloaded file after uploading"
+    "--cleanup", "-c", is_flag=True, help="Delete the downloaded file after uploading"
 )
 # add an option to specify bracket-url
 @click.option(
+    "-b",
     "--bracket-url",
     help="Bracket URL to use for the upload, if not specified, will use the default bracket URL",
 )
