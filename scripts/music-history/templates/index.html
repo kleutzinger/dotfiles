@@ -38,7 +38,7 @@
         <div class="mb-8 bg-white rounded-lg shadow p-4">
             <h2 class="text-xl font-semibold mb-4">Now Playing</h2>
             <div id="currentSong" class="text-gray-600">No song playing</div>
-            <div class="flex justify-center gap-4 mt-4">
+            <div class="flex justify-center items-center gap-4 mt-4">
                 <button onclick="togglePlayPause()" 
                         id="playPauseButton"
                         class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
@@ -48,6 +48,17 @@
                         class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                     Skip
                 </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="volumeDown()" 
+                            class="bg-gray-500 text-white px-3 py-2 rounded-lg hover:bg-gray-600 transition">
+                        -
+                    </button>
+                    <span id="volumeDisplay" class="text-gray-600 min-w-[3rem] text-center">100%</span>
+                    <button onclick="volumeUp()" 
+                            class="bg-gray-500 text-white px-3 py-2 rounded-lg hover:bg-gray-600 transition">
+                        +
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -59,6 +70,8 @@
     </div>
 
     <script>
+        const UPDATE_INTERVAL_MS = 5000;  // Update rate in milliseconds
+
         // Fetch and display current song
         async function updateCurrentSong() {
             try {
@@ -256,15 +269,52 @@
             }
         }
 
+        // Volume control functions
+        async function updateVolume() {
+            try {
+                const response = await fetch('/api/volume');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('volumeDisplay').textContent = `${data.volume}%`;
+                }
+            } catch (error) {
+                console.error('Error fetching volume:', error);
+            }
+        }
+
+        async function volumeUp() {
+            try {
+                const response = await fetch('/api/volume/up', { method: 'POST' });
+                if (response.ok) {
+                    updateVolume();
+                }
+            } catch (error) {
+                console.error('Error increasing volume:', error);
+            }
+        }
+
+        async function volumeDown() {
+            try {
+                const response = await fetch('/api/volume/down', { method: 'POST' });
+                if (response.ok) {
+                    updateVolume();
+                }
+            } catch (error) {
+                console.error('Error decreasing volume:', error);
+            }
+        }
+
         // Update current song and queue every 5 seconds
         setInterval(() => {
             updateCurrentSong();
             updateQueue();
-        }, 5000);
+            updateVolume();
+        }, UPDATE_INTERVAL_MS);
 
         // Initial load
         updateCurrentSong();
         updateQueue();
+        updateVolume();
     </script>
 </body>
 </html> 

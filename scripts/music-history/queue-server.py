@@ -10,6 +10,11 @@ from ytmusicapi import YTMusic
 
 load_dotenv()
 
+# Constants
+VOLUME_STEP_PERCENT = 2  # Volume change step size in percent
+API_BASE_URL = os.getenv('YTM_API_BASE_URL', 'http://localhost:8080')
+API_TOKEN = os.getenv('YTM_API_TOKEN')
+
 # Configure logging - only show INFO and above
 logging.basicConfig(
     level=logging.INFO,
@@ -27,10 +32,6 @@ CORS(app)
 
 # Initialize YTMusic
 ytmusic = YTMusic()
-
-# YouTube Music API base URL - you'll need to set this in your environment
-API_BASE_URL = os.getenv('YTM_API_BASE_URL', 'http://localhost:8080')
-API_TOKEN = os.getenv('YTM_API_TOKEN')
 
 def get_headers():
     return {
@@ -267,6 +268,42 @@ def next_song():
         return '', response.status_code
     except Exception as e:
         logger.error(f"Error skipping to next song: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/volume', methods=['GET'])
+def get_volume():
+    try:
+        import subprocess
+        result = subprocess.run(['amixer', '-D', 'pulse', 'sget', 'Master'], capture_output=True, text=True)
+        # Parse the output to get the volume percentage
+        import re
+        match = re.search(r'\[(\d+)%\]', result.stdout)
+        if match:
+            volume = int(match.group(1))
+            return jsonify({'volume': volume})
+        return jsonify({'error': 'Could not get volume'}), 500
+    except Exception as e:
+        logger.error(f"Error getting volume: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/volume/up', methods=['POST'])
+def volume_up():
+    try:
+        import subprocess
+        subprocess.run(['amixer', '-q', '-D', 'pulse', 'sset', 'Master', f'{VOLUME_STEP_PERCENT}%+'])
+        return '', 204
+    except Exception as e:
+        logger.error(f"Error increasing volume: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/volume/down', methods=['POST'])
+def volume_down():
+    try:
+        import subprocess
+        subprocess.run(['amixer', '-q', '-D', 'pulse', 'sset', 'Master', f'{VOLUME_STEP_PERCENT}%-'])
+        return '', 204
+    except Exception as e:
+        logger.error(f"Error decreasing volume: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
