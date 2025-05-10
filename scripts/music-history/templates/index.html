@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Queue</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .song-card {
+            transition: all 0.3s ease;
+        }
+        .song-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8 text-center">Music Queue</h1>
+        
+        <!-- Search Section -->
+        <div class="mb-8">
+            <div class="flex gap-2">
+                <input type="text" id="searchInput" 
+                       class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       placeholder="Search for a song..."
+                       onkeypress="if(event.key === 'Enter') searchSongs()"
+                       oninput="debouncedSearch()">
+            </div>
+            <div id="searchResults" class="mt-4 space-y-2"></div>
+        </div>
+
+        <!-- Current Song -->
+        <div class="mb-8 bg-white rounded-lg shadow p-4">
+            <h2 class="text-xl font-semibold mb-4">Now Playing</h2>
+            <div id="currentSong" class="text-gray-600">No song playing</div>
+            <div class="flex justify-center gap-4 mt-4">
+                <button onclick="togglePlayPause()" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    Play/Pause
+                </button>
+                <button onclick="nextSong()" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    Skip
+                </button>
+            </div>
+        </div>
+
+        <!-- Queue -->
+        <div class="bg-white rounded-lg shadow p-4">
+            <h2 class="text-xl font-semibold mb-4">Queue</h2>
+            <div id="queue" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch and display current song
+        async function updateCurrentSong() {
+            try {
+                const response = await fetch('/api/current-song');
+                if (response.status === 204) {
+                    document.getElementById('currentSong').innerHTML = '<div class="text-gray-500">No song playing</div>';
+                    return;
+                }
+                
+                const song = await response.json();
+                if (response.ok && song) {
+                    document.getElementById('currentSong').innerHTML = `
+                        <div class="flex items-center gap-6">
+                            ${song.imageSrc ? `<img src="${song.imageSrc}" class="w-32 h-32 rounded-lg shadow-lg" alt="Album art">` : ''}
+                            <div class="flex-1">
+                                <div class="text-2xl font-medium mb-2">${song.title}</div>
+                                <div class="text-lg text-gray-500 mb-1">${song.artist}</div>
+                                ${song.album ? `<div class="text-md text-gray-400">${song.album}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching current song:', error);
+                document.getElementById('currentSong').innerHTML = '<div class="text-red-500">Error loading current song</div>';
+            }
+        }
+
+        // Fetch and display queue
+        async function updateQueue() {
+            try {
+                const response = await fetch('/api/queue');
+                const queue = await response.json();
+                if (response.ok) {
+                    const queueElement = document.getElementById('queue');
+                    queueElement.innerHTML = queue.length ? queue.map((song, index) => `
+                        <div class="song-card flex items-center justify-between p-2 ${song.isPlaying ? 'bg-blue-50 border-l-4 border-blue-500' : 'bg-gray-50'} rounded">
+                            <div class="flex items-center gap-3">
+                                <span class="text-gray-500">${index + 1}.</span>
+                                <div class="w-12 h-12 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                                    ${song.imageSrc ? `<img src="${song.imageSrc}" class="w-12 h-12 object-cover" loading="lazy">` : ''}
+                                </div>
+                                <div>
+                                    <div class="font-medium">${song.title}</div>
+                                    <div class="text-sm text-gray-500">${song.artist}</div>
+                                </div>
+                            </div>
+                            ${song.isPlaying ? '<span class="text-blue-500 text-sm">Now Playing</span>' : ''}
+                        </div>
+                    `).join('') : '<div class="text-gray-500">Queue is empty</div>';
+                }
+            } catch (error) {
+                console.error('Error fetching queue:', error);
+            }
+        }
+
+        // Add these new functions before the setInterval
+        let searchTimeout;
+        function debouncedSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = document.getElementById('searchInput').value;
+                if (query.trim()) {
+                    searchSongs();
+                } else {
+                    document.getElementById('searchResults').innerHTML = '';
+                }
+            }, 500);
+        }
+
+        // Search songs
+        async function searchSongs() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
+
+            const resultsElement = document.getElementById('searchResults');
+            resultsElement.innerHTML = '<div class="text-gray-500">Searching...</div>';
+
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query }),
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Search failed');
+                }
+                
+                const results = await response.json();
+                console.log('Search results:', results); // Debug log
+                
+                resultsElement.innerHTML = results.length ? results.map(song => `
+                    <div class="song-card flex items-center justify-between p-2 bg-white rounded shadow">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                                ${song.imageSrc ? `<img src="${song.imageSrc}" class="w-12 h-12 object-cover" loading="lazy">` : ''}
+                            </div>
+                            <div>
+                                <div class="font-medium">${song.title}</div>
+                                <div class="text-sm text-gray-500">${song.artist}</div>
+                                <div class="text-xs text-gray-400">${song.album}</div>
+                            </div>
+                        </div>
+                        <button onclick="addToQueue('${song.videoId}')" 
+                                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                            Add
+                        </button>
+                    </div>
+                `).join('') : '<div class="text-gray-500">No results found</div>';
+            } catch (error) {
+                console.error('Error searching songs:', error);
+                resultsElement.innerHTML = `<div class="text-red-500">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Add song to queue
+        async function addToQueue(videoId) {
+            try {
+                const response = await fetch('/api/queue', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ videoId }),
+                });
+                
+                if (response.ok) {
+                    // Clear search results and input
+                    document.getElementById('searchResults').innerHTML = '';
+                    document.getElementById('searchInput').value = '';
+                    
+                    // Force immediate refresh
+                    updateCurrentSong();
+                    updateQueue();
+                }
+            } catch (error) {
+                console.error('Error adding to queue:', error);
+            }
+        }
+
+        // Add these new functions before the setInterval
+        async function togglePlayPause() {
+            try {
+                const response = await fetch('/api/play-pause', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    // Force immediate refresh
+                    updateCurrentSong();
+                    updateQueue();
+                }
+            } catch (error) {
+                console.error('Error toggling play/pause:', error);
+            }
+        }
+
+        async function nextSong() {
+            try {
+                const response = await fetch('/api/next', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    // Force immediate refresh
+                    updateCurrentSong();
+                    updateQueue();
+                    // Refresh again after a short delay to ensure we catch the new song
+                    setTimeout(() => {
+                        updateCurrentSong();
+                        updateQueue();
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('Error skipping to next song:', error);
+            }
+        }
+
+        // Update current song and queue every 5 seconds
+        setInterval(() => {
+            updateCurrentSong();
+            updateQueue();
+        }, 5000);
+
+        // Initial load
+        updateCurrentSong();
+        updateQueue();
+    </script>
+</body>
+</html> 
