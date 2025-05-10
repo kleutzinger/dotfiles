@@ -120,9 +120,7 @@
                 const queue = await response.json();
                 if (response.ok) {
                     const queueElement = document.getElementById('queue');
-                    // Filter out the currently playing song
-                    const filteredQueue = queue.filter(song => !song.isPlaying);
-                    queueElement.innerHTML = filteredQueue.length ? filteredQueue.map((song, index) => `
+                    queueElement.innerHTML = queue.length ? queue.map((song, index) => `
                         <div class="song-card flex items-center justify-between p-2 bg-gray-50 rounded">
                             <div class="flex items-center gap-3">
                                 <span class="text-gray-500">${index + 1}.</span>

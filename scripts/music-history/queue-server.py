@@ -108,35 +108,37 @@ def get_queue():
         formatted_queue = []
         found_current = False
         
-        for item in queue_data.get('items', []):
+        # First find the index of the most recent occurrence of the current song
+        current_index = -1
+        for i, item in enumerate(queue_data.get('items', [])):
             if 'playlistPanelVideoRenderer' in item:
-                song = item['playlistPanelVideoRenderer']
-                video_id = song.get('videoId')
-                
-                # If we haven't found the current song yet, check if this is it
-                if not found_current and current_video_id:
-                    if video_id == current_video_id:
-                        found_current = True
-                    else:
-                        continue  # Skip songs before the current one
-                
-                # Get the highest quality thumbnail
-                thumbnails = song.get('thumbnail', {}).get('thumbnails', [])
-                image_url = thumbnails[-1].get('url') if thumbnails else None
-                
-                song_data = {
-                    'title': song.get('title', {}).get('runs', [{}])[0].get('text', '?'),
-                    'artist': song.get('longBylineText', {}).get('runs', [{}])[0].get('text', '?'),
-                    'album': next((run.get('text', '?') for run in song.get('longBylineText', {}).get('runs', []) 
-                                if 'navigationEndpoint' in run and 'browseEndpoint' in run.get('navigationEndpoint', {})
-                                and run.get('navigationEndpoint', {}).get('browseEndpoint', {}).get('browseEndpointContextSupportedConfigs', {})
-                                .get('browseEndpointContextMusicConfig', {}).get('pageType') == 'MUSIC_PAGE_TYPE_ALBUM'), '?'),
-                    'videoId': video_id,
-                    'imageSrc': image_url,
-                    'isPlaying': video_id == current_video_id
-                }
-                formatted_queue.append(song_data)
-            
+                video_id = item['playlistPanelVideoRenderer'].get('videoId')
+                if video_id == current_video_id:
+                    current_index = i
+        
+        # If we found the current song, only include songs after it
+        if current_index != -1:
+            for item in queue_data.get('items', [])[current_index + 1:]:
+                if 'playlistPanelVideoRenderer' in item:
+                    song = item['playlistPanelVideoRenderer']
+                    video_id = song.get('videoId')
+                    
+                    # Get the highest quality thumbnail
+                    thumbnails = song.get('thumbnail', {}).get('thumbnails', [])
+                    image_url = thumbnails[-1].get('url') if thumbnails else None
+                    
+                    song_data = {
+                        'title': song.get('title', {}).get('runs', [{}])[0].get('text', '?'),
+                        'artist': song.get('longBylineText', {}).get('runs', [{}])[0].get('text', '?'),
+                        'album': next((run.get('text', '?') for run in song.get('longBylineText', {}).get('runs', []) 
+                                    if 'navigationEndpoint' in run and 'browseEndpoint' in run.get('navigationEndpoint', {})
+                                    and run.get('navigationEndpoint', {}).get('browseEndpoint', {}).get('browseEndpointContextSupportedConfigs', {})
+                                    .get('browseEndpointContextMusicConfig', {}).get('pageType') == 'MUSIC_PAGE_TYPE_ALBUM'), '?'),
+                        'videoId': video_id,
+                        'imageSrc': image_url
+                    }
+                    formatted_queue.append(song_data)
+        
         return jsonify(formatted_queue)
     except Exception as e:
         logger.error(f"Error getting queue: {str(e)}")
@@ -201,6 +203,7 @@ def get_current_song():
         if current_video_id != get_current_song.last_video_id:
             song_info = f"{song_data.get('title', '?')} by {song_data.get('artist', '?')}"
             logger.info(f"Now playing: {song_info}")
+                        
             get_current_song.last_video_id = current_video_id
         
         # Format the song data
