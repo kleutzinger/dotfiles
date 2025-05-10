@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Queue</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         .song-card {
             transition: all 0.3s ease;
@@ -16,6 +16,10 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
+        <div class="relative">
+            <img id="rightDancer" src="/static/mario-luigi-dance.gif" alt="Dancing Mario and Luigi" class="absolute top-0 right-0 w-12 h-12">
+            <img id="leftDancer" src="/static/mario-luigi-dance.gif" alt="Dancing Mario and Luigi" class="absolute top-0 left-0 w-12 h-12 scale-x-[-1]">
+        </div>
         <h1 class="text-3xl font-bold mb-8 text-center">Music Queue</h1>
         
         <!-- Search Section -->
@@ -36,8 +40,9 @@
             <div id="currentSong" class="text-gray-600">No song playing</div>
             <div class="flex justify-center gap-4 mt-4">
                 <button onclick="togglePlayPause()" 
+                        id="playPauseButton"
                         class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                    Play/Pause
+                    Play
                 </button>
                 <button onclick="nextSong()" 
                         class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
@@ -60,6 +65,11 @@
                 const response = await fetch('/api/current-song');
                 if (response.status === 204) {
                     document.getElementById('currentSong').innerHTML = '<div class="text-gray-500">No song playing</div>';
+                    // Set static images when no song is playing
+                    document.getElementById('leftDancer').src = '/static/no-dance.png';
+                    document.getElementById('rightDancer').src = '/static/no-dance.png';
+                    // Update button text
+                    document.getElementById('playPauseButton').textContent = 'Play';
                     return;
                 }
                 
@@ -75,6 +85,14 @@
                             </div>
                         </div>
                     `;
+                    
+                    // Update dancer images based on play state
+                    const dancerSrc = song.isPaused ? '/static/no-dance.png' : '/static/mario-luigi-dance.gif';
+                    document.getElementById('leftDancer').src = dancerSrc;
+                    document.getElementById('rightDancer').src = dancerSrc;
+                    
+                    // Update button text based on current state
+                    document.getElementById('playPauseButton').textContent = song.isPaused ? 'Play' : 'Pause';
                 }
             } catch (error) {
                 console.error('Error fetching current song:', error);

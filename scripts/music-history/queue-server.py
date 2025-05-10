@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 logging.getLogger('urllib3').setLevel(logging.WARNING)
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 CORS(app)
 
 # Initialize YTMusic
@@ -206,7 +206,8 @@ def get_current_song():
             'artist': song_data.get('artist', '?'),
             'album': song_data.get('album', '?'),
             'videoId': song_data.get('videoId'),
-            'imageSrc': song_data.get('imageSrc')  # Use imageSrc directly from the API response
+            'imageSrc': song_data.get('imageSrc'),  # Use imageSrc directly from the API response
+            'isPaused': song_data.get('isPaused', True)  # Default to True (paused) if not specified
         }
         
         return jsonify(formatted_song)
