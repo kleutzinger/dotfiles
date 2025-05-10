@@ -17,8 +17,12 @@
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <div class="relative">
-            <img id="rightDancer" src="/static/mario-luigi-dance.gif" alt="Dancing Mario and Luigi" class="absolute top-0 right-0 w-12 h-12">
-            <img id="leftDancer" src="/static/mario-luigi-dance.gif" alt="Dancing Mario and Luigi" class="absolute top-0 left-0 w-12 h-12 scale-x-[-1]">
+            <img id="leftDancer" src="/static/mario-luigi-dance.gif" alt="Previous Song" 
+                 class="absolute top-0 left-0 w-12 h-12 scale-x-[-1] cursor-pointer hover:opacity-80 transition-opacity"
+                 onclick="previousSong()">
+            <img id="rightDancer" src="/static/mario-luigi-dance.gif" alt="Next Song" 
+                 class="absolute top-0 right-0 w-12 h-12 cursor-pointer hover:opacity-80 transition-opacity"
+                 onclick="nextSong()">
         </div>
         <h1 class="text-3xl font-bold mb-8 text-center">Music Queue</h1>
         
@@ -43,10 +47,6 @@
                         id="playPauseButton"
                         class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                     Play
-                </button>
-                <button onclick="nextSong()" 
-                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                    Skip
                 </button>
                 <div class="flex items-center gap-2">
                     <button onclick="volumeDown()" 
@@ -299,6 +299,27 @@
                 }
             } catch (error) {
                 console.error('Error decreasing volume:', error);
+            }
+        }
+
+        // Add previous song function
+        async function previousSong() {
+            try {
+                const response = await fetch('/api/previous', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    // Force immediate refresh
+                    updateCurrentSong();
+                    updateQueue();
+                    // Refresh again after a short delay to ensure we catch the new song
+                    setTimeout(() => {
+                        updateCurrentSong();
+                        updateQueue();
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('Error going to previous song:', error);
             }
         }
 

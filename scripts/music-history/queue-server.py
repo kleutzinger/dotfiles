@@ -273,6 +273,32 @@ def next_song():
         logger.error(f"Error skipping to next song: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/previous', methods=['POST'])
+def previous_song():
+    try:
+        # Get current song info for logging
+        current_response = requests.get(
+            f'{API_BASE_URL}/api/v1/song',
+            headers=get_headers()
+        )
+        song_info = "unknown song"
+        if current_response.status_code == 200:
+            song_data = current_response.json()
+            song_info = f"{song_data.get('title', '?')} by {song_data.get('artist', '?')}"
+
+        response = requests.post(
+            f'{API_BASE_URL}/api/v1/previous',
+            headers=get_headers()
+        )
+        if response.status_code == 204:
+            logger.info(f"Went to previous song from: {song_info}")
+        else:
+            logger.error(f"Failed to go to previous song: {response.text}")
+        return '', response.status_code
+    except Exception as e:
+        logger.error(f"Error going to previous song: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/volume', methods=['GET'])
 def get_volume():
     try:
