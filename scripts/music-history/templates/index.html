@@ -107,8 +107,10 @@
                 const queue = await response.json();
                 if (response.ok) {
                     const queueElement = document.getElementById('queue');
-                    queueElement.innerHTML = queue.length ? queue.map((song, index) => `
-                        <div class="song-card flex items-center justify-between p-2 ${song.isPlaying ? 'bg-blue-50 border-l-4 border-blue-500' : 'bg-gray-50'} rounded">
+                    // Filter out the currently playing song
+                    const filteredQueue = queue.filter(song => !song.isPlaying);
+                    queueElement.innerHTML = filteredQueue.length ? filteredQueue.map((song, index) => `
+                        <div class="song-card flex items-center justify-between p-2 bg-gray-50 rounded">
                             <div class="flex items-center gap-3">
                                 <span class="text-gray-500">${index + 1}.</span>
                                 <div class="w-12 h-12 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
@@ -119,7 +121,6 @@
                                     <div class="text-sm text-gray-500">${song.artist}</div>
                                 </div>
                             </div>
-                            ${song.isPlaying ? '<span class="text-blue-500 text-sm">Now Playing</span>' : ''}
                         </div>
                     `).join('') : '<div class="text-gray-500">Queue is empty</div>';
                 }
