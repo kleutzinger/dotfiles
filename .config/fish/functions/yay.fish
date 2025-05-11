@@ -1,13 +1,14 @@
 # Defined in /tmp/fish.BrAOrq/yay.fish @ line 2
 function yay
-    pushd $HOME
+    pushd $HOME/Downloads
     if test -n "$VIRTUAL_ENV"
         echo "temporarily disabling venv $VIRTUAL_ENV"
-        set TEMP_VENV $VIRTUAL_ENV
+        set -l TEMP_VENV "$VIRTUAL_ENV"
         deactivate
     end
     command yay $argv
-    if test -n $TEMP_VENV
+    echo "re-enabling venv $TEMP_VENV"
+    if test -n "$TEMP_VENV"
         source $TEMP_VENV/bin/activate.fish
     end
     popd

@@ -12,5 +12,3 @@ function __auto_venv --on-variable PWD --description "Automatically activate pyt
     end
 end
 
-
-# maybe I should port this to python
