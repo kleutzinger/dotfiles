@@ -44,7 +44,7 @@ lice-git
 marked
 meld
 micro
-mise-bin
+mise
 moar
 moreutils
 mosh
