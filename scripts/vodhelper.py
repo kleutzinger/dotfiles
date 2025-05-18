@@ -16,8 +16,7 @@ usage:
     # once all yamls are populated
     vodhelper.py e
 
-    # TODO:
-    # upload to youtube
+    # upload the files in corrected/to youtube
     vodhelper u
 
 
@@ -35,9 +34,9 @@ TODOs:
 [x] add text overlay on video
     2022-03-24 Kevbot vs XYZ
 [x] automatic adding of youtube description
-[] automate youtube upload
-    [] generate youtube [x] description [] title
-    [] use youtubeuploader script
+[x] automate youtube upload
+    [x] generate youtube [x] description [x] title
+    [x] use vodbackup.py to upload
 []? start.gg api integration
 """
 
@@ -387,6 +386,9 @@ def main():
         input(
             f'start render? (will overwrite stuff in "./corrected").\n{len(ymls)} ymls files found'
         )
+        # empty the corrected directory
+        for f in os.listdir("corrected"):
+            os.remove(os.path.join("corrected", f))
         if TRNY_YAML_NAME in ymls:
             ymls.remove(TRNY_YAML_NAME)
         execute_ymls(ymls, preview_only="s" in sys.argv)
@@ -398,6 +400,42 @@ def main():
         desc = get_desc(trny, vods, pic_offset=0)
         with open("description-no-offset.txt", "w") as f:
             f.write(desc[1])
+        exit(0)
+    if "u" in sys.argv:
+        # for vid in corrected
+        # upload to youtube with vodbackup.py supplying the bracket with --bracket-url
+        if not os.path.exists("corrected"):
+            print(
+                "No corrected directory found. Run with 'e' first to generate corrected videos."
+            )
+            exit(1)
+
+        trny = get_yaml(TRNY_YAML_NAME)
+        bracket_url = trny.get("tournament_url", "")
+
+        # Store current directory to return to later
+        original_dir = os.getcwd()
+        os.chdir("corrected")
+
+        corrected_videos = sorted(
+            [f for f in os.listdir() if f.endswith((".mp4", ".ts"))]
+        )
+        if not corrected_videos:
+            print("No corrected videos found in corrected/ directory")
+            os.chdir(original_dir)
+            exit(1)
+
+        print(f"Found {len(corrected_videos)} videos to upload")
+        for vid in corrected_videos:
+            print(f"\nUploading {vid}...")
+            cmd = ["vodbackup.py", vid, "--bracket-url", bracket_url]
+            subprocess.run(cmd)
+
+        # Return to original directory
+        os.chdir(original_dir)
+        print("\nAll videos uploaded!")
+        import webbrowser
+        webbrowser.open("https://www.youtube.com/my_videos?o=U")
         exit(0)
 
     # preprocess videos, add metadata. Idempotent probably.
