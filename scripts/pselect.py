@@ -3,6 +3,8 @@
 import subprocess
 import json
 import urllib.parse
+import sys
+import random
 
 
 def get_coconut_list():
@@ -23,13 +25,16 @@ if __name__ == "__main__":
     coconuts = get_coconut_list()[::-1]
     coconuts = filter_coconut(coconuts)  # rm non-existent coconuts
     imageUrls = [c["imageUrl"] for c in coconuts]
-    cmd = ["image_selector2.py"] + imageUrls
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise Exception("Error: {}".format(result.stderr))
-    selected_image_url = result.stdout.strip()
     selected_coconut = None
     selected_index = None
+    if "--play" in sys.argv or "-p" in sys.argv:
+        selected_image_url = random.choice(imageUrls)
+    else:
+        cmd = ["image_selector2.py"] + imageUrls
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise Exception("Error: {}".format(result.stderr))
+        selected_image_url = result.stdout.strip()
     for i, c in enumerate(coconuts):
         if c["imageUrl"] == selected_image_url:
             selected_coconut = c
