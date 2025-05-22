@@ -1,7 +1,8 @@
 #!/usr/bin/env -S uv run --script --with pillow
 """
-When collaborating with someone over screenshare, the person on the other end
-may want to "point" somewhere at your screen.
+When collaborating with someone over screenshare, the remote person
+may want to "point" somewhere at your screen. We give them a grid
+to announce the relevant area coordinate-labeled cells.
 
 This script:
 1. takes a screenshot of your screen
@@ -75,11 +76,23 @@ def grid_on_img(img: Image.Image) -> str:
     for y in range(0, H, GRID_STEP_SIZE):
         for x in range(0, W, GRID_STEP_SIZE):
             coord_str = f"{x // GRID_STEP_SIZE},{y // GRID_STEP_SIZE}"
-            # hardcoding text size for now
-            # ideally we would calculate this based on font size
-            text_size = [4, 4]
-            draw.rectangle((x, y, x + text_size[0], y + text_size[1]), fill=128)
-            draw.text((x, y), coord_str, font=font)
+            # Get text size to properly position and create background
+            text_width, text_height = draw.textbbox((0, 0), coord_str, font=font)[2:]
+            # Center text horizontally within the cell
+            text_x = x + (GRID_STEP_SIZE - text_width) // 2
+            text_y = y
+            # Add dark background behind text with padding
+            padding = 2
+            draw.rectangle(
+                (
+                    text_x - padding,
+                    text_y - padding,
+                    text_x + text_width + padding,
+                    text_y + text_height + padding
+                ),
+                fill=(0, 0, 0, 180)  # Dark semi-transparent background
+            )
+            draw.text((text_x, text_y), coord_str, font=font, fill=(255, 255, 255))  # White text
 
     img.save(out_path, "PNG")
     return out_path

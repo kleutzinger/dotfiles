@@ -191,13 +191,17 @@ const toUpload = {
 
 console.log("upload? ctrl+c to cancel");
 // count down form 5 4 3 2 1 seconds all on same line
-for (let i = 5; i > 0; i--) {
-  process.stdout.write(`${i} `);
-  await new Promise((r) => setTimeout(r, 1000));
+async function countdownClear(sec){
+  console.log(`clearing in ${sec} seconds...`);
+  for (let i = sec; i > 0; i--) {
+    process.stdout.write(`${i} `);
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  await $`clear`;
 }
-
-await $`clear`;
-console.log("uploading...");
+await countdownClear(5);
 
 const out = await pb.collection("coconuts").create(toUpload);
+console.log("upload complete");
 console.log(out);
+await countdownClear(5);
