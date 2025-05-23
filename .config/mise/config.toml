@@ -7,3 +7,4 @@ trusted_config_paths = [
   '~/gits',
   '~/osp'
 ]
+idiomatic_version_file_enable_tools = ["python"]
