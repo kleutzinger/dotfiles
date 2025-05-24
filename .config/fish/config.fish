@@ -128,7 +128,9 @@ if type -q starship
     starship init fish | source
 end
 
-set -gx PATH $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/ $HOME/.cargo/bin $HOME/.bin $HOME/go/bin $HOME/.virtualenvs/++gits+ebcli/bin
+fish_add_path -g $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/
+# readability
+fish_add_path -g $HOME/.cargo/bin $HOME/.bin $HOME/go/bin $HOME/.virtualenvs/++gits+ebcli/bin $SCRIPTS_DIR/music-history
 
 # bun on ubuntu
 if test (uname -n) = kevbot.xyz
