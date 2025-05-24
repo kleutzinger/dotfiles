@@ -1,4 +1,13 @@
-#!/home/kevin/.virtualenvs/++scripts+music-history/bin/python3
+#!/usr/bin/env -S uv run --script
+
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "ytmusicapi",
+#     "importmonkey",
+# ]
+# ///
+
 import os
 import sys
 import shutil
@@ -56,3 +65,4 @@ play_youtube_music_url(url=url)
 largest_thumbnail = song["thumbnails"][-1]["url"]
 subprocess.run(["timg", largest_thumbnail])
 time.sleep(3)
+

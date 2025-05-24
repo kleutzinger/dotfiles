@@ -1,4 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "ytmusicapi",
+#     "flask",
+#     "python-dotenv",
+#     "flask-cors",
+# ]
+# ///
 
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
@@ -336,4 +346,6 @@ def volume_down():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True) 
+    port = 5000
+    logger.info(f"Starting Flask server at http://localhost:{port}")
+    app.run(host='0.0.0.0', port=port, debug=True)
