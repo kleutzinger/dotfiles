@@ -1,4 +1,10 @@
-#!/usr/bin/env -S uv run --script --with pillow
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pillow",
+# ]
+# ///
 """
 When collaborating with someone over screenshare, the remote person
 may want to "point" somewhere at your screen. We give them a grid
