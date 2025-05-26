@@ -1,4 +1,4 @@
-#/usr/bin/env python3
+#!/usr/bin/env -S uv run --script --with pyautogui
 import pyautogui
 pyautogui.keyUp('win')
 pyautogui.press('enter')
