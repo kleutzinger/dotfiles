@@ -190,11 +190,16 @@ for (let i = -2; i <= 2; i++) {
 }
 
 const paths_joined = candidateThumbnailPaths.join(" ");
-const cmd = `python3 ~/scripts/image_selector2.py ${paths_joined}`.trim();
-console.log(cmd)
+
+// const proc = Bun.spawnSync(["echo", "hello"]);
+//
+// console.log(proc.stdout.toString());
+// // => "hello\n"
+const image_selector_path = 'ble'
+const cmd = [`${}`, ...candidateThumbnailPaths]
 
 
-const thumbnailPath = (await $`${cmd}`).text().trim()
+const thumbnailPath = Bun.spawnSync(cmd).stdout.toString().trim();
 if (!thumbnailPath) {
   console.error("No thumbnail selected, exiting.");
   process.exit(1);
