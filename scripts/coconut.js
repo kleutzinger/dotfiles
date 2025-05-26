@@ -163,18 +163,45 @@ if (sec <= 0 && !secIndex) {
     break;
   }
 }
+async function mkthumbnail(path, sec) {
+  try {
 
-const seekTo = sec > 0 ? `00:00:${sec}` : "30%";
+    const seekTo = sec > 0 ? `00:00:${sec}` : "30%";
 
-// create thumbnail file
-const thumbnailPath = `/tmp/${crypto.randomUUID()}.jpg`;
-await $`ffmpegthumbnailer -t${seekTo} -s512 -i ${path} -o ${thumbnailPath}`;
-try {
-  // await $`kitten icat --align left --scale-up ${thumbnailPath}`;
-  await $`timg ${thumbnailPath}`;
-} catch (e) {
-  console.error(e);
+    // create thumbnail file
+    const thumbnailPath = `/tmp/${crypto.randomUUID()}.jpg`;
+    await $`ffmpegthumbnailer -t${seekTo} -s512 -i ${path} -o ${thumbnailPath}`;
+    // await $`kitten icat --align left --scale-up ${thumbnailPath}`;
+    // await $`timg ${thumbnailPath}`;
+    return thumbnailPath;
+  } catch (e) {
+    console.error(e);
+  }
 }
+
+// get around 10 thumbnails depending on the sec before and after the main sec as a center. return a list of paths
+
+const candidateThumbnailPaths = [];
+for (let i = -2; i <= 2; i++) {
+  const thumbnailPath = await mkthumbnail(path, sec + i);
+  if (thumbnailPath) {
+    candidateThumbnailPaths.push(thumbnailPath);
+  }
+}
+
+const paths_joined = candidateThumbnailPaths.join(" ");
+const cmd = `python3 ~/scripts/image_selector2.py ${paths_joined}`.trim();
+console.log(cmd)
+
+
+const thumbnailPath = (await $`${cmd}`).text().trim()
+if (!thumbnailPath) {
+  console.error("No thumbnail selected, exiting.");
+  process.exit(1);
+}
+
+
+
 
 `
 yt-dlp --write-thumbnail -P thumbnail:/tmp/thumb --skip-download 'https://www.youtube.com/watch?v=9DUfx2g_R8U'
