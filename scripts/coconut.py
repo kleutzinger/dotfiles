@@ -5,6 +5,7 @@
 #     "pocketbase",
 #     "diskcache",
 #     "click",
+#     "shortuuid"
 # ]
 # ///
 
@@ -12,12 +13,12 @@ import json
 import os
 import sys
 import subprocess
-import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 import time
 import concurrent.futures
+from shortuuid import uuid
 
 # Third-party imports (inline dependencies managed by uv)
 import click
@@ -232,27 +233,72 @@ def create_coconut(sec: Optional[str] = None):
     uri = data["uri"]
     sec_value = data["sec"]
     path = data["path"]
+    duration = data["duration"]
 
     # Use provided sec value if given
     if sec is not None:
         sec_value = hhmmss_to_sec(sec)
 
-    # Prompt for seconds if needed
-    if sec_value <= 0 and sec is None:
-        print(uri)
-        sec_input = input("What sec?\n")
-        sec_value = hhmmss_to_sec(sec_input.strip())
-
+    sec_value = 0
     seek_to = f"00:00:{sec_value}" if sec_value > 0 else "30%"
 
-    # Create thumbnail
-    thumbnail_path = f"/tmp/{uuid.uuid4()}.jpg"
-    run_command(
-        ["ffmpegthumbnailer", f"-t{seek_to}", "-s512", "-i", path, "-o", thumbnail_path]
-    )
+    def generate_and_select_thumbnail(path: str, seek_to: str) -> str:
+        """Generate multiple thumbnails and let user select one.
+        Returns the path to the selected thumbnail."""
+        while True:
+            # Create multiple thumbnails at different positions
+            thumbnail_paths = []
+            seek_positions = []
 
-    print(f"timg '{thumbnail_path}'")
-    run_command(["timg", thumbnail_path], capture=False)
+            # Calculate 5 positions around the seek point plus quarter marks
+            base_sec = int(seek_to[6:]) if seek_to.startswith("00:00:") else 30
+            offsets = [-10, -5, 0, 5, 10]
+
+            # Add positions around the seek point
+            for offset in offsets:
+                pos_sec = max(0, base_sec + offset)
+                seek_positions.append(f"00:00:{pos_sec}")
+
+            # Add quarter mark positions
+            duration_sec = int(duration)
+            quarter_positions = [
+                int(duration_sec * 0.25),
+                int(duration_sec * 0.5),
+                int(duration_sec * 0.75),
+            ]
+            for pos_sec in quarter_positions:
+                seek_positions.append(f"00:00:{pos_sec}")
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            temp_dir = f"/tmp/thumb-{timestamp}-{uuid()}"
+            os.makedirs(temp_dir, exist_ok=True)
+            # Generate thumbnails
+            for pos in seek_positions:
+                thumb_path = f"{temp_dir}/{uuid()}.jpg"
+                thumbnail_paths.append(thumb_path)
+                run_command(
+                    [
+                        "ffmpegthumbnailer",
+                        f"-t{pos}",
+                        "-s512",
+                        "-i",
+                        path,
+                        "-o",
+                        thumb_path,
+                    ]
+                )
+
+            # Let user select preferred thumbnail
+            selector_args = ["image_selector.py"] + thumbnail_paths
+            selected_path = run_command(selector_args, capture=True).strip()
+
+            # Show selected thumbnail
+            print(f"Selected: timg '{selected_path}'")
+            print(f"temp_dir: {temp_dir}")
+            run_command(["timg", selected_path], capture=False)
+            return selected_path
+
+    # Get thumbnail using the new function
+    thumbnail_path = generate_and_select_thumbnail(path, seek_to)
 
     # Prepare upload data
     print("upload? ctrl+c to cancel")
@@ -269,7 +315,7 @@ def create_coconut(sec: Optional[str] = None):
 
         out = pb.collection("coconuts").create(to_upload)
         print("upload complete")
-        print(out)
+        print(out.path)
         countdown_clear(5)
 
     # Clean up thumbnail

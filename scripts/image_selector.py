@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script --with pygame
 import os
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
