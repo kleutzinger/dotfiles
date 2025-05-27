@@ -8,7 +8,7 @@ import random
 
 
 def get_coconut_list():
-    cmd = ["coconut.js", "--list"]
+    cmd = ["coconut.py", "list"]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate()
     if p.returncode != 0:

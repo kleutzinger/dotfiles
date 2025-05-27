@@ -179,7 +179,7 @@ def countdown_clear(seconds: int):
     for i in range(seconds, 0, -1):
         print(f"{i} ", end="", flush=True)
         time.sleep(1)
-    run_command(["clear"])
+    run_command(["clear"], capture=False)
 
 
 def list_coconuts():
