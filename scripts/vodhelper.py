@@ -386,9 +386,11 @@ def main():
         input(
             f'start render? (will overwrite stuff in "./corrected").\n{len(ymls)} ymls files found'
         )
-        # empty the corrected directory
-        for f in os.listdir("corrected"):
-            os.remove(os.path.join("corrected", f))
+        # delete the corrected directory and remake it
+        if os.path.exists("corrected"):
+            print("deleting corrected directory")
+            shutil.rmtree("corrected")
+        os.makedirs("corrected", exist_ok=True)
         if TRNY_YAML_NAME in ymls:
             ymls.remove(TRNY_YAML_NAME)
         execute_ymls(ymls, preview_only="s" in sys.argv)
