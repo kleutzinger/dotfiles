@@ -86,7 +86,7 @@ def grid_on_img(img: Image.Image) -> str:
             text_width, text_height = draw.textbbox((0, 0), coord_str, font=font)[2:]
             # Center text horizontally within the cell
             text_x = x + (GRID_STEP_SIZE - text_width) // 2
-            text_y = y
+            text_y = y + 4
             # Add dark background behind text with padding
             padding = 2
             draw.rectangle(
