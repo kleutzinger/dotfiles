@@ -219,7 +219,7 @@ def list_coconuts():
     print(json.dumps(resolved_records, indent=2, default=str))
 
 
-def create_coconut(sec: Optional[str] = None):
+def create_coconut(sec: Optional[int] = None):
     """Create a new coconut record"""
     # Authenticate with PocketBase
     pb.collection("users").auth_with_password(POCKETBASE_USERNAME, POCKETBASE_PASSWORD)
@@ -231,15 +231,13 @@ def create_coconut(sec: Optional[str] = None):
     vlc_data = run_command(["fish", "-c", "recent_played_vlc.py --json"])
     data = json.loads(vlc_data)
     uri = data["uri"]
-    sec_value = data["sec"]
+    vlc_sec = data["sec"]
     path = data["path"]
     duration = data["duration"]
 
-    # Use provided sec value if given
-    if sec is not None:
-        sec_value = hhmmss_to_sec(sec)
+    # Use provided sec value if given, otherwise use VLC's position
+    sec_value = sec if sec is not None else vlc_sec
 
-    sec_value = 0
     seek_to = f"00:00:{sec_value}" if sec_value > 0 else "30%"
 
     def generate_and_select_thumbnail(path: str, seek_to: str) -> str:
@@ -301,8 +299,6 @@ def create_coconut(sec: Optional[str] = None):
     thumbnail_path = generate_and_select_thumbnail(path, seek_to)
 
     # Prepare upload data
-    print("upload? ctrl+c to cancel")
-    countdown_clear(5)
 
     # Upload to PocketBase
     with open(thumbnail_path, "rb") as f:
@@ -313,6 +309,9 @@ def create_coconut(sec: Optional[str] = None):
             "image": FileUpload((os.path.basename(thumbnail_path), f)),
         }
 
+        print(to_upload)
+        print("upload? ctrl+c to cancel")
+        countdown_clear(5)
         out = pb.collection("coconuts").create(to_upload)
         print("upload complete")
         print(out.path)
@@ -327,12 +326,14 @@ def create_coconut(sec: Optional[str] = None):
 
 @click.group(invoke_without_command=True)
 @click.pass_context
-@click.option("--sec", help="Timestamp in format hh:mm:ss, mm:ss, or ss")
+@click.option("--sec", help="Timestamp in format hh:mm:ss, mm:ss, or ss (also accepts 5.02 for 5:02)")
 def cli(ctx, sec):
     """Coconut media thumbnail manager"""
     if ctx.invoked_subcommand is None:
         # Default behavior - create coconut
-        create_coconut(sec)
+        # Convert sec to integer if provided
+        sec_value = hhmmss_to_sec(sec) if sec else None
+        create_coconut(sec_value)
 
 
 @cli.command()
