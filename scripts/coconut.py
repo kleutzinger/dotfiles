@@ -48,10 +48,15 @@ def relative_time(date: datetime) -> str:
         {"label": "month", "seconds": 30 * 24 * 60 * 60},
         {"label": "day", "seconds": 24 * 60 * 60},
         {"label": "hour", "seconds": 60 * 60},
+        {"label": "minute", "seconds": 60},
+        {"label": "second", "seconds": 1},
     ]
 
     result = []
     remaining_seconds = elapsed.total_seconds()
+
+    if remaining_seconds < 0:
+        return "just now"
 
     for unit in units:
         unit_time = int(remaining_seconds // unit["seconds"])
@@ -59,9 +64,11 @@ def relative_time(date: datetime) -> str:
             plural = "s" if unit_time > 1 else ""
             result.append(f"{unit_time} {unit['label']}{plural}")
             remaining_seconds -= unit_time * unit["seconds"]
+            if len(result) >= 2:  # Only show at most 2 units
+                break
 
     if not result:
-        return "0 hours ago"
+        return "just now"
 
     return ", ".join(result) + " ago"
 
@@ -70,7 +77,7 @@ def hours_ago(date: datetime) -> str:
     """Convert datetime to hours ago format"""
     now = datetime.now()
     elapsed = now - date
-    hours = int(elapsed.total_seconds() // 3600)
+    hours = max(0, int(elapsed.total_seconds() // 3600))
     return f"{hours}hr"
 
 
@@ -326,7 +333,10 @@ def create_coconut(sec: Optional[int] = None):
 
 @click.group(invoke_without_command=True)
 @click.pass_context
-@click.option("--sec", help="Timestamp in format hh:mm:ss, mm:ss, or ss (also accepts 5.02 for 5:02)")
+@click.option(
+    "--sec",
+    help="Timestamp in format hh:mm:ss, mm:ss, or ss (also accepts 5.02 for 5:02)",
+)
 def cli(ctx, sec):
     """Coconut media thumbnail manager"""
     if ctx.invoked_subcommand is None:
