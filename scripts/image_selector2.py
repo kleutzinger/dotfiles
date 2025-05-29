@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-import webview
+#!/usr/bin/env -S uv run --with pywebview
 
 # get arguments from the command line
 import sys
+import webview
 
 image_links = sys.argv[1:]
 
