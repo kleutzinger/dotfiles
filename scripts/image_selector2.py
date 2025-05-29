@@ -2,7 +2,33 @@
 
 # get arguments from the command line
 import sys
+import subprocess
+import platform
+
 import webview
+
+
+def desktop_notify(
+    message: str, title: str = "Notification"
+) -> None:
+    """Send a desktop notification."""
+    try:
+        if platform.system() == "Linux":
+            subprocess.run(["notify-send", title, message])
+        elif platform.system() == "Darwin":
+            subprocess.run(
+                [
+                    "terminal-notifier",
+                    "-title",
+                    title,
+                    "-message",
+                    message,
+                ]
+            )
+    except:
+        # If the notification fails, we can ignore it
+        pass
+
 
 image_links = sys.argv[1:]
 
@@ -25,7 +51,8 @@ class Api:
         import subprocess
 
         # notify-send the output
-        subprocess.run(["notify-send", "Image selected", value])
+
+        desktop_notify(value, "Image Selected")
         print(value, flush=True)
 
     def quit(self):
