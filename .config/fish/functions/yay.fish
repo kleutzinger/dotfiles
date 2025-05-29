@@ -2,12 +2,10 @@
 function yay
     pushd $HOME/Downloads
     if test -n "$VIRTUAL_ENV"
-        echo "temporarily disabling venv $VIRTUAL_ENV"
         set -l TEMP_VENV "$VIRTUAL_ENV"
         deactivate
     end
     command yay $argv
-    echo "re-enabling venv $TEMP_VENV"
     if test -n "$TEMP_VENV"
         source $TEMP_VENV/bin/activate.fish
     end
