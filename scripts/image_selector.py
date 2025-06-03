@@ -9,8 +9,8 @@ import sys
 pygame.init()
 
 # Set display dimensions
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 DISPLAY_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # Set colors
