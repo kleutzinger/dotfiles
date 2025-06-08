@@ -36,6 +36,7 @@ def fzf_choose(
     inp: Iterable,
     display_func: Callable = identity,
     output_func: Callable = identity,
+    sortby_func: Optional[Callable] = None,
     **kwargs,
 ) -> Any:
     """
@@ -46,6 +47,8 @@ def fzf_choose(
     TODO: add way to hide numbers on the left, aka do this without indexing
     """
     choices = []
+    if sortby_func:
+        inp = sorted(inp, key=sortby_func)
     for idx, val in enumerate(inp):
         choices.append(f"{idx:2} {display_func(val)}")
     choice_idx = int(fzf_iterable(choices, **kwargs).strip().split(" ")[0])
