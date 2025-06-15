@@ -13,7 +13,7 @@ import json
 import os
 import sys
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 import time
@@ -40,7 +40,12 @@ pb = PocketBase(POCKETBASE_URL)
 
 def relative_time(date: datetime) -> str:
     """Convert datetime to relative time string (e.g. 1 year, 2 months, 3 days, 4 hours ago)"""
-    now = datetime.now()
+    # Ensure 'date' is timezone-aware and in UTC
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
+    else:
+        date = date.astimezone(timezone.utc)
+    now = datetime.now(timezone.utc)
     elapsed = now - date
 
     units = [
@@ -75,7 +80,12 @@ def relative_time(date: datetime) -> str:
 
 def hours_ago(date: datetime) -> str:
     """Convert datetime to hours ago format"""
-    now = datetime.now()
+    # Ensure 'date' is timezone-aware and in UTC
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=timezone.utc)
+    else:
+        date = date.astimezone(timezone.utc)
+    now = datetime.now(timezone.utc)
     elapsed = now - date
     hours = max(0, int(elapsed.total_seconds() // 3600))
     return f"{hours}hr"
