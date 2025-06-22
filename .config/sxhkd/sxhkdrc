@@ -119,8 +119,8 @@ super + shift + Tab
     $HOME/scripts/window-select.sh
 
 # toggle caps lock
-super + u
-    notify-send 'super+u caps lock toggle' && xdotool key Caps_Lock
+super + shift + u
+    notify-send 'super+shift+u caps lock toggle' && xdotool key Caps_Lock
 
 # Display keybind menu
 super + slash
