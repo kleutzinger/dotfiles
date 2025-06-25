@@ -65,7 +65,14 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
         else:
             # Use yt-dlp to download and print the output filename
             result = subprocess.run(
-                ["yt-dlp", "--print", "after_move:filepath", url_or_path],
+                [
+                    "uvx",
+                    "--no-cache",
+                    "yt-dlp",
+                    "--print",
+                    "after_move:filepath",
+                    url_or_path,
+                ],
                 capture_output=True,
                 text=True,
             )
@@ -90,6 +97,7 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
                     if c.isalnum() or c in [" ", "-", "_", "."]
                 ]
             )
+            # todo: install inline somehow
             subprocess.run(
                 [
                     "youtubeuploader",
