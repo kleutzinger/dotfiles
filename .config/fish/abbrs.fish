@@ -37,3 +37,4 @@ abbr -a L --position anywhere --set-cursor "% | less"
 
 alias define "sdcv"
 alias task "go-task"
+alias fd "fd --hidden --no-ignore"
