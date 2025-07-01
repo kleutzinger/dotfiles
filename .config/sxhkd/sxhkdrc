@@ -50,7 +50,7 @@ shift + F1
 
 # open a new note
 super + n
-    xdotool search "TriliumNext Notes" windowactivate || trilium
+    xdotool search "Trilium Notes" windowactivate || trilium
 
 # open file manager
 super + e
