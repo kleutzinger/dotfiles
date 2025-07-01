@@ -10,7 +10,7 @@ dependencies:
 The point of this script is to download the latest release of TriliumNext
 and facilitate the installation process.
 
-Check out TrilumNext here: https://github.com/TriliumNext/Notes
+Check out TrilumNext here: https://github.com/TriliumNext/Trilium
 
 This script should work on macOS (m-series), Windows, and Linux.
 
@@ -41,7 +41,7 @@ function iterPicker(iterable, displayFunc) {
 
 // use json api to get all releases
 const response = await fetch(
-  `https://api.github.com/repos/TriliumNext/Notes/releases`
+  `https://api.github.com/repos/TriliumNext/Trilium/releases`
 );
 
 const data = (await response.json()).slice(0, 5);
@@ -52,7 +52,7 @@ console.dir(release.name);
 let installDir;
 let asset;
 if (currentOS.isOSX) {
-  const assetName = `TriliumNextNotes-${tagName}-macos-arm64.dmg`;
+  const assetName = `TriliumNotes-${tagName}-macos-arm64.dmg`;
   asset = release.assets.find((a) => {
     return a.name === assetName;
   });
@@ -77,7 +77,7 @@ if (currentOS.isWindows) {
   /*
   cd C:\Users\kevin\Documents\GitHub\dotfiles\ ; git pull ; bun run scripts\update-trilium.js
   */
-  const assetName = `TriliumNextNotes-${tagName}-windows-x64.exe`;
+  const assetName = `TriliumNotes-${tagName}-windows-x64.exe`;
   asset = release.assets.find((a) => {
     return a.name === assetName;
   });
@@ -91,8 +91,8 @@ if (currentOS.isWindows) {
   console.log("done! please double click the file on your desktop to install.");
 }
 if (currentOS.isLinux) {
-  // get asset with name of form TriliumNextNotes-v0.92.7-linux-x64.zip
-  const assetName = `TriliumNextNotes-${tagName}-linux-x64.zip`;
+  // get asset with name of form TriliumNotes-v0.92.7-linux-x64.zip
+  const assetName = `TriliumNotes-${tagName}-linux-x64.zip`;
   asset = release.assets.find((a) => {
     return a.name === assetName;
   });
