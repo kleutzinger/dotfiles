@@ -1,4 +1,4 @@
-#!/usr/bin/env -S uv run --with pywebview
+#!/usr/bin/env -S uv run --with pywebview,PyGObject
 
 # get arguments from the command line
 import sys
