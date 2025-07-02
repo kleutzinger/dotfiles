@@ -156,6 +156,8 @@ def concurrent_path_finder(records: List[Any]) -> List[Dict]:
             "image": record.image,
             "imageUrl": getattr(record, "imageUrl", None),
             "timeAgo": getattr(record, "timeAgo", None),
+            "note": getattr(record, "note", None),
+            "since": getattr(record, "since", None),
             **resolved,
         }
         updated_records.append(record_dict)
@@ -229,14 +231,31 @@ def list_coconuts():
         record.timeAgo = (
             f"({hours_ago(created_datetime)}) {relative_time(created_datetime)}"
         )
+        record._created_datetime = created_datetime  # Store for later use
 
-    resolved_records = sorted(
-        concurrent_path_finder(records), key=lambda x: x["created"]
-    )
+    # Sort records by created time (only once)
+    records_sorted = sorted(records, key=lambda r: r._created_datetime)
+
+    # Calculate 'since' (hours since previous entry)
+    prev_created = None
+    for record in records_sorted:
+        if prev_created is not None:
+            delta = (record._created_datetime - prev_created).total_seconds() / 3600
+            record.since = round(delta, 2)
+        else:
+            record.since = None
+        prev_created = record._created_datetime
+
+    # Remove helper attribute before path resolution
+    for record in records_sorted:
+        if hasattr(record, "_created_datetime"):
+            delattr(record, "_created_datetime")
+
+    resolved_records = concurrent_path_finder(records_sorted)
     print(json.dumps(resolved_records, indent=2, default=str))
 
 
-def create_coconut(sec: Optional[int] = None):
+def create_coconut(sec: Optional[int] = None, note: Optional[str] = None):
     """Create a new coconut record"""
     # Authenticate with PocketBase
     pb.collection("users").auth_with_password(POCKETBASE_USERNAME, POCKETBASE_PASSWORD)
@@ -324,6 +343,7 @@ def create_coconut(sec: Optional[int] = None):
             "hostname": hostname,
             "sec": sec_value,
             "image": FileUpload((os.path.basename(thumbnail_path), f)),
+            "note": note,
         }
 
         print(to_upload)
@@ -347,13 +367,17 @@ def create_coconut(sec: Optional[int] = None):
     "--sec",
     help="Timestamp in format hh:mm:ss, mm:ss, or ss (also accepts 5.02 for 5:02)",
 )
-def cli(ctx, sec):
+@click.option(
+    "--note",
+    help="Optional note for this coconut",
+)
+def cli(ctx, sec, note):
     """Coconut media thumbnail manager"""
     if ctx.invoked_subcommand is None:
         # Default behavior - create coconut
         # Convert sec to integer if provided
         sec_value = hhmmss_to_sec(sec) if sec else None
-        create_coconut(sec_value)
+        create_coconut(sec_value, note)
 
 
 @cli.command()
