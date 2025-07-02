@@ -66,36 +66,8 @@
 		"stations" : 
 		[
 			{
-				"name" : "rainwave game",
-				"notifications" : false,
-				"url" : "https://relay.rainwave.cc:443/game.mp3"
-			},
-			{
-				"name" : "rainwave chiptune",
-				"notifications" : false,
-				"url" : "https://relay.rainwave.cc:443/chiptune.mp3"
-			},
-			{
-				"name" : "rainwave all",
-				"notifications" : false,
-				"url" : "https://relay.rainwave.cc:443/all.mp3"
-			},
-			{
-				"name" : "rainwave OC remix",
-				"notifications" : false,
-				"url" : "https://relay.rainwave.cc:443/ocremix.mp3"
-			},
-			{
-				"name" : "gensokyo",
-				"url" : "https://stream.gensokyoradio.net/1/"
-			},
-			{
 				"name" : "kevbot radio",
 				"url" : "https://radio.kevbot.xyz/stream"
-			},
-			{
-				"name" : "KB video game radio",
-				"url" : "https://radio.kevbot.xyz/videogame"
 			},
 			{
 				"name" : "ambient radio",
@@ -113,6 +85,40 @@
 			{
 				"name" : "philly alt 104.5",
 				"url" : "https://stream.revma.ihrhls.com/zc3401"
+			}
+		]
+	},
+	{
+		"group" : "video game",
+		"stations" : 
+		[
+			{
+				"name" : "rainwave OC remix",
+				"notifications" : false,
+				"url" : "https://relay.rainwave.cc:443/ocremix.mp3"
+			},
+			{
+				"name" : "rainwave game",
+				"notifications" : false,
+				"url" : "https://relay.rainwave.cc:443/game.mp3"
+			},
+			{
+				"name" : "rainwave all",
+				"notifications" : false,
+				"url" : "https://relay.rainwave.cc:443/all.mp3"
+			},
+			{
+				"name" : "rainwave chiptune",
+				"notifications" : false,
+				"url" : "https://relay.rainwave.cc:443/chiptune.mp3"
+			},
+			{
+				"name" : "KB video game radio",
+				"url" : "https://radio.kevbot.xyz/videogame"
+			},
+			{
+				"name" : "gensokyo",
+				"url" : "https://stream.gensokyoradio.net/1/"
 			}
 		]
 	}
