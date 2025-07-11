@@ -101,6 +101,7 @@ unclutter
 usage
 uv
 vlc
+vlc-plugins-all
 webapp-manager
 wget
 wmctrl
