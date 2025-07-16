@@ -255,7 +255,9 @@ def list_coconuts():
     print(json.dumps(resolved_records, indent=2, default=str))
 
 
-def create_coconut(sec: Optional[int] = None, note: Optional[str] = None):
+def create_coconut(
+    sec: Optional[int] = None, note: Optional[str] = None, path: Optional[str] = None
+):
     """Create a new coconut record"""
     # Authenticate with PocketBase
     pb.collection("users").auth_with_password(POCKETBASE_USERNAME, POCKETBASE_PASSWORD)
@@ -264,7 +266,10 @@ def create_coconut(sec: Optional[int] = None, note: Optional[str] = None):
     hostname = run_command(["hostname"])
 
     # Get recent played VLC data
-    vlc_data = run_command(["fish", "-c", "recent_played_vlc.py --json"])
+    vlc_cmd = ["fish", "-c", "recent_played_vlc.py --json"]
+    if path:
+        vlc_cmd = ["fish", "-c", f"recent_played_vlc.py --json --path '{path}'"]
+    vlc_data = run_command(vlc_cmd)
     data = json.loads(vlc_data)
     uri = data["uri"]
     vlc_sec = data["sec"]
@@ -371,13 +376,17 @@ def create_coconut(sec: Optional[int] = None, note: Optional[str] = None):
     "--note",
     help="Optional note for this coconut",
 )
-def cli(ctx, sec, note):
+@click.option(
+    "--path",
+    help="Use a custom file path instead of the most recently played VLC file",
+)
+def cli(ctx, sec, note, path):
     """Coconut media thumbnail manager"""
     if ctx.invoked_subcommand is None:
         # Default behavior - create coconut
         # Convert sec to integer if provided
         sec_value = hhmmss_to_sec(sec) if sec else None
-        create_coconut(sec_value, note)
+        create_coconut(sec_value, note, path)
 
 
 @cli.command()
