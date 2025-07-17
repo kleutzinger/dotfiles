@@ -51,37 +51,34 @@ def get_brackets() -> List[Bracket]:
     return requests.get("https://tril.kevbot.xyz/custom/brackets").json()
 
 
-def get_entrants(slug: str):
+def get_entrants(slug: str, num: int = 100):
     """Fetch entrants from start.gg API"""
     query = """
-    query EventEntrants($slug: String!) {
-      event(slug: $slug) {
-        id
-        name
-        entrants(query: {
-          page: 1
-          perPage: 100
-        }) {
-          pageInfo {
-            total
-            totalPages
-          }
-          nodes {
+    query GetEventSeeds($slug: String!, $num: Int!) {
+        event(slug: $slug) {
             id
-            participants {
-              id
-              gamerTag
+            name
+            phases {
+                seeds(query: {
+                    page: 1
+                    perPage: $num
+                }) {
+                    nodes {
+                        seedNum
+                        entrant {
+                            name
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
     """
 
     headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
     response = requests.post(
         "https://api.start.gg/gql/alpha",
-        json={"query": query, "variables": {"slug": slug}},
+        json={"query": query, "variables": {"slug": slug, "num": num}},
         headers=headers,
     )
 
@@ -117,7 +114,13 @@ def bracket() -> Bracket:
 
 @cli.command()
 @click.option("--bracket", help="URL or slug of the bracket")
-def entrants(bracket):
+@click.option(
+    "--num", default=100, help="Number of seeds to fetch (default: 100, max: 512)"
+)
+def entrants(bracket, num):
+    if num > 512:
+        click.echo("Error: --num cannot exceed 512", err=True)
+        raise click.Abort()
     """Get entrants for a bracket"""
     if bracket:
         # If it's a URL, convert to slug
@@ -131,13 +134,24 @@ def entrants(bracket):
         chosen = fzf_choose(brackets, display_func=lambda x: x["title"])
         slug = url2slug(chosen["BracketUrl"])
 
-    event = get_entrants(slug)
+    event = get_entrants(slug, num)
     click.echo(f"\nEvent: {event['name']}")
-    click.echo(f"Total Entrants: {event['entrants']['pageInfo']['total']}")
-    click.echo("\nEntrants:")
-    for entrant in event["entrants"]["nodes"]:
-        for participant in entrant["participants"]:
-            click.echo(f"- {participant['gamerTag']}")
+
+    # Get seeds from the first phase
+    if event["phases"] and event["phases"][0]["seeds"]["nodes"]:
+        seeds = event["phases"][0]["seeds"]["nodes"]
+        click.echo(f"Tournament: {slug}")
+        click.echo(f"Total Seeds: {len(seeds)}")
+        click.echo("\nSeeds (ordered by seed number):")
+        # Sort by seed number
+        sorted_seeds = sorted(seeds, key=lambda x: x["seedNum"])
+        for seed in sorted_seeds:
+            name = seed["entrant"]["name"]
+            # Split name on | and take the right part if it exists, otherwise keep full name
+            name = name.split(" | ")[-1]
+            click.echo(f"{seed['seedNum']:03d} - {name}")
+    else:
+        click.echo("No seeds found for this event.")
 
 
 if __name__ == "__main__":
