@@ -256,7 +256,10 @@ def list_coconuts():
 
 
 def create_coconut(
-    sec: Optional[int] = None, note: Optional[str] = None, path: Optional[str] = None
+    sec: Optional[int] = None,
+    note: Optional[str] = None,
+    path: Optional[str] = None,
+    first_thumb: bool = False,
 ):
     """Create a new coconut record"""
     # Authenticate with PocketBase
@@ -328,7 +331,11 @@ def create_coconut(
 
             # Let user select preferred thumbnail
             selector_args = ["image_selector.py"] + thumbnail_paths
-            selected_path = run_command(selector_args, capture=True).strip()
+            if first_thumb:  # pick the first thumbnail if --first is set
+                print(f"Selecting first thumbnail: {thumbnail_paths[0]}")
+                selected_path = thumbnail_paths[0]
+            else:
+                selected_path = run_command(selector_args, capture=True).strip()
 
             # Show selected thumbnail
             print(f"Selected: timg '{selected_path}'")
@@ -380,13 +387,20 @@ def create_coconut(
     "--path",
     help="Use a custom file path instead of the most recently played VLC file",
 )
-def cli(ctx, sec, note, path):
+@click.option(
+    "--first",
+    "-f",
+    help="choose the first thumbnail",
+    is_flag=True,
+    default=False,
+)
+def cli(ctx, sec, note, path, first):
     """Coconut media thumbnail manager"""
     if ctx.invoked_subcommand is None:
         # Default behavior - create coconut
         # Convert sec to integer if provided
         sec_value = hhmmss_to_sec(sec) if sec else None
-        create_coconut(sec_value, note, path)
+        create_coconut(sec_value, note, path, first_thumb=first)
 
 
 @cli.command()
