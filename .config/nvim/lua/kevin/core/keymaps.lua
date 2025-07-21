@@ -124,3 +124,16 @@ end, { desc = "Rename symbol" })
 keymap.set("n", "<F2>", function()
   vim.lsp.buf.rename()
 end, { desc = "Rename symbol" })
+
+-- leader C to :CopilotChatToggle
+keymap.set("n", "<leader>C", "<cmd>CopilotChatToggle<CR>", { desc = "Toggle Copilot Chat" })
+
+-- Quick chat keybinding
+vim.keymap.set('n', '<leader>ccq', function()
+  local input = vim.fn.input("Quick Chat: ")
+  if input ~= "" then
+    require("CopilotChat").ask(input, {
+      selection = require("CopilotChat.select").buffer
+    })
+  end
+end, { desc = "CopilotChat - Quick chat" })
