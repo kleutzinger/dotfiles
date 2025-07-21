@@ -25,17 +25,13 @@ https://tril.kevbot.xyz/custom/brackets
 
 [
   {
-    "title": "Unranked",
-    "VODs": ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
-    "BracketUrl": "https://www.start.gg/tournament/unranked/event/melee-singles",
-    "Date": "2025-07-19"
-  },
-  {
     "title": "Get On My Level: Forever - Canadian Fighting Game Championships",
     "VODs": [],
     "BracketUrl": "https://www.start.gg/tournament/get-on-my-level-forever-canadian-fighting-game-championships/event/super-smash-bros-melee-singles",
     "Date": "2025-07-05"
+    "relativeDate": "X days ago"
   }, ...
+]
 
 """
 
@@ -103,12 +99,19 @@ def cli():
     pass
 
 
+def choose_bracket() -> Bracket:
+    """Choose a bracket from the available ones"""
+    brackets = get_brackets()
+    chosen = fzf_choose(
+        brackets, display_func=lambda x: f"{x.get('title')}{x.get('relativeDate')}"
+    )
+    return chosen
+
+
 @cli.command()
 def bracket() -> Bracket:
     """List available brackets, choose one"""
-    brackets = get_brackets()
-    chosen = fzf_choose(brackets, display_func=lambda x: x["title"])
-    click.echo(json.dumps(chosen, indent=2))
+    click.echo(json.dumps(choose_bracket(), indent=2))
     return Bracket
 
 
@@ -129,9 +132,7 @@ def entrants(bracket, num):
         else:
             slug = bracket
     else:
-        # Choose from available brackets
-        brackets = get_brackets()
-        chosen = fzf_choose(brackets, display_func=lambda x: x["title"])
+        chosen = choose_bracket()
         slug = url2slug(chosen["BracketUrl"])
 
     event = get_entrants(slug, num)
@@ -140,7 +141,7 @@ def entrants(bracket, num):
     # Get seeds from the first phase
     if event["phases"] and event["phases"][0]["seeds"]["nodes"]:
         seeds = event["phases"][0]["seeds"]["nodes"]
-        click.echo(f"Tournament: {slug}")
+        click.echo(f"Tournament: https://start.gg/{slug}")
         click.echo(f"Total Seeds: {len(seeds)}")
         click.echo("\nSeeds (ordered by seed number):")
         # Sort by seed number
