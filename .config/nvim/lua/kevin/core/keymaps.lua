@@ -114,3 +114,13 @@ end, { desc = "Extract Block" })
 keymap.set("n", "<leader>rbf", function()
   require("refactoring").refactor("Extract Block To File")
 end, { desc = "Extract Block To File" })
+
+-- rename symbol lsp
+keymap.set("n", "<leader>rn", function()
+  vim.lsp.buf.rename()
+end, { desc = "Rename symbol" })
+
+-- bind f2 to same thing
+keymap.set("n", "<F2>", function()
+  vim.lsp.buf.rename()
+end, { desc = "Rename symbol" })
