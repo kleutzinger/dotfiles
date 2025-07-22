@@ -26,7 +26,7 @@ def ul_li_to_nice(htmlstr: str):
     "convert html list to plain text"
     replaceme = ["<li>", "</li>", "<ul>", "</ul>"]
     out = ""
-    for line in htmlstr.split("<li>"):
+    for line in htmlstr.split("<li>")[1:]:
         for r in replaceme:
             line = line.replace(r, "")
         out += line + "\n"
