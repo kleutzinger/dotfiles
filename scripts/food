@@ -24,12 +24,28 @@ ENDPOINT = "http://127.0.0.1:37840/custom/food"
 
 def ul_li_to_nice(htmlstr: str):
     "convert html list to plain text"
-    replaceme = ["<li>", "</li>", "<ul>", "</ul>"]
+    import re
+
+    # Remove ul tags and their content
+    htmlstr = re.sub(r"<ul[^>]*>", "", htmlstr)
+    htmlstr = re.sub(r"</ul>", "", htmlstr)
+
+    # Find all li tags and extract their content
+    li_pattern = r"<li[^>]*>(.*?)</li>"
+    matches = re.findall(li_pattern, htmlstr, re.DOTALL)
+
     out = ""
-    for line in htmlstr.split("<li>")[1:]:
-        for r in replaceme:
-            line = line.replace(r, "")
-        out += line + "\n"
+    for i, match in enumerate(matches):
+        # Clean up the content: remove extra whitespace and newlines
+        content = match.strip()
+        # Remove any remaining HTML tags
+        content = re.sub(r"<[^>]+>", "", content)
+        if content:
+            # Skip the first line if it's just "Food Journal" or "Journal"
+            if i == 0 and content.lower() in ["food journal", "journal"]:
+                continue
+            out += content + "\n"
+
     return out
 
 
