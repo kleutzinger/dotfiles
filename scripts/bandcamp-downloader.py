@@ -9,7 +9,7 @@ import tempfile
 from pprint import pprint
 from urllib.parse import urlsplit, urlunsplit
 
-from common import insertIntoPocketBase
+from common import tryInsertIntoPocketBase as insertIntoPocketBase
 
 # python function to download a webpage by url and find the <title> tag conents without any libraries
 
@@ -21,43 +21,6 @@ def get_title(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
     return soup.title.string
-
-
-def insertIntoPB(record: dict = {}) -> None:
-    """
-    Insert a record into PocketBase, specifically the bandcamps collection
-
-    params:
-        record: dict - the record to insert
-            example:
-                {
-                    "url": "https://kevin.bandcamp.com/album/album",
-                    "full_cmd": "yt-dlp...",
-                    "cwd": "/home/kevin/Downloads",
-                    "hostname": "kevin-arch"
-                }
-    """
-    POCKETBASE_URL = os.getenv("POCKETBASE_URL")
-    POCKETBASE_USERNAME = os.getenv("POCKETBASE_ADMIN_USERNAME")
-    POCKETBASE_PASSWORD = os.getenv("POCKETBASE_ADMIN_PASSWORD")
-
-    if not all([POCKETBASE_URL, POCKETBASE_USERNAME, POCKETBASE_PASSWORD]):
-        print("Missing environment variables")
-        sys.exit(1)
-
-    pb = PocketBase(POCKETBASE_URL)
-
-    async def inner(params=record):
-        await pb.admins.auth.with_password(
-            email=POCKETBASE_USERNAME, password=POCKETBASE_PASSWORD
-        )
-
-        collection = pb.collection("bandcamps")
-        created = await collection.create(params=params)
-        # print what was created
-        pprint(created)
-
-    asyncio.run(inner(record))
 
 
 def remove_query_params_and_fragment(url):

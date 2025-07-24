@@ -117,6 +117,13 @@ def fetch_url_with_retry(
     return None  # Return None if all retry attempts fail
 
 
+def tryInsertIntoPocketBase(record: dict = {}, db_name: str = "") -> None:
+    try:
+        insertIntoPocketBase(record, db_name)
+    except Exception as e:
+        print(f"Failed to insert into pocketbase: {e}")
+
+
 def insertIntoPocketBase(record: dict = {}, db_name: str = "") -> None:
     """
     Insert a record into PocketBase, specifically the bandcamps collection
