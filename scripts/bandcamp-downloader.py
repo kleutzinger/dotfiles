@@ -1,5 +1,4 @@
-#!/home/kevin/.virtualenvs/++scripts/bin/python
-import asyncio
+#!/usr/bin/env -S uv run
 import os
 import shlex
 import shutil

@@ -2,3 +2,17 @@
 name = "scripts"
 version = "0.1.0"
 description = "My small project"
+dependencies = [
+    "trilium-py",
+    "click",
+    "rokucli",
+    "pocketbase-async",
+    "pygame",
+    "beautifulsoup4",
+    "requests",
+    "requests-html",
+    "lxml-html-clean",
+]
+
+[tool.uv]
+package = false
