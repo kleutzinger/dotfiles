@@ -13,6 +13,7 @@ dependencies = [
     "requests",
     "requests-html",
     "lxml-html-clean",
+    "mutagen>=1.47.0",
 ]
 
 [tool.uv]

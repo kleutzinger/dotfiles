@@ -65,6 +65,7 @@ pup
 python-black
 python-iterfzf
 python-lxml-html-clean
+python-mutagen
 python-opencv
 python-psutil
 python-pyautogui
