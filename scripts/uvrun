@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 from: https://github.com/astral-sh/uv/issues/12193#issuecomment-2752712973
 """
