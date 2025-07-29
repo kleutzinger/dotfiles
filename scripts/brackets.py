@@ -143,7 +143,7 @@ def choose_bracket(latest: bool = False) -> Bracket:
 
     brackets = get_brackets()
     chosen = fzf_choose(
-        brackets, display_func=lambda x: f"{x.get('title')}{x.get('relativeDate')}"
+        brackets, display_func=lambda x: f"{x.get('relativeDate'):12} - {x.get('title', '')}"
     )
     return chosen
 
