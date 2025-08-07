@@ -36,7 +36,9 @@ abbr cdtt 'cd ~/.threads && gallery-dl (p) --sleep 5'
 abbr r 'reset'
 abbr -a L --position anywhere --set-cursor "% | less"
 abbr grv 'gh repo view --web'
+abbr f 'food'
 
 alias define "sdcv"
 alias task "go-task"
 alias fd "fd --hidden --no-ignore"
+
