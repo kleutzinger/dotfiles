@@ -143,16 +143,24 @@ def choose_bracket(latest: bool = False) -> Bracket:
 
     brackets = get_brackets()
     chosen = fzf_choose(
-        brackets, display_func=lambda x: f"{x.get('relativeDate'):12} - {x.get('title', '')}"
+        brackets,
+        display_func=lambda x: f"{x.get('relativeDate'):12} - {x.get('title', '')}",
     )
     return chosen
 
 
 @cli.command()
 @click.option("--latest", is_flag=True, help="Choose the most recent bracket")
-def bracket(latest) -> Bracket:
+@click.option("--upload", is_flag=True, help="Upload a new bracket")
+def bracket(latest: bool = False, upload: bool = False) -> Bracket:
     """List available brackets, choose one"""
-    click.echo(json.dumps(choose_bracket(latest=latest), indent=2))
+    bracket = choose_bracket(latest=latest)
+    if upload:
+        bracket_url = bracket.get("BracketUrl")
+        vod = bracket["VODs"][0]["url"]
+        click.echo(f"vodbackup.py --cleanup --bracket-url {bracket_url} {vod}")
+    else:
+        click.echo(json.dumps(bracket, indent=2))
     return Bracket
 
 
