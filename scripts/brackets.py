@@ -156,9 +156,10 @@ def bracket(latest: bool = False, upload: bool = False) -> Bracket:
     """List available brackets, choose one"""
     bracket = choose_bracket(latest=latest)
     if upload:
+        title = bracket.get("title", "")
         bracket_url = bracket.get("BracketUrl")
         vod = bracket["VODs"][0]["url"]
-        click.echo(f"vodbackup.py --cleanup --bracket-url {bracket_url} {vod}")
+        click.echo(f"vodbackup.py --cleanup --title '{title}' --bracket-url '{bracket_url}' '{vod}'")
     else:
         click.echo(json.dumps(bracket, indent=2))
     return Bracket

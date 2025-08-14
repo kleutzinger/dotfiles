@@ -37,7 +37,14 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
     "--bracket-url",
     help="Bracket URL to use for the upload, if not specified, will use the default bracket URL",
 )
-def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
+# add a --title
+@click.option(
+    "-t",
+    "--title"
+    help="Specify the title of the video"
+
+)
+def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: str = ""):
     # Copy secrets to current dir
     secrets = [
         (CLIENT_SECRETS_PATH, os.path.basename(CLIENT_SECRETS_PATH)),
@@ -90,10 +97,12 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = ""):
             description_text = "Find all my vods at https://vods.kevbot.xyz"
             if bracket_url:
                 description_text += f"\nBracket URL: {bracket_url}"
+            if not title:
+                title = os.path.basename(file)
             alphanumeric_title = "".join(
                 [
                     c
-                    for c in os.path.basename(file)
+                    for c in title
                     if c.isalnum() or c in [" ", "-", "_", "."]
                 ]
             )
