@@ -40,7 +40,7 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 # add a --title
 @click.option(
     "-t",
-    "--title"
+    "--title",
     help="Specify the title of the video"
 
 )
