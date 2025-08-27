@@ -13,7 +13,6 @@ abbr asdf 'setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl'
 abbr d deactivate
 abbr gs 'git switch -'
 abbr xt 'TERM=xterm'
-abbr bbb 'bandcamp-downloader.sh'
 abbr cdr 'cd (git rev-parse --show-toplevel)'
 abbr ayy 'yay'
 abbr ped sudoedit /etc/pacman.conf
@@ -37,6 +36,7 @@ abbr r 'reset'
 abbr -a L --position anywhere --set-cursor "% | less"
 abbr grv 'gh repo view --web'
 abbr f 'food'
+abbr bbb 'brackets.py bracket --execute'
 
 alias define "sdcv"
 alias task "go-task"
