@@ -14,6 +14,7 @@ import click
 from typing import TypedDict, List
 from common import fzf_choose
 from datetime import datetime
+import subprocess
 
 API_KEY = os.getenv("START_GG_API_KEY")
 if not API_KEY:
@@ -152,14 +153,23 @@ def choose_bracket(latest: bool = False) -> Bracket:
 @cli.command()
 @click.option("--latest", is_flag=True, help="Choose the most recent bracket")
 @click.option("--upload", is_flag=True, help="Upload a new bracket")
-def bracket(latest: bool = False, upload: bool = False) -> Bracket:
+@click.option("--execute", is_flag=True, help="execute Uploading a new bracket")
+def bracket(
+    latest: bool = False, upload: bool = False, execute: bool = False
+) -> Bracket:
     """List available brackets, choose one"""
     bracket = choose_bracket(latest=latest)
-    if upload:
+    if upload or execute:
         title = bracket.get("title", "")
+        title = title.replace("'", "")
         bracket_url = bracket.get("BracketUrl")
         vod = bracket["VODs"][0]["url"]
-        click.echo(f"vodbackup.py --cleanup --title '{title}' --bracket-url '{bracket_url}' '{vod}'")
+        cmd = f"vodbackup.py --cleanup --title '{title}' --bracket-url '{bracket_url}' '{vod}'"
+        if upload:
+            click.echo(cmd)
+        if execute:
+            click.echo(f"executing: {cmd}")
+            subprocess.run(cmd, shell=True, check=True)
     else:
         click.echo(json.dumps(bracket, indent=2))
     return Bracket
