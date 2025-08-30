@@ -1,5 +1,10 @@
 # Defined in /tmp/fish.BrAOrq/yay.fish @ line 2
 function yay
+    if test (uname) = "Darwin"  # we're on mac
+        brew update
+        brew upgrade
+        return
+    end
     pushd $HOME/Downloads
     if test -n "$VIRTUAL_ENV"
         set -l TEMP_VENV "$VIRTUAL_ENV"
