@@ -45,7 +45,7 @@ marked
 meld
 micro
 mise
-moar
+moor
 moreutils
 mosh
 mpv
