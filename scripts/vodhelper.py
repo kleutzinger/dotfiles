@@ -137,6 +137,7 @@ def init_tourney_yaml() -> dict:
     except IndexError:
         bracket = None
         guess_trny_url = None
+        title = "?"
     if bracket:
         guess_trny_url = bracket.get("BracketUrl")
         print(f"found start.gg url: {guess_trny_url}")
@@ -149,19 +150,28 @@ def init_tourney_yaml() -> dict:
         print("no tournament url provided, exiting")
         exit(1)
     # get number of vods in directory, aka the number of opponents
+    title = bracket.get("title", "?")
+    # optionally add a short title via prompt
+    short_title = input(f"short title? (e.g. {title:20})\n") or ""
     mp4_count = len(get_ts_mp4_paths())
     print(f"found {mp4_count} vods")
-    getname = lambda x: os.path.splitext(os.path.basename(x))[0].split("-")[-1]
-    opponents = [getname(i) for i in get_ts_mp4_paths()]
-    base_yaml = dict(tournament_url=trny_url, date=nTime, opponents=opponents)
+    get_opp_name = lambda x: os.path.splitext(os.path.basename(x))[0].split("-")[-1]
+    opponents = [get_opp_name(i) for i in get_ts_mp4_paths()]
+    base_yaml = dict(
+        tournament_url=trny_url,
+        title=title,
+        short_title=short_title,
+        date=nTime,
+        opponents=opponents,
+    )
     write_yaml(base_yaml, TRNY_YAML_NAME)
     return base_yaml
 
 
 def get_yaml(y_path: str) -> Any:
     with open(y_path, "r") as f:
-        vod = yaml.load(f, Loader=yaml.Loader)
-    return vod
+        data = yaml.load(f, Loader=yaml.Loader)
+    return data
 
 
 def make_or_get_vod_yaml(vidpath: str, tournament: dict, vid_idx: int) -> dict:
@@ -188,6 +198,7 @@ def make_or_get_vod_yaml(vidpath: str, tournament: dict, vid_idx: int) -> dict:
             p2=opponent,
             note="",
             date=tournament["date"],
+            short_title=tournament.get("short_title", ""),
             start_offset_ms=0,
             end_offset_ms=0,
             filesize=file_size(abspath),
@@ -207,9 +218,6 @@ def write_vod_yaml(vod: dict, prev: Optional[dict] = None):
     yaml_path = vod["abspath"] + ".yml"
     print(f"i want to write: {yaml_path=}")
     pprint(vod)
-    # if os.path.exists(yaml_path) and prev == get_yaml(yaml_path):
-    #     print("no changes, no writing yaml")
-    #     return
     input("ctrl + c to cancel?")
     write_yaml(vod, yaml_path)
 
@@ -255,11 +263,16 @@ def gen_perspective_ffmpeg_cmd(
 
 def vod2textoverlay(vod: dict) -> str:
     remove_char_paren = lambda s: (s + " ")[: s.rfind("(")].strip()
-    remove_special_chars = lambda s: re.sub(r"[^A-Za-z0-9\- ]+", "", s)
+    remove_special_chars = lambda s: re.sub(r"[^A-Za-z0-9@\- ]+", "", s)
     p1 = remove_char_paren(vod.get("p1", "Kevbot"))
     p2 = remove_char_paren(vod.get("p2", "Opponent"))
     date = vod.get("date", "20XX")
-    return remove_special_chars(f"{date} {p1} vs {p2}")
+    short_title = vod.get("short_title", "")
+    out = f"{date} {p1} vs {p2}"
+    if short_title:
+        out += f" @ {short_title}"
+    out = remove_special_chars(out)
+    return out
 
 
 def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
@@ -430,6 +443,9 @@ def main():
         print(f"Found {len(corrected_videos)} videos to upload")
         for vid in corrected_videos:
             print(f"\nUploading {vid}...")
+            yaml_data = get_yaml(vid + ".yml")
+            # TODO: use title from yaml if it exists
+            # date opp1 vs opp2 @ short_title
             cmd = ["vodbackup.py", vid, "--bracket-url", bracket_url]
             subprocess.run(cmd)
 
@@ -437,6 +453,7 @@ def main():
         os.chdir(original_dir)
         print("\nAll videos uploaded!")
         import webbrowser
+
         webbrowser.open("https://www.youtube.com/my_videos?o=U")
         exit(0)
 
