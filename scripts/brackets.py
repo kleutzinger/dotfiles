@@ -324,9 +324,8 @@ def set(bracket, latest, not_kevbot):
 
     # Display detailed information about chosen set focusing on entrants
     click.echo("\nChosen Set Details:")
-    click.echo(
-        f"Round: {chosen_set['fullRoundText'] or f'Round {chosen_set["round"]}'}"
-    )
+    round_text = chosen_set["fullRoundText"] or f"Round {chosen_set['round']}"
+    click.echo(f"Round: {round_text}")
 
     # Show detailed entrant information
     for i, slot in enumerate(chosen_set["slots"], 1):
@@ -343,6 +342,89 @@ def set(bracket, latest, not_kevbot):
     # Print full JSON for debugging
     click.echo("\nFull Set Data:")
     click.echo(json.dumps(chosen_set, indent=2))
+
+
+@cli.command()
+@click.option("--tournament-url", required=True, help="URL of the tournament")
+@click.option("--event-name", required=True, help="Name of the event")
+def tourney2slug(tournament_url, event_name):
+    """Find event by name in tournament and return the full slug"""
+    # Extract tournament slug from URL
+    tournament_slug = url2slug(tournament_url)
+
+    # Query start.gg API to get tournament and find event by name
+    query = """
+    query GetTournamentEvents($slug: String!) {
+        tournament(slug: $slug) {
+            id
+            name
+            slug
+            events {
+                id
+                name
+                slug
+            }
+        }
+    }
+    """
+
+    headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+    response = requests.post(
+        "https://api.start.gg/gql/alpha",
+        json={"query": query, "variables": {"slug": tournament_slug}},
+        headers=headers,
+    )
+
+    if response.status_code != 200:
+        click.echo(f"Error: {response.status_code}", err=True)
+        click.echo(response.text, err=True)
+        raise click.Abort()
+
+    data = response.json()
+    if "errors" in data:
+        click.echo("GraphQL Errors:", err=True)
+        for error in data["errors"]:
+            click.echo(error["message"], err=True)
+        raise click.Abort()
+
+    tournament = data["data"]["tournament"]
+    if not tournament:
+        click.echo(f"Tournament not found: {tournament_slug}", err=True)
+        raise click.Abort()
+
+    # Find event by name (case-insensitive)
+    matching_events = []
+    for event in tournament["events"]:
+        if event["name"].lower() == event_name.lower():
+            matching_events.append(event)
+
+    if not matching_events:
+        click.echo(
+            f"Event '{event_name}' not found in tournament '{tournament['name']}'",
+            err=True,
+        )
+        click.echo("Available events:", err=True)
+        for event in tournament["events"]:
+            click.echo(f"  - {event['name']}", err=True)
+        raise click.Abort()
+
+    if len(matching_events) > 1:
+        click.echo(f"Multiple events found with name '{event_name}':", err=True)
+        for event in matching_events:
+            click.echo(f"  - {event['name']} (slug: {event['slug']})", err=True)
+        raise click.Abort()
+
+    # Return the full slug
+    event_slug = matching_events[0]["slug"]
+
+    # Check if event_slug already contains the tournament part
+    if event_slug.startswith(tournament_slug):
+        full_slug = event_slug
+    else:
+        full_slug = f"{tournament_slug}/event/{event_slug}"
+
+    click.echo(full_slug)
+    return full_slug
 
 
 @cli.command()
