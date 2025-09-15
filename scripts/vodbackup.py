@@ -76,6 +76,8 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: 
                     "uvx",
                     "--no-cache",
                     "yt-dlp",
+                    "--cookies-from-browser",
+                    "firefox",
                     "--print",
                     "after_move:filepath",
                     url_or_path,
