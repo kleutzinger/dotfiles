@@ -269,9 +269,9 @@ def vod2textoverlay(vod: dict) -> str:
     date = vod.get("date", "20XX")
     short_title = vod.get("short_title", "")
     out = f"{date} {p1} vs {p2}"
+    out = remove_special_chars(out)
     if short_title:
         out += f" @ {short_title}"
-    out = remove_special_chars(out)
     return out
 
 
@@ -443,7 +443,11 @@ def main():
         print(f"Found {len(corrected_videos)} videos to upload")
         for vid in corrected_videos:
             print(f"\nUploading {vid}...")
-            yaml_data = get_yaml(vid + ".yml")
+            # Remove the 3-digit prefix from corrected video name to get original name
+            # The corrected videos have format "000VIDEONAME.mp4" but YAML files are "VIDEONAME.mp4.yml"
+            original_vid_name = re.sub(r'^\d{3}', '', vid)
+            yaml_path = os.path.join(original_dir, original_vid_name + ".yml")
+            yaml_data = get_yaml(yaml_path)
             # TODO: use title from yaml if it exists
             # date opp1 vs opp2 @ short_title
             cmd = ["vodbackup.py", vid, "--bracket-url", bracket_url]
