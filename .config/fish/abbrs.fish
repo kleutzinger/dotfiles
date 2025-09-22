@@ -39,6 +39,10 @@ abbr f 'food'
 abbr bbb 'brackets.py bracket --execute'
 
 alias define "sdcv"
-alias task "go-task"
+
+if test (uname) != "Darwin"
+  alias task "go-task"
+end
+
 alias fd "fd --hidden --no-ignore"
 
