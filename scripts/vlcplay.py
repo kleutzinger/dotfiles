@@ -36,6 +36,7 @@ PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 @click.option(
     "--stdout", is_flag=True, help="just print the paths, one per line, do not play"
 )
+@click.option("--limit", type=int, default=20000, help="Limit number of files to play. Default 2000")
 def main(
     videos: bool,
     images: bool,
@@ -45,6 +46,7 @@ def main(
     largest: bool,
     query: str,
     stdout: bool,
+    limit: int,
 ) -> None:
     def conditional_print(s: str) -> None:
         if not stdout:
@@ -88,6 +90,8 @@ def main(
     else:
         vids = sorted(vids, key=lambda x: x.lower())
     # urlencode all vids
+    if limit:
+        vids = vids[:limit]
     vids = [urllib.parse.quote(vid) for vid in vids]
 
     with open(PLAYLIST_FILE, "w") as f:
