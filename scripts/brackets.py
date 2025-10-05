@@ -175,8 +175,12 @@ def is_kevbot_set(s):
 @click.option("--latest", is_flag=True, help="Choose the most recent bracket")
 @click.option("--upload", is_flag=True, help="Upload a new bracket")
 @click.option("--execute", is_flag=True, help="execute Uploading a new bracket")
+@click.option("--nocleanup", is_flag=True, default=False, help="keep vid file around")
 def bracket(
-    latest: bool = False, upload: bool = False, execute: bool = False
+    latest: bool = False,
+    upload: bool = False,
+    execute: bool = False,
+    nocleanup: bool = False,
 ) -> Bracket:
     """List available brackets, choose one"""
     bracket = choose_bracket(latest=latest)
@@ -185,7 +189,8 @@ def bracket(
         title = title.replace("'", "")
         bracket_url = bracket.get("BracketUrl")
         vod = bracket["VODs"][0]["url"]
-        cmd = f"vodbackup.py --cleanup --title '{title}' --bracket-url '{bracket_url}' '{vod}'"
+        cleanup_arg = "" if nocleanup else "--cleanup"
+        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' '{vod}'"
         if upload:
             click.echo(cmd)
         if execute:
@@ -418,11 +423,14 @@ def sets(bracket, latest):
             while True:
                 response = requests.post(
                     "https://api.start.gg/gql/alpha",
-                    json={"query": phase_sets_query, "variables": {
-                        "phaseId": phase["id"],
-                        "perPage": per_page,
-                        "page": page
-                    }},
+                    json={
+                        "query": phase_sets_query,
+                        "variables": {
+                            "phaseId": phase["id"],
+                            "perPage": per_page,
+                            "page": page,
+                        },
+                    },
                     headers=headers,
                 )
 
@@ -454,16 +462,22 @@ def sets(bracket, latest):
 
         # Fetch from each phase group
         for phase_group in phase["phaseGroups"]["nodes"]:
-            click.echo(f"Fetching sets from {phase['name']} - Pool {phase_group['displayIdentifier']}...", err=True)
+            click.echo(
+                f"Fetching sets from {phase['name']} - Pool {phase_group['displayIdentifier']}...",
+                err=True,
+            )
             page = 1
             while True:
                 response = requests.post(
                     "https://api.start.gg/gql/alpha",
-                    json={"query": phase_group_sets_query, "variables": {
-                        "phaseGroupId": phase_group["id"],
-                        "perPage": per_page,
-                        "page": page
-                    }},
+                    json={
+                        "query": phase_group_sets_query,
+                        "variables": {
+                            "phaseGroupId": phase_group["id"],
+                            "perPage": per_page,
+                            "page": page,
+                        },
+                    },
                     headers=headers,
                 )
 
