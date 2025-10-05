@@ -263,7 +263,7 @@ def gen_perspective_ffmpeg_cmd(
 
 def vod2textoverlay(vod: dict) -> str:
     remove_char_paren = lambda s: (s + " ")[: s.rfind("(")].strip()
-    remove_special_chars = lambda s: re.sub(r"[^A-Za-z0-9@\- ]+", "", s)
+    remove_special_chars = lambda s: re.sub(r"[^A-Za-z0-9@\-\$ ]+", "", s)
     p1 = remove_char_paren(vod.get("p1", "Kevbot"))
     p2 = remove_char_paren(vod.get("p2", "Opponent"))
     date = vod.get("date", "20XX")

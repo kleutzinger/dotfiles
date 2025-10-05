@@ -152,6 +152,25 @@ def choose_bracket(latest: bool = False) -> Bracket:
     return chosen
 
 
+def is_kevbot_set(s):
+    """Check if a set contains kevbot"""
+    if not s["slots"][0]["entrant"] or not s["slots"][1]["entrant"]:
+        return False
+
+    for slot in s["slots"]:
+        if slot["entrant"] and slot["entrant"]["participants"]:
+            for participant in slot["entrant"]["participants"]:
+                if participant and (
+                    "kevbot" in participant.get("gamerTag", "").lower()
+                    or (
+                        participant.get("user")
+                        and participant.get("user", {}).get("id") == KEVBOT_SGG_ID
+                    )
+                ):
+                    return True
+    return False
+
+
 @cli.command()
 @click.option("--latest", is_flag=True, help="Choose the most recent bracket")
 @click.option("--upload", is_flag=True, help="Upload a new bracket")
@@ -275,9 +294,9 @@ def sets(bracket, latest):
         chosen = choose_bracket(latest=latest)
         slug = url2slug(chosen["BracketUrl"])
 
-    # Enhanced query to get all sets from all phases and phase groups with pagination
-    query = """
-        query EventSets($slug: String!, $perPage: Int!) {
+    # First get phase and phase group IDs
+    structure_query = """
+        query EventStructure($slug: String!) {
             event(slug: $slug) {
                 name
                 phases {
@@ -287,45 +306,69 @@ def sets(bracket, latest):
                         nodes {
                             id
                             displayIdentifier
-                            sets(perPage: $perPage) {
-                                nodes {
-                                    id
-                                    round
-                                    fullRoundText
-                                    winnerId
-                                    displayScore
-                                    slots {
-                                        entrant {
-                                            id
-                                            name
-                                            participants {
-                                                gamerTag
-                                                user {
-                                                    id
-                                                }
-                                            }
-                                        }
+                        }
+                    }
+                }
+            }
+        }
+    """
+
+    # Query for sets from a specific phase
+    phase_sets_query = """
+        query GetPhaseSets($phaseId: ID!, $perPage: Int!, $page: Int!) {
+            phase(id: $phaseId) {
+                sets(perPage: $perPage, page: $page) {
+                    pageInfo {
+                        totalPages
+                    }
+                    nodes {
+                        id
+                        round
+                        fullRoundText
+                        winnerId
+                        displayScore
+                        completedAt
+                        slots {
+                            entrant {
+                                id
+                                name
+                                participants {
+                                    gamerTag
+                                    user {
+                                        id
                                     }
                                 }
                             }
                         }
                     }
-                    sets(perPage: $perPage) {
-                        nodes {
-                            id
-                            round
-                            fullRoundText
-                            winnerId
-                            displayScore
-                            slots {
-                                entrant {
-                                    id
-                                    name
-                                    participants {
-                                        gamerTag
-                                        user {
-                                            id
-                                        }
+                }
+            }
+        }
+    """
+
+    # Query for sets from a specific phase group
+    phase_group_sets_query = """
+        query GetPhaseGroupSets($phaseGroupId: ID!, $perPage: Int!, $page: Int!) {
+            phaseGroup(id: $phaseGroupId) {
+                sets(perPage: $perPage, page: $page) {
+                    pageInfo {
+                        totalPages
+                    }
+                    nodes {
+                        id
+                        round
+                        fullRoundText
+                        winnerId
+                        displayScore
+                        completedAt
+                        slots {
+                            entrant {
+                                id
+                                name
+                                participants {
+                                    gamerTag
+                                    user {
+                                        id
                                     }
                                 }
                             }
@@ -337,9 +380,11 @@ def sets(bracket, latest):
     """
 
     headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+
+    # Get event structure
     response = requests.post(
         "https://api.start.gg/gql/alpha",
-        json={"query": query, "variables": {"slug": slug, "perPage": 500}},
+        json={"query": structure_query, "variables": {"slug": slug}},
         headers=headers,
     )
 
@@ -360,22 +405,96 @@ def sets(bracket, latest):
         click.echo("No phases found for this event.")
         return
 
-    # Collect all sets from all phases and phase groups (deduplicate by set ID)
+    # Collect all sets (deduplicate by set ID)
     all_sets_dict = {}
-    for phase in event["phases"]:
-        # Get sets directly from phase
-        if phase["sets"]["nodes"]:
-            for s in phase["sets"]["nodes"]:
-                all_sets_dict[s["id"]] = s
+    per_page = 50  # Lower to avoid complexity issues
 
-        # Get sets from phase groups (pools)
-        if phase["phaseGroups"]["nodes"]:
-            for phase_group in phase["phaseGroups"]["nodes"]:
-                if phase_group["sets"]["nodes"]:
-                    for s in phase_group["sets"]["nodes"]:
-                        all_sets_dict[s["id"]] = s
+    # Fetch sets from each phase and phase group with pagination
+    for phase in event["phases"]:
+        # Fetch phase sets if no phase groups (e.g., single elimination brackets)
+        if not phase["phaseGroups"]["nodes"]:
+            click.echo(f"Fetching sets from phase {phase['name']}...", err=True)
+            page = 1
+            while True:
+                response = requests.post(
+                    "https://api.start.gg/gql/alpha",
+                    json={"query": phase_sets_query, "variables": {
+                        "phaseId": phase["id"],
+                        "perPage": per_page,
+                        "page": page
+                    }},
+                    headers=headers,
+                )
+
+                if response.status_code != 200:
+                    break
+
+                data = response.json()
+                if "errors" in data:
+                    break
+
+                if not data["data"]["phase"]:
+                    break
+
+                phase_sets = data["data"]["phase"]["sets"]["nodes"]
+                if not phase_sets:
+                    break
+
+                click.echo(f"  Page {page}: {len(phase_sets)} sets", err=True)
+
+                # Add sets and check for kevbot
+                for s in phase_sets:
+                    all_sets_dict[s["id"]] = s
+
+                # Stop if we got less than a full page
+                if len(phase_sets) < per_page:
+                    break
+
+                page += 1
+
+        # Fetch from each phase group
+        for phase_group in phase["phaseGroups"]["nodes"]:
+            click.echo(f"Fetching sets from {phase['name']} - Pool {phase_group['displayIdentifier']}...", err=True)
+            page = 1
+            while True:
+                response = requests.post(
+                    "https://api.start.gg/gql/alpha",
+                    json={"query": phase_group_sets_query, "variables": {
+                        "phaseGroupId": phase_group["id"],
+                        "perPage": per_page,
+                        "page": page
+                    }},
+                    headers=headers,
+                )
+
+                if response.status_code != 200:
+                    break
+
+                data = response.json()
+                if "errors" in data:
+                    break
+
+                if not data["data"]["phaseGroup"]:
+                    break
+
+                pg_sets = data["data"]["phaseGroup"]["sets"]["nodes"]
+                if not pg_sets:
+                    break
+
+                click.echo(f"  Page {page}: {len(pg_sets)} sets", err=True)
+
+                # Add sets
+                for s in pg_sets:
+                    all_sets_dict[s["id"]] = s
+
+                # Stop if we got less than a full page
+                if len(pg_sets) < per_page:
+                    break
+
+                page += 1
 
     all_sets = list(all_sets_dict.values())
+    click.echo(f"Total sets processed: {len(all_sets)}", err=True)
 
     # Filter for kevbot sets
     kevbot_sets = []
@@ -483,15 +602,18 @@ def sets(bracket, latest):
                         "score": formatted_score,
                         "round": round_text,
                         "round_num": s["round"],
+                        "completedAt": s.get("completedAt", 0) or 0,
                     }
                 )
+
+    click.echo(f"Kevbot sets found: {len(kevbot_sets)}", err=True)
 
     if not kevbot_sets:
         click.echo("No sets found for kevbot in this tournament.")
         return
 
-    # Sort by round number (reverse for most recent first)
-    kevbot_sets.sort(key=lambda x: x["round_num"], reverse=True)
+    # Sort by completion time (most recent first)
+    kevbot_sets.sort(key=lambda x: x["completedAt"], reverse=True)
 
     # Print console summary
     if kevbot_sets:
