@@ -104,10 +104,15 @@ if (currentOS.isLinux) {
   const DL_URL = asset.browser_download_url;
   const DL_FILE = DL_URL.split("/").pop();
   const path = tmpobj.name + "/" + DL_FILE;
+  console.log("Downloading from:", DL_URL);
   Bun.spawnSync({ cmd: ["wget", "--verbose", DL_URL], cwd: tmpobj.name });
+  console.log("Extracting archive...");
   Bun.spawnSync({ cmd: ["unzip", path], cwd: tmpobj.name });
-  Bun.spawnSync({ cmd: ["rm", "*.zip"], cwd: tmpobj.name });
+  console.log("Removing old installation...");
   await $`rm -rf ${installDir}`;
-  Bun.spawnSync({ cmd: ["mv", "*", installDir], cwd: tmpobj.name }); // this is broken
+  console.log("Creating install directory...");
+  await $`mkdir -p ${installDir}`;
+  console.log("Copying files to:", installDir);
+  await $`cp -r ${tmpobj.name}/'Trilium Notes-linux-x64'/* ${installDir}`;
   console.log("done");
 }
