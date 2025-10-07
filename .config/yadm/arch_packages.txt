@@ -6,6 +6,7 @@ audacity
 betterlockscreen
 brightnessctl
 bun-bin
+claude-code
 croc
 docker
 docker-compose
