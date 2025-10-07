@@ -37,6 +37,7 @@ abbr -a L --position anywhere --set-cursor "% | less"
 abbr grv 'gh repo view --web'
 abbr f 'food'
 abbr bbb 'brackets.py bracket --execute'
+abbr vz visidata
 
 alias define "sdcv"
 
