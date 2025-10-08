@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interval Training Audio Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .secondary-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .secondary-btn:hover {
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .danger-btn:hover {
+            box-shadow: 0 10px 20px rgba(245, 101, 101, 0.4);
+        }
+
+        .player-controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .player-controls.active {
+            display: block;
+        }
+
+        .seekbar-container {
+            margin-bottom: 15px;
+        }
+
+        .seekbar-wrapper {
+            position: relative;
+            padding-top: 10px;
+        }
+
+        .seekbar-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            pointer-events: none;
+        }
+
+        .beep-marker {
+            position: absolute;
+            width: 2px;
+            height: 8px;
+            background: #a0aec0;
+            top: 0;
+            transition: background 0.1s;
+        }
+
+        .beep-marker.played {
+            background: #667eea;
+        }
+
+        .seekbar {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .seekbar-progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .status.processing {
+            background: #d1ecf1;
+            color: #0c5460;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interval Training Audio Generator</h1>
+        <p class="subtitle">Generate custom beep intervals for your workouts</p>
+
+        <div class="form-group">
+            <label for="interval">Interval (milliseconds)</label>
+            <input type="number" id="interval" value="1000" min="100" step="100">
+            <div class="hint">Time between each beep</div>
+        </div>
+
+        <div class="form-group">
+            <label for="duration">Total Duration (seconds)</label>
+            <input type="number" id="duration" value="30" min="1" step="1">
+            <div class="hint">Total length of the audio file</div>
+        </div>
+
+        <div class="form-group">
+            <label for="frequency">Beep Frequency (Hz)</label>
+            <input type="number" id="frequency" value="880" min="200" max="2000" step="10">
+            <div class="hint">Pitch of the beep sound (higher = higher pitch)</div>
+        </div>
+
+        <div class="form-group">
+            <label for="beepDuration">Beep Duration (milliseconds)</label>
+            <input type="number" id="beepDuration" value="100" min="50" max="1000" step="10">
+            <div class="hint">Length of each beep</div>
+        </div>
+
+        <div class="button-group">
+            <button id="previewBtn" class="secondary-btn">Preview</button>
+            <button id="generateBtn">Download MP3</button>
+        </div>
+
+        <div id="playerControls" class="player-controls">
+            <div class="seekbar-container">
+                <div class="seekbar-wrapper">
+                    <div class="seekbar-markers" id="seekbarMarkers"></div>
+                    <div class="seekbar" id="seekbar">
+                        <div class="seekbar-progress" id="seekbarProgress"></div>
+                    </div>
+                </div>
+                <div class="time-display">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalTime">0:00</span>
+                </div>
+            </div>
+            <button id="stopBtn" class="danger-btn">Stop</button>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <!-- Include lamejs from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.0/lame.min.js"></script>
+
+    <script>
+        const generateBtn = document.getElementById('generateBtn');
+        const previewBtn = document.getElementById('previewBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const statusDiv = document.getElementById('status');
+        const playerControls = document.getElementById('playerControls');
+        const seekbar = document.getElementById('seekbar');
+        const seekbarProgress = document.getElementById('seekbarProgress');
+        const seekbarMarkers = document.getElementById('seekbarMarkers');
+        const currentTimeSpan = document.getElementById('currentTime');
+        const totalTimeSpan = document.getElementById('totalTime');
+
+        let audioContext = null;
+        let audioSource = null;
+        let startTime = 0;
+        let pauseTime = 0;
+        let animationFrame = null;
+        let currentAudioBuffer = null;
+
+        function updateBeepMarkers(interval, totalDuration) {
+            // Clear existing markers
+            seekbarMarkers.innerHTML = '';
+
+            const intervalSeconds = interval / 1000;
+            const numBeeps = Math.floor(totalDuration / intervalSeconds);
+
+            for (let i = 0; i < numBeeps; i++) {
+                const beepTime = i * intervalSeconds;
+                const percentage = (beepTime / totalDuration) * 100;
+
+                const marker = document.createElement('div');
+                marker.className = 'beep-marker';
+                marker.style.left = `${percentage}%`;
+                marker.dataset.beepTime = beepTime;
+                seekbarMarkers.appendChild(marker);
+            }
+        }
+
+        function updateMarkerColors(currentTime) {
+            const markers = seekbarMarkers.querySelectorAll('.beep-marker');
+            markers.forEach(marker => {
+                const beepTime = parseFloat(marker.dataset.beepTime);
+                if (currentTime >= beepTime) {
+                    marker.classList.add('played');
+                } else {
+                    marker.classList.remove('played');
+                }
+            });
+        }
+
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateSeekbar() {
+            if (!audioContext || !currentAudioBuffer) return;
+
+            const currentTime = audioContext.currentTime - startTime;
+            const duration = currentAudioBuffer.duration;
+
+            if (currentTime >= duration) {
+                stopPlayback();
+                return;
+            }
+
+            const progress = (currentTime / duration) * 100;
+            seekbarProgress.style.width = `${progress}%`;
+            currentTimeSpan.textContent = formatTime(currentTime);
+            updateMarkerColors(currentTime);
+
+            animationFrame = requestAnimationFrame(updateSeekbar);
+        }
+
+        function stopPlayback() {
+            if (audioSource) {
+                audioSource.stop();
+                audioSource.disconnect();
+                audioSource = null;
+            }
+
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
+
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+
+            seekbarProgress.style.width = '0%';
+            currentTimeSpan.textContent = '0:00';
+            playerControls.classList.remove('active');
+            previewBtn.disabled = false;
+            generateBtn.disabled = false;
+        }
+
+        function createAudioBuffer(callback) {
+            const interval = parseInt(document.getElementById('interval').value);
+            const totalDuration = parseInt(document.getElementById('duration').value);
+            const frequency = parseInt(document.getElementById('frequency').value);
+            const beepDuration = parseInt(document.getElementById('beepDuration').value) / 1000;
+
+            // Validate inputs
+            if (interval < 100 || totalDuration < 1 || beepDuration * 1000 >= interval) {
+                callback(new Error('Invalid parameters. Beep duration must be less than interval.'), null);
+                return;
+            }
+
+            // Create offline audio context
+            const sampleRate = 44100;
+            const offlineCtx = new OfflineAudioContext(2, sampleRate * totalDuration, sampleRate);
+
+            // Calculate number of beeps
+            const intervalSeconds = interval / 1000;
+            const numBeeps = Math.floor(totalDuration / intervalSeconds);
+
+            // Create beeps
+            for (let i = 0; i < numBeeps; i++) {
+                const startTime = i * intervalSeconds;
+
+                // Create oscillator for beep
+                const oscillator = offlineCtx.createOscillator();
+                const gainNode = offlineCtx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(offlineCtx.destination);
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+
+                // Envelope for smoother beep (avoid clicks)
+                const now = startTime;
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
+                gainNode.gain.setValueAtTime(0.3, now + beepDuration - 0.01);
+                gainNode.gain.linearRampToValueAtTime(0, now + beepDuration);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + beepDuration);
+            }
+
+            // Render audio
+            offlineCtx.startRendering().then(audioBuffer => {
+                callback(null, audioBuffer);
+            }).catch(error => {
+                callback(error, null);
+            });
+        }
+
+        function previewAudio() {
+            // Stop any existing playback
+            stopPlayback();
+
+            previewBtn.disabled = true;
+            generateBtn.disabled = true;
+            showStatus('Generating preview...', 'processing');
+
+            setTimeout(() => {
+                try {
+                    createAudioBuffer((error, audioBuffer) => {
+                        if (error) {
+                            showStatus('Error generating preview: ' + error.message, 'error');
+                            previewBtn.disabled = false;
+                            generateBtn.disabled = false;
+                            return;
+                        }
+
+                        currentAudioBuffer = audioBuffer;
+
+                        // Update beep markers
+                        const interval = parseInt(document.getElementById('interval').value);
+                        const totalDuration = parseInt(document.getElementById('duration').value);
+                        updateBeepMarkers(interval, totalDuration);
+
+                        // Create audio context for playback
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        audioSource = audioContext.createBufferSource();
+                        audioSource.buffer = audioBuffer;
+                        audioSource.connect(audioContext.destination);
+
+                        // Setup playback tracking
+                        startTime = audioContext.currentTime;
+                        totalTimeSpan.textContent = formatTime(audioBuffer.duration);
+
+                        // Start playback
+                        audioSource.start(0);
+                        audioSource.onended = () => {
+                            if (audioContext && audioContext.state === 'running') {
+                                stopPlayback();
+                            }
+                        };
+
+                        // Show player controls
+                        playerControls.classList.add('active');
+                        showStatus('', 'processing');
+                        updateSeekbar();
+                    });
+                } catch (error) {
+                    showStatus('Error: ' + error.message, 'error');
+                    previewBtn.disabled = false;
+                    generateBtn.disabled = false;
+                }
+            }, 100);
+        }
+
+        function generateAudio() {
+            generateBtn.disabled = true;
+            showStatus('Generating audio...', 'processing');
+
+            setTimeout(() => {
+                try {
+                    createAudioBuffer((error, audioBuffer) => {
+                        if (error) {
+                            showStatus('Error generating audio: ' + error.message, 'error');
+                            generateBtn.disabled = false;
+                            return;
+                        }
+
+                        showStatus('Encoding to MP3...', 'processing');
+
+                        setTimeout(() => {
+                            try {
+                                const mp3Data = encodeToMp3(audioBuffer);
+                                downloadMp3(mp3Data);
+                                showStatus('MP3 generated successfully!', 'success');
+                                generateBtn.disabled = false;
+                            } catch (error) {
+                                showStatus('Error encoding MP3: ' + error.message, 'error');
+                                generateBtn.disabled = false;
+                            }
+                        }, 100);
+                    });
+                } catch (error) {
+                    showStatus('Error: ' + error.message, 'error');
+                    generateBtn.disabled = false;
+                }
+            }, 100);
+        }
+
+        function encodeToMp3(audioBuffer) {
+            const channels = 2;
+            const sampleRate = audioBuffer.sampleRate;
+            const kbps = 128;
+            const mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, kbps);
+
+            const leftChannel = audioBuffer.getChannelData(0);
+            const rightChannel = audioBuffer.numberOfChannels > 1 ? audioBuffer.getChannelData(1) : leftChannel;
+
+            // Convert float samples to 16-bit PCM
+            const left = convertFloat32ToInt16(leftChannel);
+            const right = convertFloat32ToInt16(rightChannel);
+
+            const mp3Data = [];
+            const sampleBlockSize = 1152; // Standard MP3 frame size
+
+            for (let i = 0; i < left.length; i += sampleBlockSize) {
+                const leftChunk = left.subarray(i, i + sampleBlockSize);
+                const rightChunk = right.subarray(i, i + sampleBlockSize);
+                const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk);
+
+                if (mp3buf.length > 0) {
+                    mp3Data.push(mp3buf);
+                }
+            }
+
+            // Flush remaining data
+            const mp3buf = mp3encoder.flush();
+            if (mp3buf.length > 0) {
+                mp3Data.push(mp3buf);
+            }
+
+            return mp3Data;
+        }
+
+        function convertFloat32ToInt16(buffer) {
+            const l = buffer.length;
+            const int16Array = new Int16Array(l);
+
+            for (let i = 0; i < l; i++) {
+                const s = Math.max(-1, Math.min(1, buffer[i]));
+                int16Array[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+
+            return int16Array;
+        }
+
+        function downloadMp3(mp3Data) {
+            const blob = new Blob(mp3Data, { type: 'audio/mp3' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `interval_training_${Date.now()}.mp3`;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        }
+
+        // Seekbar click to seek
+        seekbar.addEventListener('click', (e) => {
+            if (!currentAudioBuffer || !audioContext) return;
+
+            const rect = seekbar.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            const seekTime = percentage * currentAudioBuffer.duration;
+
+            // Stop current playback and restart from seek position
+            if (audioSource) {
+                audioSource.stop();
+                audioSource.disconnect();
+            }
+
+            // Create new source and start from seek position
+            audioSource = audioContext.createBufferSource();
+            audioSource.buffer = currentAudioBuffer;
+            audioSource.connect(audioContext.destination);
+
+            startTime = audioContext.currentTime - seekTime;
+            audioSource.start(0, seekTime);
+
+            audioSource.onended = () => {
+                if (audioContext && audioContext.state === 'running') {
+                    stopPlayback();
+                }
+            };
+        });
+
+        generateBtn.addEventListener('click', generateAudio);
+        previewBtn.addEventListener('click', previewAudio);
+        stopBtn.addEventListener('click', stopPlayback);
+    </script>
+</body>
+</html>
