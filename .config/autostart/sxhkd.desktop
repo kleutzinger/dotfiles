@@ -1,12 +1,6 @@
 [Desktop Entry]
-Encoding=UTF-8
-Type=Application
-Name=sxhkd after delay
-Comment=enable sxhkd after window manager starts up
-Exec=/usr/bin/sxhkd -m -1
-OnlyShowIn=XFCE;
-RunHook=0
-StartupNotify=false
+Name=sxhkd
+Comment=Simple X hotkey daemon
+Exec=/usr/bin/sxhkd
 Terminal=false
-Hidden=false
-
+Type=Application
