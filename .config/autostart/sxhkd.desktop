@@ -1,6 +1,13 @@
 [Desktop Entry]
-Name=sxhkd
-Comment=Simple X hotkey daemon
-Exec=/usr/bin/sxhkd
-Terminal=false
+Encoding=UTF-8
+Version=0.9.4
 Type=Application
+Name=sxhkd after delay
+Comment=enable sxhkd after window manager starts up
+Exec=/home/kevin/scripts/wait-sxhkd.sh
+OnlyShowIn=XFCE;
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false
+
