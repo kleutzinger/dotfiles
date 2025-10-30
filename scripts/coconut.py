@@ -102,6 +102,12 @@ EQUIV_PATH_ARR = [
 ]
 
 
+EQUIV_EXT_ARR = [
+    ".mp4",
+    ".m4v",
+]
+
+
 def concurrent_path_finder(records: List[Any]) -> List[Dict]:
     """Find existing paths for records concurrently"""
     path_map = {}
@@ -123,13 +129,41 @@ def concurrent_path_finder(records: List[Any]) -> List[Dict]:
                 present_prefix = prefix
                 break
 
+        # Find present extension
+        present_ext = None
+        for ext in EQUIV_EXT_ARR:
+            if original_path.endswith(ext):
+                present_ext = ext
+                break
+
+        # Try all combinations of equivalent paths and extensions
+        paths_to_try = []
+
         if present_prefix:
             for equivalent_path in EQUIV_PATH_ARR:
                 new_path = original_path.replace(present_prefix, equivalent_path, 1)
-                if os.path.exists(new_path):
-                    result = {"path": new_path, "exists": True}
-                    path_map[original_path] = result
-                    return result
+                paths_to_try.append(new_path)
+
+                # Also try with different extensions
+                if present_ext:
+                    for equivalent_ext in EQUIV_EXT_ARR:
+                        if equivalent_ext != present_ext:
+                            new_path_with_ext = new_path[:-len(present_ext)] + equivalent_ext
+                            paths_to_try.append(new_path_with_ext)
+
+        # Also try just changing the extension without changing the path
+        if present_ext:
+            for equivalent_ext in EQUIV_EXT_ARR:
+                if equivalent_ext != present_ext:
+                    new_path_with_ext = original_path[:-len(present_ext)] + equivalent_ext
+                    paths_to_try.append(new_path_with_ext)
+
+        # Check all generated paths
+        for path_to_check in paths_to_try:
+            if os.path.exists(path_to_check):
+                result = {"path": path_to_check, "exists": True}
+                path_map[original_path] = result
+                return result
 
         result = {"path": original_path, "exists": False}
         path_map[original_path] = result
