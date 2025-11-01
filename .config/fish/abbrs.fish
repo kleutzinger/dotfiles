@@ -38,6 +38,7 @@ abbr grv 'gh repo view --web'
 abbr f 'food'
 abbr bbb 'brackets.py bracket --execute'
 abbr vz visidata
+abbr fff 'coconut.py --path (readlink -f (fzf))'
 
 alias define "sdcv"
 
