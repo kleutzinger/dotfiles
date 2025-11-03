@@ -153,6 +153,11 @@ if test -e /usr/share/doc/find-the-command/ftc.fish
     source /usr/share/doc/find-the-command/ftc.fish noprompt noupdate
 end
 
+if test -e ~/.iterm2_shell_integration.fish
+    echo sourced
+    source ~/.iterm2_shell_integration.fish
+end
+
 function check_yadm --description 'check yadm for changes'
     if type -q yadm
         set -l YADM_CHECK_FILE /tmp/yadm_check_time
