@@ -154,7 +154,6 @@ if test -e /usr/share/doc/find-the-command/ftc.fish
 end
 
 if test -e ~/.iterm2_shell_integration.fish
-    echo sourced
     source ~/.iterm2_shell_integration.fish
 end
 

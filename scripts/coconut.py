@@ -307,6 +307,7 @@ def create_coconut(
     if path:
         vlc_cmd = ["fish", "-c", f"recent_played_vlc.py --json --path '{path}'"]
     vlc_data = run_command(vlc_cmd)
+    print(vlc_data)
     data = json.loads(vlc_data)
     uri = data["uri"]
     vlc_sec = data["sec"]
