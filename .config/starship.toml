@@ -31,3 +31,6 @@ disabled = true
 [status]
 disabled = false
 format = "[$status]($style) "
+
+[gcloud]
+disabled = true
