@@ -22,11 +22,11 @@ super + Return
 
 # run dmenu
 super + space
-    dmenu_run -fn 'Droid Sans Mono-25'
+    xfce4-popup-whiskermenu
 
 # open "start" menu
 super + shift + space
-    xfce4-popup-whiskermenu
+    dmenu_run -fn 'Droid Sans Mono-25'
 
 # close current window
 super + q
