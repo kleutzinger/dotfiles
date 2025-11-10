@@ -173,7 +173,9 @@ function check_yadm --description 'check yadm for changes'
     end
 end
 
-check_yadm
+if status is-interactive
+  check_yadm
+end
 
 if type -q mise
     mise activate fish | source
