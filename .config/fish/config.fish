@@ -173,6 +173,10 @@ function check_yadm --description 'check yadm for changes'
     end
 end
 
+if type -q kubectl
+  kubectl completion fish | source
+end
+
 if status is-interactive
   check_yadm
 end
