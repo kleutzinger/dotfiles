@@ -5,6 +5,4 @@ set -e
 
 cd $HOME/scripts/kevtests/
 
-# forwards all arguments to pytest
-#
-$HOME/.virtualenvs/++scripts+kevtests/bin/pytest $@
+uvx --with psutil pytest
