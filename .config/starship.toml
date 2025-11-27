@@ -30,7 +30,7 @@ disabled = true
 
 [status]
 disabled = false
-format = "[$status]($style) "
+format = "[$status $common_meaning]($style) "
 
 [gcloud]
 disabled = true
