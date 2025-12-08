@@ -6,6 +6,7 @@ vlc (fd -a -e mkv -e webm -e mp4 -e m4v -e webm -e gif -e m4a -e wmv --follow | 
 
 import os
 import subprocess
+import random
 import urllib.parse
 
 import click
@@ -32,6 +33,7 @@ PLAYLIST_FILE = os.path.join("/tmp", "vids.m3u8")
 @click.option("--latest", is_flag=True, help="Sort by latest created date")
 @click.option("--latestm", is_flag=True, help="Sort by latest modified date")
 @click.option("--largest", is_flag=True, help="Sort by largest first")
+@click.option("--shuffle", is_flag=True, help="Shuffle at end")
 @click.option("--query", help="Search for files with a given query")
 @click.option(
     "--stdout", is_flag=True, help="just print the paths, one per line, do not play"
@@ -44,6 +46,7 @@ def main(
     latest: bool,
     latestm: bool,
     largest: bool,
+    shuffle: bool,
     query: str,
     stdout: bool,
     limit: int,
@@ -93,6 +96,8 @@ def main(
     if limit:
         vids = vids[:limit]
     vids = [urllib.parse.quote(vid) for vid in vids]
+    if shuffle:
+        random.shuffle(vids)
 
     with open(PLAYLIST_FILE, "w") as f:
         joined_paths = "\n".join(vids)
