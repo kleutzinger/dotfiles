@@ -15,6 +15,7 @@ from typing import TypedDict, List
 from common import fzf_choose
 from datetime import datetime
 import subprocess
+import sys
 
 KEVBOT_SGG_ID = "658c6a49"
 
@@ -649,17 +650,28 @@ def sets(bracket, latest):
 
     # Copy HTML to clipboard
     try:
-        result = subprocess.run(
-            ["xclip", "-selection", "clipboard", "-i", "-t", "text/html"],
-            input=html_table,
-            text=True,
-            check=True,
-        )
+        if sys.platform == "darwin":
+            # macOS: use clippy
+            result = subprocess.run(
+                ["clippy", "--mime", "text/html"],
+                input=html_table,
+                text=True,
+                check=True,
+            )
+        else:
+            # Linux: use xclip
+            result = subprocess.run(
+                ["xclip", "-selection", "clipboard", "-i", "-t", "text/html"],
+                input=html_table,
+                text=True,
+                check=True,
+            )
         click.echo("HTML table copied to clipboard!")
     except subprocess.CalledProcessError as e:
         click.echo(f"Error copying to clipboard: {e}", err=True)
     except FileNotFoundError:
-        click.echo("xclip not found.")
+        tool = "clippy" if sys.platform == "darwin" else "xclip"
+        click.echo(f"{tool} not found.")
 
 
 @cli.command()
