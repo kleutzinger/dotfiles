@@ -395,11 +395,11 @@ def create_coconut(
 
         print(to_upload)
         print("upload? ctrl+c to cancel")
-        countdown_clear(5)
+        countdown_clear(3)
         out = pb.collection("coconuts").create(to_upload)
         print("upload complete")
         print(out.path)
-        countdown_clear(5)
+        countdown_clear(2)
 
     # Clean up thumbnail
     try:
