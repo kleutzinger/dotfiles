@@ -5,7 +5,8 @@
 #     "pocketbase",
 #     "diskcache",
 #     "click",
-#     "shortuuid"
+#     "shortuuid",
+#     "pyobjc; sys_platform == 'darwin'",
 # ]
 # ///
 
