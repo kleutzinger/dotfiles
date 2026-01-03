@@ -6,7 +6,6 @@
 #     "diskcache",
 #     "click",
 #     "shortuuid",
-#     "pyobjc; sys_platform == 'darwin'",
 # ]
 # ///
 

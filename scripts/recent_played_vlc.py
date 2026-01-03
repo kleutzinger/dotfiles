@@ -3,6 +3,7 @@
 # requires-python = ">=3.13"
 # dependencies = [
 #     "click",
+#     "pyobjc; sys_platform == 'darwin'",
 # ]
 # ///
 import os
@@ -47,7 +48,55 @@ def recent_and_time_linux_or_win(config_file_path: str) -> tuple[str, int]:
 
 
 def recent_and_time_mac() -> tuple[str, int]:
-    # Filepath to the .plist file
+    # Try to get the path from a running VLC instance first
+    import Quartz
+
+    windows = Quartz.CGWindowListCopyWindowInfo(
+        Quartz.kCGWindowListExcludeDesktopElements,
+        Quartz.kCGNullWindowID
+    )
+
+    for window in windows:
+        owner_name = window.get(Quartz.kCGWindowOwnerName, "")
+        window_name = window.get(Quartz.kCGWindowName, "")
+
+        if owner_name == "VLC" and window_name:
+            # URL decode the path
+            path = unquote(window_name)
+
+            # Check if it's an absolute path
+            if not path.startswith("/"):
+                # Handle relative path - try to get VLC's working directory
+                pid = window.get(Quartz.kCGWindowOwnerPID)
+
+                try:
+                    lsof_output = subprocess.check_output(
+                        ["lsof", "-a", "-p", str(pid), "-d", "cwd", "-Fn"],
+                        stderr=subprocess.DEVNULL
+                    ).decode("utf-8")
+
+                    # Parse lsof output - format is lines starting with 'n' followed by path
+                    for line in lsof_output.split("\n"):
+                        if line.startswith("n"):
+                            cwd = line[1:]  # Remove the 'n' prefix
+                            full_path = os.path.join(cwd, path)
+                            if os.path.exists(full_path):
+                                path = full_path
+                                break
+                except subprocess.CalledProcessError:
+                    pass
+
+                # If still not absolute, error out
+                if not path.startswith("/"):
+                    print(f"Error: VLC window title contains relative path that could not be resolved: {window_name}")
+                    sys.exit(1)
+
+            # Convert to file:// URI
+            uri = f"file://{quote(path)}"
+            # We can't get the playback time from the window title
+            return uri, 0
+
+    # If no running VLC instance found, fall back to reading the plist file
     plist_path = MAC_CONFIG_PATH
 
     # Open and parse the .plist file
