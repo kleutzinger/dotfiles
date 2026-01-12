@@ -10,6 +10,27 @@ return {
     local telescope = require("telescope")
     local actions = require("telescope.actions")
 
+    local multiopen = function(prompt_bufnr)
+      local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
+      local multi = picker:get_multi_selection()
+
+      if vim.tbl_isempty(multi) then
+        require('telescope.actions').select_default(prompt_bufnr)
+        return
+      end
+
+      require('telescope.actions').close(prompt_bufnr)
+      for _, entry in pairs(multi) do
+        local filename = entry.filename or entry.value
+        local lnum = entry.lnum or 1
+        local lcol = entry.col or 1
+        if filename then
+          vim.cmd(string.format("tabnew +%d %s", lnum, filename))
+          vim.cmd(string.format("normal! %dG%d|", lnum, lcol))
+        end
+      end
+    end
+
     telescope.setup({
       defaults = {
         path_display = { "truncate " },
@@ -18,6 +39,18 @@ return {
             ["<C-h>"] = actions.move_selection_previous, -- move to prev result
             ["<C-k>"] = actions.move_selection_next, -- move to next result
             ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+          },
+        },
+      },
+      pickers = {
+        live_grep = {
+          mappings = {
+            i = {
+              ["<CR>"] = multiopen,
+            },
+            n = {
+              ["<CR>"] = multiopen,
+            },
           },
         },
       },
