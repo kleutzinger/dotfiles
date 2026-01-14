@@ -52,6 +52,7 @@ def search_notes(search):
         res = ea.search_note(
             search=search,
         )["results"]
+        print(res)
         if not res:
             print("no results found")
             exit(1)
@@ -72,13 +73,43 @@ def get_note_content(noteid):
 @click.command()
 @click.argument("attribute", required=True)
 @click.argument("value", required=True)
-def search_for_attribute(attribute, value):
-    print(attribute, value)
+@click.argument("new_value", required=False)
+def search_for_attribute(attribute, value, new_value):
     """
-    search for the attribute name
-    then iterate through and find all that have the appropriate value
+    search for the value
+    then iterate through and find all that have the appropriate attribute name with that value
     """
-    raise NotImplementedError
+    notes = ea.search_note(search=value)["results"]
+
+    matching_results = []
+    for note in notes:
+        if "attributes" in note:
+            for attr in note["attributes"]:
+                if attr.get("name") == attribute and attr.get("value") == value:
+                    matching_results.append({"note": note, "attribute": attr})
+                    break
+
+    if not matching_results:
+        print(f"No notes found with attribute {attribute}={value}")
+        sys.exit(1)
+
+    if len(matching_results) > 1:
+        print(f"Error: Multiple notes found with attribute {attribute}={value}:")
+        for result in matching_results:
+            note = result["note"]
+            print(f"  - ID: {note.get('noteId')}, Title: {note.get('title')}")
+        sys.exit(1)
+
+    found_attribute = matching_results[0]["attribute"]
+
+    if new_value:
+        attribute_id = found_attribute.get("attributeId")
+        ea.patch_attribute(attributeId=attribute_id, value=new_value)
+        print(f"Updated attribute {attribute} from '{value}' to '{new_value}'")
+        found_attribute["value"] = new_value
+
+    print(json.dumps(found_attribute, indent=2))
+    return found_attribute
 
 
 # handle multiple commands
