@@ -12,6 +12,8 @@ import sqlite3
 from bs4 import BeautifulSoup
 from collections import Counter
 import re
+import platform
+import os
 
 exclude_words = set(
     [
@@ -48,7 +50,13 @@ with open("/usr/share/dict/words", "r") as myfile:
     data = myfile.readlines()
     allwords = set([x.strip().lower() for x in data])
 # Connect to your SQLite database
-conn = sqlite3.connect("/home/kevin/.local/share/trilium-data/document.db")
+
+# if on mac
+if platform.system() == "Darwin":
+    db_path = os.path.expanduser("~/Library/Application Support/trilium-data/document.db")
+else:
+    db_path = os.path.expanduser("~/.local/share/trilium-data/document.db")
+conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
 # Execute the SQL query
