@@ -80,6 +80,8 @@ def get_ts_mp4_paths(_dir="./"):
     video_paths = sorted(video_paths)
     # filter out videos with tmp in their name
     video_paths = list(filter(lambda x: "tmp" not in x, video_paths))
+    # filter out macOS AppleDouble metadata files (start with "._")
+    video_paths = list(filter(lambda x: not x.startswith("._"), video_paths))
     return list(video_paths)
     # return [os.path.join(_dir, v) for v in video_paths]
 
