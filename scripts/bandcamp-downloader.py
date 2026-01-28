@@ -1,5 +1,6 @@
 #!/usr/bin/env -S uvrun
 import os
+import platform
 import shlex
 import shutil
 import subprocess
@@ -7,6 +8,17 @@ import sys
 import tempfile
 from pprint import pprint
 from urllib.parse import urlsplit, urlunsplit
+
+
+def get_dir_size(path):
+    total = 0
+    for entry in os.scandir(path):
+        if entry.is_file():
+            total += entry.stat().st_size
+        elif entry.is_dir():
+            total += get_dir_size(entry.path)
+    return total
+
 
 from common import tryInsertIntoPocketBase as insertIntoPocketBase
 
@@ -30,7 +42,10 @@ def main() -> None:
     DL_URL = sys.argv[1] if len(sys.argv) > 1 else None
 
     if not DL_URL:
-        DL_URL = subprocess.check_output(["xsel", "-ob"]).decode().strip()
+        if platform.system() == "Darwin":
+            DL_URL = subprocess.check_output(["pbpaste"]).decode().strip()
+        else:
+            DL_URL = subprocess.check_output(["xsel", "-ob"]).decode().strip()
         print(f"No args, using clipboard: {DL_URL}")
 
     if "bandcamp.com" in DL_URL and ("?" in DL_URL or "#" in DL_URL):
@@ -39,6 +54,8 @@ def main() -> None:
 
     CWD = os.getcwd()
 
+    is_youtube = "youtube.com" in DL_URL or "youtu.be" in DL_URL
+
     full_cmd = [
         "yt-dlp",
         "-f",
@@ -46,8 +63,12 @@ def main() -> None:
         "--embed-thumbnail",
         "-o",
         "%(artist)s - %(playlist_title)s/%(playlist_index)s %(track)s.%(ext)s",
-        DL_URL,
     ]
+
+    if is_youtube:
+        full_cmd += ["-x", "--audio-format", "mp3"]
+
+    full_cmd.append(DL_URL)
     # shlex.join is used for quoting, and we replace single quotes with double quotes to pass to sqlite
     joined_cmd = shlex.join(full_cmd)
     hostname = os.uname().nodename
@@ -72,11 +93,14 @@ def main() -> None:
 
     # folder with largest size
     # aka the most common artist of the album which we set as the album artist
-    largest_folder = max(os.listdir(), key=lambda x: os.path.getsize(x))
+    largest_folder = max(
+        os.listdir(),
+        key=lambda x: get_dir_size(x) if os.path.isdir(x) else os.path.getsize(x),
+    )
     os.chdir(start_dir)
     # capitalize first letter of largest_folder
     output_dir = os.path.join(start_dir, largest_folder[0].upper() + largest_folder[1:])
-    os.mkdir(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
 
     for root, _, files in os.walk(tmp_dir):
         for file in files:
