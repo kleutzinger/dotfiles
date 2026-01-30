@@ -61,6 +61,10 @@ def recent_and_time_mac() -> tuple[str, int]:
         window_name = window.get(Quartz.kCGWindowName, "")
 
         if owner_name == "VLC" and window_name:
+            # Skip known VLC UI windows that aren't file names
+            if window_name in ("Fullscreen Controls", "VLC", "Main Window"):
+                continue
+
             # URL decode the path
             path = unquote(window_name)
 
