@@ -140,7 +140,8 @@ else if test (uname -s) = Linux
     # this is for rootless docker
     set -gx DOCKER_HOST unix://$XDG_RUNTIME_DIR/docker.sock
     set -gx PATH $HOME/.bun/bin $PATH
-    # elseif test (uname -s) = Darwin  # MacOS
+else if test (uname -s) = Darwin  # MacOS
+    set --export XDG_CONFIG_HOME "$HOME/.config"
 end
 
 if status is-interactive
