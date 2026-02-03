@@ -277,6 +277,21 @@ def vod2textoverlay(vod: dict) -> str:
     return out
 
 
+def vod2title(vod: dict) -> str:
+    """Generate YouTube title: Kevbot vs Porkers @ TAP 55 [2026-01-01]"""
+    remove_char_paren = lambda s: (s + " ")[: s.rfind("(")].strip()
+    p1 = remove_char_paren(vod.get("p1", "Kevbot"))
+    p2 = remove_char_paren(vod.get("p2", "Opponent"))
+    date = vod.get("date", "20XX")
+    short_title = vod.get("short_title", "")
+
+    title = f"{p1} vs {p2}"
+    if short_title:
+        title += f" @ {short_title}"
+    title += f" [{date}]"
+    return title
+
+
 def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
     """correct perspective of video"""
     from get_img_coords import get_perspective_points
@@ -450,9 +465,9 @@ def main():
             original_vid_name = re.sub(r'^\d{3}', '', vid)
             yaml_path = os.path.join(original_dir, original_vid_name + ".yml")
             yaml_data = get_yaml(yaml_path)
-            # TODO: use title from yaml if it exists
-            # date opp1 vs opp2 @ short_title
-            cmd = ["vodbackup.py", vid, "--bracket-url", bracket_url]
+            title = vod2title(yaml_data)
+            description = f"\n\nOriginal filename: {vid}"
+            cmd = ["vodbackup.py", vid, "--bracket-url", bracket_url, "--title", title, "--description", description]
             subprocess.run(cmd)
 
         # Return to original directory

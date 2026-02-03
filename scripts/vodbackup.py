@@ -41,10 +41,14 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 @click.option(
     "-t",
     "--title",
-    help="Specify the title of the video"
-
+    help="Specify the title of the video",
 )
-def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: str = ""):
+@click.option(
+    "-d",
+    "--description",
+    help="Additional text to append to the description",
+)
+def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: str = "", description: str = ""):
     # Copy secrets to current dir
     secrets = [
         (CLIENT_SECRETS_PATH, os.path.basename(CLIENT_SECRETS_PATH)),
@@ -97,13 +101,15 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: 
             description_text = "Find all my vods at https://vods.kevbot.xyz"
             if bracket_url:
                 description_text += f"\nBracket URL: {bracket_url}"
+            if description:
+                description_text += description
             if not title:
                 title = os.path.basename(file)
-            alphanumeric_title = "".join(
+            sanitized_title = "".join(
                 [
                     c
                     for c in title
-                    if c.isalnum() or c in [" ", "-", "_", "."]
+                    if c.isalnum() or c in [" ", "-", "_", ".", "$", "@", "[", "]"]
                 ]
             )
             # todo: install inline somehow
@@ -117,7 +123,7 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: 
                     "-description",
                     description_text,
                     "-title",
-                    alphanumeric_title,
+                    sanitized_title,
                 ]
             )
         if cleanup:
