@@ -143,7 +143,9 @@ else if test (uname -s) = Linux
     # this is for rootless docker
     set -gx DOCKER_HOST unix://$XDG_RUNTIME_DIR/docker.sock
     set -gx PATH $HOME/.bun/bin $PATH
-# else if test (uname -s) = Darwin  # MacOS
+else if test (uname -s) = Darwin  # MacOS
+  set -g PATH /opt/homebrew/opt/ffmpeg-full/bin \
+        (string match -v "/opt/homebrew/opt/ffmpeg-full/bin" $PATH)
 end
 
 if status is-interactive
