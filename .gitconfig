@@ -28,6 +28,7 @@
     lb = !git reflog show --pretty=format:'%gs ~ %gd' --date=relative | grep 'checkout:' | grep -oE '[^ ]+ ~ .*' | awk -F~ '!seen[$1]++' | head -n 10 | awk -F' ~ HEAD@{' '{printf(\"  \\033[33m%s: \\033[37m %s\\033[0m\\n\", substr($2, 1, length($2)-1), $1)}'
 	permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
     checkout-from-branch = !git checkout $(git branch | awk '{print $NF}' | fzf) -- $(git ls-files | fzf --multi )
+    revert-to-squash = "!f() { c=$(git log --oneline | fzf | awk '{print $1}'); git revert --no-commit $c..HEAD && git commit -m \"Revert to $c\"; }; f"
 
 [merge]
   tool = vscode
