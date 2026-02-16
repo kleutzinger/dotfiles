@@ -146,6 +146,8 @@ else if test (uname -s) = Linux
 else if test (uname -s) = Darwin  # MacOS
   set -g PATH /opt/homebrew/opt/ffmpeg-full/bin \
         (string match -v "/opt/homebrew/opt/ffmpeg-full/bin" $PATH)
+  # add go bin dir as path, too
+  set -g PATH $HOME/go/bin $PATH
 end
 
 if status is-interactive
