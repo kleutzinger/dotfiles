@@ -4,18 +4,22 @@
 # dependencies = [
 #     "click",
 #     "requests",
+#     "beautifulsoup4",
 # ]
 # ///
 
 import os
 import json
+import re
 import requests
 import click
+import tempfile
 from typing import TypedDict, List
 from common import fzf_choose
 from datetime import datetime
 import subprocess
 import sys
+from bs4 import BeautifulSoup
 
 KEVBOT_SGG_ID = "658c6a49"
 
@@ -57,6 +61,99 @@ def url2slug(url: str) -> str:
 def get_brackets() -> List[Bracket]:
     """Fetch brackets from the API"""
     return requests.get("https://tril.kevbot.xyz/custom/brackets").json()
+
+
+# Known Melee characters for parsing
+MELEE_CHARACTERS = [
+    "Captain Falcon",
+    "Donkey Kong",
+    "Dr Mario",
+    "Dr. Mario",
+    "Ice Climbers",
+    "Ice Climber",
+    "Jigglypuff",
+    "Young Link",
+    "Falco",
+    "Fox",
+    "Marth",
+    "Peach",
+    "Sheik",
+    "Luigi",
+    "Samus",
+    "Yoshi",
+    "Ganon",
+    "Ganondorf",
+    "Pikachu",
+    "Mario",
+    "Mewtwo",
+    "Ness",
+    "Pichu",
+    "Zelda",
+    "Link",
+    "Roy",
+    "Kirby",
+    "Bowser",
+    "Game & Watch",
+    "Mr. Game & Watch",
+    "Falcon",
+]
+
+
+CHAR_CACHE_FILE = os.path.join(tempfile.gettempdir(), "brackets_char_cache.html")
+
+
+def fetch_character_html(force: bool = False) -> str:
+    """Fetch and cache the character HTML data"""
+    if not force and os.path.exists(CHAR_CACHE_FILE):
+        with open(CHAR_CACHE_FILE, "r") as f:
+            return f.read()
+
+    try:
+        response = requests.get("https://tril.kevbot.xyz/custom/brackets-html/")
+        response.raise_for_status()
+        html = response.text
+        with open(CHAR_CACHE_FILE, "w") as f:
+            f.write(html)
+        return html
+    except requests.RequestException as e:
+        click.echo(f"Warning: Could not fetch character data: {e}", err=True)
+        return ""
+
+
+def get_character_lookup(html: str) -> dict[str, str]:
+    """Parse HTML and build a tag -> character lookup"""
+    if not html:
+        return {}
+
+    soup = BeautifulSoup(html, "html.parser")
+    lookup: dict[str, str] = {}
+
+    # Find all table cells in the first column (opponent cells)
+    for table in soup.find_all("table"):
+        for row in table.find_all("tr"):
+            cells = row.find_all("td")
+            if cells:
+                text = cells[0].get_text(strip=True)
+                if not text:
+                    continue
+
+                # Try to extract character from the end of the string
+                found_char = None
+                tag = text
+
+                for char in sorted(MELEE_CHARACTERS, key=len, reverse=True):
+                    if text.lower().endswith(" " + char.lower()):
+                        found_char = char
+                        tag = text[: -(len(char) + 1)].strip()
+                        break
+
+                if found_char and tag:
+                    # Store lowercase tag for case-insensitive lookup
+                    tag_lower = tag.lower()
+                    if tag_lower not in lookup:
+                        lookup[tag_lower] = found_char
+
+    return lookup
 
 
 def get_entrants(slug: str, num: int = 100):
@@ -511,6 +608,12 @@ def sets(bracket, latest):
     all_sets = list(all_sets_dict.values())
     click.echo(f"Total sets processed: {len(all_sets)}", err=True)
 
+    # Get character lookup from historical data (force refresh cache each run)
+    click.echo("Fetching character data...", err=True)
+    html = fetch_character_html(force=True)
+    char_lookup = get_character_lookup(html)
+    click.echo(f"Loaded {len(char_lookup)} opponent-character mappings", err=True)
+
     # Filter for kevbot sets
     kevbot_sets = []
     for s in all_sets:
@@ -540,6 +643,11 @@ def sets(bracket, latest):
                 opponent_name = s["slots"][opponent_slot]["entrant"]["name"].split(
                     " | "
                 )[-1]
+                # Look up character from historical data
+                char = char_lookup.get(opponent_name.lower())
+                if char:
+                    opponent_name = f"{opponent_name} {char}"
+
                 round_text = s["fullRoundText"] or f"Round {s['round']}"
 
                 # Abbreviate round names
@@ -574,7 +682,6 @@ def sets(bracket, latest):
 
                     # Parse the actual score from displayScore
                     score_text = s["displayScore"]
-                    import re
 
                     # Try multiple patterns to extract scores
                     # Pattern 1: "3 - 1" or "3-1"
