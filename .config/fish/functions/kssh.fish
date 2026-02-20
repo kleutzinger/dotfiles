@@ -24,12 +24,16 @@ function kssh --description 'Select a Kubernetes pod with fzf (exec, logs, or de
         return
     end
 
+    set -l cmd
     switch $mode
         case exec
-            kubectl exec -it $pod -n $ns -- bash
+            set cmd kubectl exec -it $pod -n $ns -- bash
         case logs
-            kubectl logs -f $pod -n $ns
+            set cmd kubectl logs -f $pod -n $ns
         case describe
-            kubectl describe pod $pod -n $ns
+            set cmd kubectl describe pod $pod -n $ns
     end
+
+    echo $cmd
+    $cmd
 end
