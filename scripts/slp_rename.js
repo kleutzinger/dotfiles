@@ -5,6 +5,7 @@ import { lstatSync, readdirSync, renameSync } from 'fs';
 import { join } from 'path';
 import { parseArgs } from 'util';
 import { SlippiGame, characters, stages } from '@slippi/slippi-js/node';
+import { execSync } from 'child_process';
 
 const { values: argv, positionals } = parseArgs({
   args: Bun.argv.slice(2),
@@ -27,8 +28,17 @@ Options:
 }
 
 if (positionals.length === 0) {
-  console.error('You must provide directories to rename.');
-  process.exit(1);
+  let picked;
+  try {
+    picked = execSync('osascript -e \'POSIX path of (choose folder with prompt "Select a directory to rename:")\' 2>/dev/null').toString().trim();
+  } catch {
+    picked = null;
+  }
+  if (!picked) {
+    console.error('No directory selected.');
+    process.exit(1);
+  }
+  positionals.push(picked);
 }
 
 /** Returns character with their tag or color in parentheses (if they have either). */
