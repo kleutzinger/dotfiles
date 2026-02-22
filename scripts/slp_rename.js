@@ -1,0 +1,169 @@
+#!/usr/bin/env bun
+// forked from https://github.com/mtimkovich/slippi-renamer
+// reworked to use bun.js (https://bun.com/)
+import { lstatSync, readdirSync, renameSync } from 'fs';
+import { join } from 'path';
+import { parseArgs } from 'util';
+import { SlippiGame, characters, stages } from '@slippi/slippi-js/node';
+
+const { values: argv, positionals } = parseArgs({
+  args: Bun.argv.slice(2),
+  options: {
+    n: { type: 'boolean', short: 'n', default: false },
+    r: { type: 'boolean', short: 'r', default: false },
+    help: { type: 'boolean', short: 'h', default: false },
+  },
+  allowPositionals: true,
+});
+
+if (argv.help) {
+  console.log(`Usage: slp_rename [options] <directories>
+
+Options:
+  -n        Perform a trial run without renaming
+  -r        Rename in subdirectories too
+  -h        Show this help`);
+  process.exit(0);
+}
+
+if (positionals.length === 0) {
+  console.error('You must provide directories to rename.');
+  process.exit(1);
+}
+
+/** Returns character with their tag or color in parentheses (if they have either). */
+function playerName(player, metadata) {
+  const character = characters.getCharacterName(player.characterId);
+  const color = characters.getCharacterColorName(player.characterId, player.characterColor);
+  let playerIds = [];
+
+  if (player.nametag) {
+    playerIds.push(player.nametag);
+  } else if (color !== 'Default') {
+    playerIds.push(color);
+  }
+  if (metadata && metadata.names.netplay !== 'Player' && metadata.names.netplay !== undefined) {
+    playerIds.push(metadata.names.netplay);
+  }
+
+  if (playerIds.length > 0) {
+    return `${character} (${playerIds.join(',')})`;
+  } else {
+    return character;
+  }
+}
+
+function prettyPrintTeams(settings, metadata) {
+  const stage = stages.getStageName(settings.stageId);
+  const teams = new Map();
+  for (let i = 0; i < settings.players.length; i++) {
+    let player = settings.players[i];
+    if (!teams.has(player.teamId)) {
+      teams.set(player.teamId, []);
+    }
+    if (metadata) {
+      teams.get(player.teamId).push(playerName(player, metadata.players[i]));
+    } else {
+      teams.get(player.teamId).push(playerName(player));
+    }
+  }
+
+  const pretty = Array.from(teams.values())
+                      .map(team => team.join(' & '))
+                      .join(' vs ');
+  return `${pretty} - ${stage}`;
+}
+
+function prettyPrintSingles(settings, metadata) {
+  let player1, player2;
+  if (metadata) {
+    player1 = playerName(settings.players[0], metadata.players[0]);
+    player2 = playerName(settings.players[1], metadata.players[1]);
+  } else {
+    player1 = playerName(settings.players[0]);
+    player2 = playerName(settings.players[1]);
+  }
+  const stage = stages.getStageName(settings.stageId);
+
+  return `${player1} vs ${player2} - ${stage}`;
+}
+
+function parsedFilename(settings, metadata, file) {
+  const dateRegex = file.match('_([^\.]+)');
+
+  let datePrefix = null;
+  if (!dateRegex) {
+    if (!metadata) {
+      return null;
+    }
+    const dateStr = metadata.startAt.replace(/[-:]/g, '');
+    datePrefix = dateStr.substring(0, dateStr.length - 1);
+  } else {
+    datePrefix = dateRegex[1];
+  }
+
+  let pretty = null;
+
+  if (settings.isTeams) {
+    pretty = prettyPrintTeams(settings, metadata);
+  } else {
+    pretty = prettyPrintSingles(settings, metadata);
+  }
+  if (!pretty) {
+    return null;
+  }
+
+  return `${datePrefix} - ${pretty}.slp`;
+}
+
+function isDirectory(dir) {
+  const stats = lstatSync(dir);
+  return stats && stats.isDirectory();
+}
+
+const directories = [...positionals];
+
+while (directories.length > 0) {
+  const dir = directories.pop();
+
+  if (!isDirectory(dir)) {
+    console.log(`${dir} is not a directory, skipping.`);
+    continue;
+  }
+
+  console.log(`Searching ${dir} for slp files.`);
+
+  const files = readdirSync(dir);
+  for (const file of files) {
+    const filePath = join(dir, file);
+    if (argv.r && isDirectory(filePath)) {
+      directories.push(filePath);
+      continue;
+    } else if (!file.match('\.slp$')) {
+      console.log(`'${file}' skipped.`);
+      continue;
+    }
+
+    const game = new SlippiGame(filePath);
+    const settings = game.getSettings();
+    const metadata = game.getMetadata();
+
+    const newName = parsedFilename(settings, metadata, file);
+    if (!newName) {
+      console.log(`Error parsing '${file}'`);
+      continue;
+    }
+
+    const newPath = join(dir, newName);
+    if (!argv.n) {
+      try {
+        renameSync(filePath, newPath);
+        console.log(`Renamed: ${file} -> ${newName}`);
+      } catch (err) {
+        console.log(`Error renaming ${filePath}: ${err}`);
+      }
+    } else {
+      console.log(`${file} -> ${newName}`);
+    }
+  }
+}
