@@ -128,7 +128,7 @@ super + slash
 
 # activate vscode
 super + b
-    xdotool search "Visual Studio Code" windowactivate
+    firefox "https://tril.kevbot.xyz/share/bracket-chooser.html/"
 
 # activate or launch discord
 super + d
