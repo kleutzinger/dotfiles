@@ -683,21 +683,17 @@ def sets(bracket, latest):
                     # Parse the actual score from displayScore
                     score_text = s["displayScore"]
 
-                    # Try multiple patterns to extract scores
-                    # Pattern 1: "3 - 1" or "3-1"
-                    score_match = re.search(r"(\d+)\s*-\s*(\d+)", score_text)
-                    if not score_match:
-                        # Pattern 2: "Name 3-Name 1"
-                        score_match = re.search(r"\s(\d+)-.*?\s(\d+)", score_text)
-                    if not score_match:
-                        # Pattern 3: Just look for any two numbers
-                        numbers = re.findall(r"\d+", score_text)
-                        if len(numbers) >= 2:
-                            score1, score2 = numbers[0], numbers[1]
-                        else:
-                            score1, score2 = None, None
+                    # displayScore format is "PlayerName score - PlayerName score"
+                    # Split on " - " and take the trailing number from each half
+                    # so numbers in player names/sponsors don't get picked up as scores
+                    parts = re.split(r"\s+-\s+", score_text, maxsplit=1)
+                    if len(parts) == 2:
+                        m1 = re.search(r"(\d+)\s*$", parts[0])
+                        m2 = re.search(r"(\d+)\s*$", parts[1])
+                        score1 = m1.group(1) if m1 else None
+                        score2 = m2.group(1) if m2 else None
                     else:
-                        score1, score2 = score_match.groups()
+                        score1, score2 = None, None
 
                     if score1 and score2:
                         # Determine which score is kevbot's based on slot position
