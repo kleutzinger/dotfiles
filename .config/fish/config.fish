@@ -131,7 +131,7 @@ if type -q starship
     starship init fish | source
 end
 
-fish_add_path -g $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/
+fish_add_path -g $PATH $HOME/.local/bin $SCRIPTS_DIR $PATH $GEM_HOME/bin $HOME/.yarn/bin/ $HOME/.deno/bin $HOME/.npm/bin/ $HOME.cargo/bin
 # readability
 fish_add_path -g $HOME/.cargo/bin $HOME/.bin $HOME/go/bin $HOME/.virtualenvs/++gits+ebcli/bin $SCRIPTS_DIR/music-history
 
