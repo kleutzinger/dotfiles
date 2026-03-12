@@ -1,6 +1,7 @@
 function kssh --description 'Select a Kubernetes pod with fzf (exec, logs, or describe)'
     set ns os-analytics-api-dev
     set mode exec
+    set filter false
 
     # Parse arguments
     for arg in $argv
@@ -9,6 +10,8 @@ function kssh --description 'Select a Kubernetes pod with fzf (exec, logs, or de
                 set mode logs
             case --describe
                 set mode describe
+            case --filter
+                set filter true
             case '*'
                 # Treat anything else as namespace
                 set ns $arg
@@ -35,5 +38,9 @@ function kssh --description 'Select a Kubernetes pod with fzf (exec, logs, or de
     end
 
     echo $cmd
-    $cmd
+    if test "$filter" = true -a "$mode" = logs
+        $cmd | grep -v -e /readyz/ -e /healthz/
+    else
+        $cmd
+    end
 end
