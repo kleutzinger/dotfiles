@@ -50,6 +50,8 @@ def choose_points(path: str, ordered: bool = True) -> PointList:
     pts = []
 
     def draw(x):
+        if len(pts) < 2:
+            return
         d = cv.getTrackbarPos("thickness", "window")
         d = -1 if d == 0 else d
         i = cv.getTrackbarPos("color", "window")
@@ -63,6 +65,7 @@ def choose_points(path: str, ordered: bool = True) -> PointList:
     def mouse(event, x, y, flags, param):
         if event == cv.EVENT_RBUTTONDOWN:
             pts.append((x, y))
+            print(f"point {len(pts)}: ({x}, {y}) (raw with border)")
             draw(0)
 
     cv.setMouseCallback("window", mouse)
@@ -72,6 +75,9 @@ def choose_points(path: str, ordered: bool = True) -> PointList:
     while 1:
         k = cv.waitKey(33)
         if k == 27:  # Esc key to stop
+            if len(pts) != 4:
+                print(f"WARNING: expected 4 points, got {len(pts)}: {pts} — keep clicking")
+                continue
             break
     cv.destroyAllWindows()
 
@@ -81,9 +87,13 @@ def choose_points(path: str, ordered: bool = True) -> PointList:
             out.append((x - BORDER_SIZE_PX, y - BORDER_SIZE_PX))
         return out
 
+    print(f"raw pts (pre-border-fix, {len(pts)} points): {pts}")
     pts = fix_border_coords(pts)
+    print(f"pts after border fix: {pts}")
     if ordered:
-        return order_pts(pts)
+        ordered_pts = order_pts(pts)
+        print(f"pts after ordering: {ordered_pts}")
+        return ordered_pts
     return pts
 
 
@@ -99,20 +109,24 @@ def order_pts(pts: PointList) -> PointList:
     2........3
     i could have used polar coords or something here, but this'll work fine
     """
+    print(f"order_pts input ({len(pts)} points): {pts}")
     if len(pts) != 4:
-        raise ValueError("need 4 points")
+        raise ValueError(f"need 4 points, got {len(pts)}: {pts}")
 
-    left2 = set(sorted(pts, key=lambda p: p[0])[:2])
-    right2 = set(sorted(pts, key=lambda p: p[0])[2:])
+    cx = sum(p[0] for p in pts) / 4
+    cy = sum(p[1] for p in pts) / 4
+    print(f"  centroid: ({cx:.1f}, {cy:.1f})")
+    for p in pts:
+        import math
+        angle = math.degrees(math.atan2(p[1] - cy, p[0] - cx))
+        quadrant = ("TR" if p[0]>cx else "TL") if p[1]<cy else ("BR" if p[0]>cx else "BL")
+        print(f"  {p} angle={angle:.1f}° → {quadrant}")
 
-    top2 = set(sorted(pts, key=lambda p: p[1])[:2])
-    bottom2 = set(sorted(pts, key=lambda p: p[1])[2:])
+    sorted_y = sorted(pts, key=lambda p: p[1])
+    topleft, topright = sorted(sorted_y[:2], key=lambda p: p[0])
+    bottomleft, bottomright = sorted(sorted_y[2:], key=lambda p: p[0])
 
-    topleft = top2.intersection(left2).pop()
-    topright = top2.intersection(right2).pop()
-    bottomleft = bottom2.intersection(left2).pop()
-    bottomright = bottom2.intersection(right2).pop()
-
+    print(f"  result: TL={topleft} TR={topright} BL={bottomleft} BR={bottomright}")
     return [topleft, topright, bottomleft, bottomright]
 
 
@@ -122,15 +136,40 @@ def test_order_pts():
     assert order_pts(pts[::-1]) == [(0, 0), (1, 0), (0, 1), (1, 1)]
 
 
+def probe_video(path: str):
+    """print rotation metadata and stream dimensions from ffprobe"""
+    import subprocess, json
+    cmd = [
+        "ffprobe", "-v", "error",
+        "-select_streams", "v:0",
+        "-show_entries", "stream=width,height,codec_name:stream_tags=rotate:format_tags=rotate",
+        "-of", "json", path,
+    ]
+    out = subprocess.check_output(cmd).decode()
+    info = json.loads(out)
+    streams = info.get("streams", [{}])
+    s = streams[0] if streams else {}
+    tags = s.get("tags", {})
+    print(f"[probe] {path}")
+    print(f"  stream dims : {s.get('width')}x{s.get('height')}")
+    print(f"  rotate tag  : {tags.get('rotate', '(none)')}")
+    print(f"  codec       : {s.get('codec_name')}")
+
+
 def main(num_points: int, path: str, ordered: bool = True) -> PointList:
+    print(f"main: {path=}, {num_points=}")
     # check if path is an image
     if path.endswith(".png"):
         return choose_points(path, ordered=ordered)
+    probe_video(path)
     frame_second = int(get_vod_duration_ms(path) * random.random() / 1000)
+    print(f"extracting frame at {frame_second}s from {path}")
     framepath = extract_vid_frame_to_file(
         path, path + ".png", seek_sec=frame_second, overwrite=True
     )
+    print(f"frame extracted to {framepath}")
     ret = choose_points(framepath)
+    print(f"choose_points returned: {ret}")
     return ret
 
 

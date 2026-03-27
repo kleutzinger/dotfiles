@@ -298,31 +298,45 @@ def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
 
     # y  = rf".\bin\ffmpeg.exe -i .\vid\src-10.mp4 -vf perspective={x},scale=960:720,setdar=4/3 43.mp4"
     points = get_perspective_points(vidpath)
+    print(f"perspective points (TL, TR, BL, BR): {points}")
+    print(f"  TL={points[0]} TR={points[1]}")
+    print(f"  BL={points[2]} BR={points[3]}")
 
-    # ffplay perspective is broken on normal pixel video files, not sure why
-    # probably some pixel ratio thing idk
-    # cmd = f"ffplay -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4/3"
+    def rotate_points_cw(pts):
+        """rotate point assignment 90° CW: TL→TR, TR→BR, BR→BL, BL→TL"""
+        # [TL, TR, BL, BR] → [BL, TL, BR, TR]
+        tl, tr, bl, br = pts
+        return [bl, tl, br, tr]
 
-    # workaround is to render a short preview and ask for confirmation on that
+    def preview(pts):
+        c = gen_perspective_ffmpeg_cmd(vidpath, outputpath, pts, preview_only=True, text_overlay="preview")
+        print(f"ffmpeg cmd:\n  {c}")
+        run(split(c))
+        if shutil.which("mpv") is not None:
+            run(["mpv", "--no-border", outputpath])
+        elif shutil.which("vlc") is not None:
+            run(["vlc", "--play-and-exit", "--no-video-title-show", outputpath])
+        else:
+            print("no video preview player found")
 
-    # make preview video
-    cmd = gen_perspective_ffmpeg_cmd(
-        vidpath,
-        outputpath,
-        points,
-        preview_only=True,
-        text_overlay="preview",
-    )
-    print(cmd)
-    # cmd = f"ffmpeg -i {vidpath} -vf perspective={ppoints},scale=960:720,setdar=4u3 out.mp4"
+    def rotate_points_ccw(pts):
+        """rotate point assignment 90° CCW"""
+        tl, tr, bl, br = pts
+        return [tr, br, tl, bl]
 
-    run(split(cmd))
-    if shutil.which("mpv") is not None:
-        run(["mpv", "--no-border", outputpath])
-    elif shutil.which("vlc") is not None:
-        run(["vlc", "--play-and-exit", "--no-video-title-show", outputpath])
-    else:
-        print("no video preview player found")
+    preview(points)
+    while True:
+        inp = input("r=rotate 90° CW, l=rotate 90° CCW, enter=accept: ").strip().lower()
+        if inp == "r":
+            points = rotate_points_cw(points)
+            print(f"rotated points: TL={points[0]} TR={points[1]} BL={points[2]} BR={points[3]}")
+            preview(points)
+        elif inp == "l":
+            points = rotate_points_ccw(points)
+            print(f"rotated points: TL={points[0]} TR={points[1]} BL={points[2]} BR={points[3]}")
+            preview(points)
+        else:
+            break
     return points
 
 
@@ -344,6 +358,7 @@ def extract_vid_frame_to_file(
         "-hide_banner",
         "-loglevel",
         "error",
+        "-noautorotate",  # match raw video orientation used by perspective filter
         "-ss",
         f"{seek_sec}",
         "-i",
@@ -356,7 +371,16 @@ def extract_vid_frame_to_file(
     ]
     if overwrite:
         cmd = cmd[0:1] + ["-y"] + cmd[1:]
+    print(f"extract_vid_frame_to_file: {' '.join(cmd)}")
     subprocess.run(cmd)
+    # print dimensions of extracted frame
+    import cv2
+    frame = cv2.imread(output_path)
+    if frame is not None:
+        h, w = frame.shape[:2]
+        print(f"extracted frame dims: {w}x{h} -> {output_path}")
+    else:
+        print(f"WARNING: could not read extracted frame at {output_path}")
     return output_path
 
 
