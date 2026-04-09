@@ -154,26 +154,26 @@ while (directories.length > 0) {
       continue;
     }
 
-    const game = new SlippiGame(filePath);
-    const settings = game.getSettings();
-    const metadata = game.getMetadata();
+    try {
+      const game = new SlippiGame(filePath);
+      const settings = game.getSettings();
+      const metadata = game.getMetadata();
 
-    const newName = parsedFilename(settings, metadata, file);
-    if (!newName) {
-      console.log(`Error parsing '${file}'`);
-      continue;
-    }
+      const newName = parsedFilename(settings, metadata, file);
+      if (!newName) {
+        console.log(`Error parsing '${file}'`);
+        continue;
+      }
 
-    const newPath = join(dir, newName);
-    if (!argv.n) {
-      try {
+      const newPath = join(dir, newName);
+      if (!argv.n) {
         renameSync(filePath, newPath);
         console.log(`Renamed: ${file} -> ${newName}`);
-      } catch (err) {
-        console.log(`Error renaming ${filePath}: ${err}`);
+      } else {
+        console.log(`${file} -> ${newName}`);
       }
-    } else {
-      console.log(`${file} -> ${newName}`);
+    } catch (err) {
+      console.log(`Error processing '${file}': ${err}`);
     }
   }
 }
