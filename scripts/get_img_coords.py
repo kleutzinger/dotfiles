@@ -8,6 +8,7 @@
 [] connect image
 """
 
+import os
 import random
 from vodhelper import extract_vid_frame_to_file, get_vod_duration_ms
 
@@ -156,13 +157,55 @@ def probe_video(path: str):
     print(f"  codec       : {s.get('codec_name')}")
 
 
+def find_brightest_frame(
+    path: str, num_new: int = 5, previous_samples: list[tuple[int, float]] | None = None
+) -> tuple[int, list[tuple[int, float]]]:
+    """Sample num_new additional frames (avoiding already-sampled seconds) and return
+    (best_sec_overall, all_samples). Pass previous_samples on subsequent calls to expand
+    the search: 5 → 10 → 15 frames etc."""
+    if previous_samples is None:
+        previous_samples = []
+
+    duration_s = get_vod_duration_ms(path) / 1000
+    margin = duration_s * 0.05
+    usable_start = int(margin)
+    usable_end = int(duration_s - margin)
+
+    already = {s for s, _ in previous_samples}
+    available = [s for s in range(usable_start, usable_end + 1) if s not in already]
+
+    if len(available) <= num_new:
+        to_sample = available
+    else:
+        to_sample = [available[int(i * (len(available) - 1) / (num_new - 1))] for i in range(num_new)]
+
+    new_samples: list[tuple[int, float]] = []
+    tmp_path = path + ".tmp_sample.png"
+    for sec in to_sample:
+        extract_vid_frame_to_file(path, tmp_path, seek_sec=sec, overwrite=True)
+        frame = cv.imread(tmp_path)
+        if frame is None:
+            continue
+        brightness = float(np.mean(cv.cvtColor(frame, cv.COLOR_BGR2GRAY)))
+        print(f"  frame @{sec}s brightness={brightness:.1f}")
+        new_samples.append((sec, brightness))
+
+    if os.path.exists(tmp_path):
+        os.remove(tmp_path)
+
+    all_samples = previous_samples + new_samples
+    best_sec, best_brightness = max(all_samples, key=lambda x: x[1])
+    print(f"brightest frame: @{best_sec}s (brightness={best_brightness:.1f}, {len(all_samples)} frames sampled)")
+    return best_sec, all_samples
+
+
 def main(num_points: int, path: str, ordered: bool = True) -> PointList:
     print(f"main: {path=}, {num_points=}")
     # check if path is an image
     if path.endswith(".png"):
         return choose_points(path, ordered=ordered)
     probe_video(path)
-    frame_second = int(get_vod_duration_ms(path) * random.random() / 1000)
+    frame_second, _ = find_brightest_frame(path)
     print(f"extracting frame at {frame_second}s from {path}")
     framepath = extract_vid_frame_to_file(
         path, path + ".png", seek_sec=frame_second, overwrite=True

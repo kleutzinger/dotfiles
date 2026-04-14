@@ -294,19 +294,28 @@ def vod2title(vod: dict) -> str:
 
 def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
     """correct perspective of video"""
-    from get_img_coords import get_perspective_points
+    from get_img_coords import find_brightest_frame, choose_points, order_pts
 
-    # y  = rf".\bin\ffmpeg.exe -i .\vid\src-10.mp4 -vf perspective={x},scale=960:720,setdar=4/3 43.mp4"
-    points = get_perspective_points(vidpath)
-    print(f"perspective points (TL, TR, BL, BR): {points}")
-    print(f"  TL={points[0]} TR={points[1]}")
-    print(f"  BL={points[2]} BR={points[3]}")
+    sampled: list[tuple[int, float]] = []
 
-    def rotate_points_cw(pts):
-        """rotate point assignment 90° CW: TL→TR, TR→BR, BR→BL, BL→TL"""
-        # [TL, TR, BL, BR] → [BL, TL, BR, TR]
+    def pick_frame():
+        nonlocal sampled
+        sec, sampled = find_brightest_frame(vidpath, num_new=5, previous_samples=sampled)
+        return extract_vid_frame_to_file(vidpath, vidpath + ".png", seek_sec=sec, overwrite=True)
+
+    def pick_points(framepath):
+        pts = choose_points(framepath)
+        pts = order_pts(pts)
+        print(f"  TL={pts[0]} TR={pts[1]} BL={pts[2]} BR={pts[3]}")
+        return pts
+
+    def rotate_cw(pts):
         tl, tr, bl, br = pts
         return [bl, tl, br, tr]
+
+    def rotate_ccw(pts):
+        tl, tr, bl, br = pts
+        return [tr, br, tl, bl]
 
     def preview(pts):
         c = gen_perspective_ffmpeg_cmd(vidpath, outputpath, pts, preview_only=True, text_overlay="preview")
@@ -319,24 +328,30 @@ def correctPerspective(vidpath: str, outputpath: str) -> list[tuple[int, int]]:
         else:
             print("no video preview player found")
 
-    def rotate_points_ccw(pts):
-        """rotate point assignment 90° CCW"""
-        tl, tr, bl, br = pts
-        return [tr, br, tl, bl]
-
+    framepath = pick_frame()
+    points = pick_points(framepath)
     preview(points)
+
     while True:
-        inp = input("r=rotate 90° CW, l=rotate 90° CCW, enter=accept: ").strip().lower()
+        inp = input("enter=accept  r=repick corners  R=rotate CW  L=rotate CCW  x=new frame: ").strip()
         if inp == "r":
-            points = rotate_points_cw(points)
-            print(f"rotated points: TL={points[0]} TR={points[1]} BL={points[2]} BR={points[3]}")
+            points = pick_points(framepath)
             preview(points)
-        elif inp == "l":
-            points = rotate_points_ccw(points)
-            print(f"rotated points: TL={points[0]} TR={points[1]} BL={points[2]} BR={points[3]}")
+        elif inp == "R":
+            points = rotate_cw(points)
+            print(f"  TL={points[0]} TR={points[1]} BL={points[2]} BR={points[3]}")
+            preview(points)
+        elif inp == "L":
+            points = rotate_ccw(points)
+            print(f"  TL={points[0]} TR={points[1]} BL={points[2]} BR={points[3]}")
+            preview(points)
+        elif inp == "x":
+            framepath = pick_frame()
+            points = pick_points(framepath)
             preview(points)
         else:
             break
+
     return points
 
 
@@ -358,7 +373,6 @@ def extract_vid_frame_to_file(
         "-hide_banner",
         "-loglevel",
         "error",
-        "-noautorotate",  # match raw video orientation used by perspective filter
         "-ss",
         f"{seek_sec}",
         "-i",
@@ -515,17 +529,7 @@ def main():
         prev_vod = deepcopy(vod)
         print(f"{vid_path=}")
         if vod.get("pers_pts") is None:
-            while True:
-                points = correctPerspective(vid_path, os.path.join("tmp", "out.mp4"))
-                if len(points) != 4:
-                    print(f"bad {len(points)=}. should be 4")
-                    continue
-                inp = input("r to retry, y to continue").lower()
-                if "r" in inp:
-                    continue
-                else:
-                    break
-
+            points = correctPerspective(vid_path, os.path.join("tmp", "out.mp4"))
             vod["pers_pts"] = points
         if vod.get("p2") is None:
             vod["p2"] = input("player 2?: ")
