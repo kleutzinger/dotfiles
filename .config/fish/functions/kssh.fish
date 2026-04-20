@@ -1,5 +1,5 @@
 function kssh --description 'Select a Kubernetes pod with fzf (exec, logs, or describe)'
-    set ns os-analytics-api-dev
+    set ns ""
     set mode exec
     set filter false
 
@@ -15,6 +15,22 @@ function kssh --description 'Select a Kubernetes pod with fzf (exec, logs, or de
             case '*'
                 # Treat anything else as namespace
                 set ns $arg
+        end
+    end
+
+    # If no namespace given, pick env via fzf and set context + namespace
+    if test -z "$ns"
+        set env (printf "dev\nprod" | fzf --prompt="env> " --height=5)
+        if test -z "$env"
+            return
+        end
+        switch $env
+            case dev
+                kubectl config use-context $VST_NONPROD_CTX >/dev/null
+                set ns os-analytics-api-dev
+            case prod
+                kubectl config use-context  $VST_PROD_CTX >/dev/null
+                set ns os-analytics-api-prod
         end
     end
 
