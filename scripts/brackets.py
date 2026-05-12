@@ -156,7 +156,7 @@ def get_character_lookup(html: str) -> dict[str, str]:
     return lookup
 
 
-def get_entrants(slug: str, num: int = 100):
+def get_entrants(slug: str, num: int = 512):
     """Fetch entrants from start.gg API"""
     query = """
     query GetEventSeeds($slug: String!, $num: Int!) {
@@ -174,6 +174,14 @@ def get_entrants(slug: str, num: int = 100):
                             name
                         }
                     }
+                }
+            }
+            entrants(query: {
+                page: 1
+                perPage: $num
+            }) {
+                nodes {
+                    name
                 }
             }
         }
@@ -781,7 +789,7 @@ def sets(bracket, latest):
 @click.option("--bracket", help="URL or slug of the bracket")
 @click.option("--latest", is_flag=True, help="Choose the most recent bracket")
 @click.option(
-    "--num", default=100, help="Number of seeds to fetch (default: 100, max: 512)"
+    "--num", default=512, help="Number of seeds to fetch (default: 512, max: 512)"
 )
 def entrants(bracket, latest, num):
     if num > 512:
@@ -814,8 +822,16 @@ def entrants(bracket, latest, num):
             # Split name on | and take the right part if it exists, otherwise keep full name
             name = name.split(" | ")[-1]
             click.echo(f"{seed['seedNum']:03d} - {name}")
+    elif event.get("entrants") and event["entrants"]["nodes"]:
+        entrants_list = event["entrants"]["nodes"]
+        click.echo(f"Tournament: https://start.gg/{slug}")
+        click.echo(f"Total Entrants: {len(entrants_list)}")
+        click.echo("\nEntrants (seeds not available):")
+        for entrant in entrants_list:
+            name = entrant["name"].split(" | ")[-1]
+            click.echo(name)
     else:
-        click.echo("No seeds found for this event.")
+        click.echo("No seeds or entrants found for this event.")
 
 
 if __name__ == "__main__":
