@@ -251,7 +251,7 @@ def list_coconuts():
         if key in cache:
             record.imageUrl = cache[key]
         else:
-            record.imageUrl = f"{POCKETBASE_URL}/api/files/{record.collectionId}/{record.id}/{record.image}"
+            record.imageUrl = f"{POCKETBASE_URL}/api/files/{record.collection_id}/{record.id}/{record.image}"
             cache[key] = record.imageUrl
 
         # Handle datetime - could be string or datetime object
