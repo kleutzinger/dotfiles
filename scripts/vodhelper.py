@@ -497,7 +497,6 @@ def main():
 
         print(f"Found {len(corrected_videos)} videos to upload")
         for vid in corrected_videos:
-            print(f"\nUploading {vid}...")
             # Remove the 3-digit prefix from corrected video name to get original name
             # The corrected videos have format "000VIDEONAME.mp4" but YAML files are "VIDEONAME.mp4.yml"
             original_vid_name = re.sub(r'^\d{3}', '', vid)
@@ -506,6 +505,7 @@ def main():
             title = vod2title(yaml_data)
             description = f"\n\nOriginal filename: {vid}"
             cmd = ["vodbackup.py", vid, "--bracket-url", bracket_url, "--title", title, "--description", description]
+            print(cmd)
             subprocess.run(cmd)
 
         # Return to original directory

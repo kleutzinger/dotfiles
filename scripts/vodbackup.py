@@ -97,7 +97,7 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: 
                 return
             video_files = [downloaded_file]
         for file in video_files:
-            print("Uploading", file)
+            print("Uploading to youtube", file)
             description_text = "Find all my vods at https://vods.kevbot.xyz"
             if bracket_url:
                 description_text += f"\nBracket URL: {bracket_url}"
