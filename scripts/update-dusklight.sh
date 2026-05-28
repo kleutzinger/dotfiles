@@ -3,7 +3,7 @@ set -euo pipefail
 
 REPO="TwilitRealm/dusklight"
 DEST="$HOME/Desktop"
-OUTPUT="$DEST/Dusk-latest-x86_64.AppImage"
+OUTPUT="$DEST/Dusk-v1.0.0-x86_64.AppImage"
 
 echo "Fetching latest release info..."
 RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest")
