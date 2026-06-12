@@ -243,9 +243,11 @@ def gen_perspective_ffmpeg_cmd(
         points += f":{a}:{b}"
     # remove first colon
     points = points[1:]
-    # check if we're on windows
+    import sys as _sys
     if os.name == "nt":
         font_path = "C\\\\:/Windows/Fonts/arial.ttf"
+    elif _sys.platform == "darwin":
+        font_path = os.path.expanduser("~/Library/Fonts/FiraMonoNerdFont-Regular.otf")
     elif os.name == "posix":
         font_path = "/usr/share/fonts/TTF/Ubuntu Mono Nerd Font Complete Mono.ttf"
     else:
