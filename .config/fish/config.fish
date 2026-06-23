@@ -14,10 +14,14 @@ set -gx DOKKU_HOST kevbot.xyz
 set -gx MYVIMRC $HOME/.config/nvim/init.vim
 set -gx SXHKD_SHELL /usr/bin/sh
 set -gx STEAM_COMPAT_DATA_PATH $HOME/.proton
-set -gx GDK_SCALE 1
-set -gx QT_AUTO_SCREEN_SCALE_FACTOR 1
-set -gx QT_SCALE_FACTOR 2
 set -gx FZF_DEFAULT_OPTS '--height 75% --layout=reverse --border'
+
+
+if string match -q "*XFCE*" $XDG_CURRENT_DESKTOP; or string match -q "*xfce*" $DESKTOP_SESSION
+  set -gx GDK_SCALE 1
+  set -gx QT_AUTO_SCREEN_SCALE_FACTOR 1
+  set -gx QT_SCALE_FACTOR 2
+end
 
 alias bunx="bun x"
 source $HOME/.config/fish/abbrs.fish
