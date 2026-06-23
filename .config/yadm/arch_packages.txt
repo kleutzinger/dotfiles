@@ -23,7 +23,7 @@ fish
 fisher
 flameshot
 fzf
-gallery-dl-bin
+gallery-dl
 gdu
 geany
 gist
@@ -64,7 +64,6 @@ powertop
 pre-commit
 pup
 python-black
-python-iterfzf
 python-lxml-html-clean
 python-mutagen
 python-opencv
