@@ -390,11 +390,140 @@ def tourney2slug(tournament_url, event_name):
     return full_slug
 
 
+def find_bracket_by_url(url_or_slug: str) -> "Bracket":
+    """Find a bracket in the API by matching URL or slug"""
+    brackets = get_brackets()
+    try:
+        target_slug = url2slug(url_or_slug) if url_or_slug.startswith("http") else url_or_slug
+    except (ValueError, IndexError):
+        target_slug = url_or_slug
+    for bracket in brackets:
+        try:
+            if url2slug(bracket["BracketUrl"]) == target_slug:
+                return bracket
+        except (ValueError, KeyError):
+            continue
+    raise click.ClickException(f"Bracket not found: {url_or_slug}")
+
+
+def get_vod_metadata(url: str) -> dict:
+    """Fetch upload date and title from a VOD URL using yt-dlp (no download)"""
+    result = subprocess.run(
+        ["uvx", "--no-cache", "yt-dlp", "--skip-download", "--print", "%(upload_date)s\t%(title)s", url],
+        capture_output=True,
+        text=True,
+    )
+    output = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else ""
+    if "\t" in output:
+        date, title = output.split("\t", 1)
+        return {"date": date.strip(), "title": title.strip()}
+    return {"date": "", "title": url}
+
+
+def download_vod(url: str) -> str:
+    """Download a VOD with yt-dlp and return the filepath"""
+    result = subprocess.run(
+        ["uvx", "--no-cache", "yt-dlp", "--print", "after_move:filepath", url],
+        capture_output=True,
+        text=True,
+    )
+    filepath = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else None
+    if not filepath or not os.path.exists(filepath):
+        raise click.ClickException(f"Failed to download: {url}")
+    return filepath
+
+
+def ffmpeg_concat(files: list, output: str) -> None:
+    """Concatenate video files with ffmpeg concat demuxer (no re-encode)"""
+    fd, filelist_path = tempfile.mkstemp(suffix=".txt")
+    try:
+        with os.fdopen(fd, "w") as f:
+            for file in files:
+                f.write(f"file '{os.path.abspath(file)}'\n")
+        subprocess.run(
+            ["ffmpeg", "-f", "concat", "-safe", "0", "-i", filelist_path, "-c", "copy", output],
+            check=True,
+        )
+    finally:
+        if os.path.exists(filelist_path):
+            os.remove(filelist_path)
+
+
 @cli.command()
 @click.option("--bracket", help="URL or slug of the bracket")
 @click.option("--latest", is_flag=True, help="Choose the most recent bracket")
-def sets(bracket, latest):
+@click.option("--execute", is_flag=True, help="Execute the download, concat, and upload")
+@click.option("--concatenate", is_flag=True, help="Concatenate two VODs before uploading")
+@click.option("--nocleanup", is_flag=True, default=False, help="Keep video files around after upload")
+def sets(bracket, latest, execute, concatenate, nocleanup):
     """Show kevbot's sets with win/loss format"""
+    if concatenate:
+        if bracket:
+            full_bracket = find_bracket_by_url(bracket)
+        else:
+            full_bracket = choose_bracket(latest=latest)
+
+        vods = full_bracket.get("VODs", [])
+        if len(vods) != 2:
+            raise click.ClickException(f"Expected exactly 2 VODs, found {len(vods)}")
+
+        vod_urls = [v["url"] for v in vods]
+        title = full_bracket.get("title", "").replace("'", "")
+        bracket_url = full_bracket.get("BracketUrl", "")
+
+        click.echo("Fetching VOD metadata...", err=True)
+        metas = [get_vod_metadata(url) for url in vod_urls]
+
+        # Auto-sort by upload date when dates differ
+        if metas[0]["date"] and metas[1]["date"] and metas[0]["date"] != metas[1]["date"]:
+            paired = sorted(zip(metas, vod_urls), key=lambda x: x[0]["date"])
+            metas, vod_urls = [p[0] for p in paired], [p[1] for p in paired]
+
+        click.echo("\nProposed concat order:")
+        for i, (meta, url) in enumerate(zip(metas, vod_urls)):
+            click.echo(f"  {i + 1}. {meta['date'] or 'unknown date'} - {meta['title']}")
+            click.echo(f"     {url}")
+
+        if not click.confirm("\nUse this order?", default=True):
+            vod_urls.reverse()
+            metas.reverse()
+            click.echo("Swapped order.")
+
+        sanitized_title = "".join(
+            c for c in title if c.isalnum() or c in " -_.$@[]"
+        ).strip()
+        concat_filename = f"{sanitized_title[:80]}_concat.mp4"
+
+        if not execute:
+            click.echo(f"\nWould download and concatenate to: {concat_filename}")
+            click.echo("Run with --execute to proceed.")
+            return
+
+        click.echo("\nDownloading VOD 1...")
+        file1 = download_vod(vod_urls[0])
+        click.echo(f"Downloaded: {file1}")
+
+        click.echo("Downloading VOD 2...")
+        file2 = download_vod(vod_urls[1])
+        click.echo(f"Downloaded: {file2}")
+
+        click.echo(f"\nConcatenating to {concat_filename}...")
+        ffmpeg_concat([file1, file2], concat_filename)
+        click.echo(f"Concatenated: {concat_filename}")
+
+        if not nocleanup:
+            for f in [file1, file2]:
+                try:
+                    os.remove(f)
+                except Exception as e:
+                    click.echo(f"Warning: could not delete {f}: {e}", err=True)
+
+        cleanup_arg = "" if nocleanup else "--cleanup"
+        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' '{os.path.abspath(concat_filename)}'"
+        click.echo(f"\nUploading: {cmd}")
+        subprocess.run(cmd, shell=True, check=True)
+        return
+
     if bracket:
         # If it's a URL, convert to slug
         if bracket.startswith("http"):
