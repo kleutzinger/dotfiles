@@ -13,5 +13,4 @@ return {
   "eandrju/cellular-automaton.nvim",
   "ntpeters/vim-better-whitespace",
   "almo7aya/openingh.nvim",
-  "github/copilot.vim",
 }

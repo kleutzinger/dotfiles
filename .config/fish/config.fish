@@ -24,12 +24,7 @@ if string match -q "*XFCE*" $XDG_CURRENT_DESKTOP; or string match -q "*xfce*" $D
 end
 
 alias bunx="bun x"
-source $HOME/.config/fish/abbrs.fish
-if test -e $HOME/rescale/env.fish
-    source $HOME/rescale/env.fish
-else
-    set -gx BROWSER firefox
-end
+set -gx BROWSER "python3 -m webbrowser"
 
 if test -e $HOME/.config/fish/secrets.fish
     source $HOME/.config/fish/secrets.fish
@@ -183,6 +178,8 @@ function check_yadm --description 'check yadm for changes'
         end
     end
 end
+
+source ~/.config/fish/abbrs.fish
 
 if type -q kubectl
   kubectl completion fish | source
