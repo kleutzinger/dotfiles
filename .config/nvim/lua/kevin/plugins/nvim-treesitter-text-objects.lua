@@ -1,53 +1,62 @@
 return {
   "nvim-treesitter/nvim-treesitter-textobjects",
+  branch = "main",
   event = { "BufReadPost", "BufNewFile" },
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
   },
+  -- main branch dropped `nvim-treesitter.configs`: select/swap keymaps are
+  -- bound by hand to the textobjects submodules instead of a keymaps table
   config = function()
-    require("nvim-treesitter.configs").setup({
-      textobjects = {
-        select = {
-          enable = true,
-
-          -- Automatically jump forward to textobj, similar to targets.vim
-          lookahead = true,
-
-          keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
-            ["a="] = { query = "@assignment.outer", desc = "Select outer part of an assignment region" },
-            ["i="] = { query = "@assignment.inner", desc = "Select inner part of an assignment region" },
-
-            ["a:"] = { query = "@parameter.outer", desc = "Select outer part of a parameter/field region" },
-            ["i:"] = { query = "@parameter.inner", desc = "Select inner part of a parameter/field region" },
-
-            ["ai"] = { query = "@conditional.outer", desc = "Select outer part of a conditional region" },
-            ["ii"] = { query = "@conditional.inner", desc = "Select inner part of a conditional region" },
-
-            ["al"] = { query = "@loop.outer", desc = "Select outer part of a loop region" },
-            ["il"] = { query = "@loop.inner", desc = "Select inner part of a loop region" },
-
-            ["ab"] = { query = "@block.outer", desc = "Select outer part of a block region" }, -- overrides default text object block of parenthesis to parenthesis
-            ["ib"] = { query = "@block.inner", desc = "Select inner part of a block region" }, -- overrides default text object block of parenthesis to parenthesis
-
-            ["af"] = { query = "@function.outer", desc = "Select outer part of a function region" },
-            ["if"] = { query = "@function.inner", desc = "Select inner part of a function region" },
-
-            ["ac"] = { query = "@class.outer", desc = "Select outer part of a class region" },
-            ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-          },
-          include_surrounding_whitespace = true,
-        },
-        swap = {
-          enable = true,
-          swap_next = {
-            ["<leader>on"] = "@parameter.inner", -- swap object under cursor with next
-          },
-          swap_previous = {
-            ["<leader>op"] = "@parameter.inner", -- swap object under cursor with previous
-          },
-        },
+    require("nvim-treesitter-textobjects").setup({
+      select = {
+        -- Automatically jump forward to textobj, similar to targets.vim
+        lookahead = true,
+        include_surrounding_whitespace = true,
       },
     })
+
+    local select = require("nvim-treesitter-textobjects.select")
+
+    local function select_textobject(query)
+      return function()
+        select.select_textobject(query, "textobjects")
+      end
+    end
+
+    -- You can use the capture groups defined in textobjects.scm
+    vim.keymap.set({ "x", "o" }, "a=", select_textobject("@assignment.outer"), { desc = "Select outer part of an assignment region" })
+    vim.keymap.set({ "x", "o" }, "i=", select_textobject("@assignment.inner"), { desc = "Select inner part of an assignment region" })
+
+    vim.keymap.set({ "x", "o" }, "a:", select_textobject("@parameter.outer"), { desc = "Select outer part of a parameter/field region" })
+    vim.keymap.set({ "x", "o" }, "i:", select_textobject("@parameter.inner"), { desc = "Select inner part of a parameter/field region" })
+
+    vim.keymap.set({ "x", "o" }, "ai", select_textobject("@conditional.outer"), { desc = "Select outer part of a conditional region" })
+    vim.keymap.set({ "x", "o" }, "ii", select_textobject("@conditional.inner"), { desc = "Select inner part of a conditional region" })
+
+    vim.keymap.set({ "x", "o" }, "al", select_textobject("@loop.outer"), { desc = "Select outer part of a loop region" })
+    vim.keymap.set({ "x", "o" }, "il", select_textobject("@loop.inner"), { desc = "Select inner part of a loop region" })
+
+    -- overrides default text object block of parenthesis to parenthesis
+    vim.keymap.set({ "x", "o" }, "ab", select_textobject("@block.outer"), { desc = "Select outer part of a block region" })
+    vim.keymap.set({ "x", "o" }, "ib", select_textobject("@block.inner"), { desc = "Select inner part of a block region" })
+
+    vim.keymap.set({ "x", "o" }, "af", select_textobject("@function.outer"), { desc = "Select outer part of a function region" })
+    vim.keymap.set({ "x", "o" }, "if", select_textobject("@function.inner"), { desc = "Select inner part of a function region" })
+
+    vim.keymap.set({ "x", "o" }, "ac", select_textobject("@class.outer"), { desc = "Select outer part of a class region" })
+    vim.keymap.set({ "x", "o" }, "ic", select_textobject("@class.inner"), { desc = "Select inner part of a class region" })
+
+    local swap = require("nvim-treesitter-textobjects.swap")
+
+    -- swap object under cursor with next
+    vim.keymap.set("n", "<leader>on", function()
+      swap.swap_next("@parameter.inner")
+    end, { desc = "Swap parameter with next" })
+
+    -- swap object under cursor with previous
+    vim.keymap.set("n", "<leader>op", function()
+      swap.swap_previous("@parameter.inner")
+    end, { desc = "Swap parameter with previous" })
   end,
 }
