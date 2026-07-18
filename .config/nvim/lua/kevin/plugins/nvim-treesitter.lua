@@ -39,12 +39,6 @@ return {
             vim.opt_local.foldmethod = "expr"
             vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
           end
-          vim.schedule(function()
-            if vim.fn.mode() ~= "t" then
-              vim.cmd("silent! normal! zx")
-            end
-          end)
-
           -- indent
           if not vim.tbl_contains({ "python", "html", "yaml", "markdown" }, ft) then
             vim.bo[args.buf].indentexpr = "v:lua.require('nvim-treesitter').indentexpr()"

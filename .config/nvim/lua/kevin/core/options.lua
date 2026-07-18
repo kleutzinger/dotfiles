@@ -44,3 +44,6 @@ opt.splitbelow = true -- split horizontal window to the bottom
 -- turn off swapfile
 opt.swapfile = false
 opt.cmdheight = 0
+
+-- folding
+opt.foldlevelstart = 99 -- open all folds by default when opening a file
