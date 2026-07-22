@@ -192,3 +192,8 @@ end
 if type -q mise
     mise activate fish | source
 end
+
+# Added by LM Studio CLI (lms)
+set -gx PATH $PATH /Users/kevin/.lmstudio/bin
+# End of LM Studio CLI section
+
