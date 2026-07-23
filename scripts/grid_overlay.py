@@ -27,7 +27,8 @@ Mine is super + shift + h
 must have these pre-installed
     PIL: https://pillow.readthedocs.io/en/stable/index.html
     feh: https://feh.finalrewind.org/
-    scrot: https://github.com/resurrecting-open-source-projects/scrot
+    scrot (X11 only): https://github.com/resurrecting-open-source-projects/scrot
+    spectacle (KDE Wayland/X11): pre-installed on KDE Plasma
 
 #__RUN__# python #__file__#
 """
@@ -41,6 +42,7 @@ from PIL import Image, ImageDraw, ImageFont
 # smaller numbers may affect performance
 GRID_STEP_SIZE = 100
 IS_MAC = os.uname().sysname == "Darwin"
+IS_WAYLAND = os.environ.get("XDG_SESSION_TYPE") == "wayland"
 
 potential_fonts = [
     "/usr/share/fonts/TTF/FiraCode-Regular.ttf",
@@ -107,9 +109,12 @@ def grid_on_img(img: Image.Image) -> str:
 def main() -> None:
     screenshot_path = "/tmp/screenshot.png"
     # take a fullscreen screenshot
-    # if mac
     if IS_MAC:
         subprocess.run(["screencapture", "-x", screenshot_path])
+    elif IS_WAYLAND:
+        # scrot is X11-only and produces a black image under Wayland;
+        # spectacle talks to the compositor directly (KDE Plasma)
+        subprocess.run(["spectacle", "-b", "-n", "-f", "-o", screenshot_path])
     else:
         subprocess.run(["scrot", "--overwrite", screenshot_path])
     with Image.open(screenshot_path) as img:
