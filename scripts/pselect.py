@@ -24,6 +24,8 @@ def filter_coconut(coconuts):
 if __name__ == "__main__":
     coconuts = get_coconut_list()[::-1]
     coconuts = filter_coconut(coconuts)  # rm non-existent coconuts
+    if "--shuffle" in sys.argv:
+        random.shuffle(coconuts)
     imageUrls = [c["imageUrl"] for c in coconuts]
     selected_coconut = None
     selected_index = None
