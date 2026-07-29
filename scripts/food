@@ -57,13 +57,16 @@ def trim_line(text: str):
 @click.command()
 @click.option("--notification", "-n", is_flag=True, help="send a notification after")
 @click.option("--list", "-l", is_flag=True, help="list all food")
+@click.option("--raw", "-r", is_flag=True, help="show raw response from server")
 @click.argument("food", required=False, nargs=-1)
-def main(notification, list, food):
+def main(notification, list, raw, food):
     if food is None or list:
         response = requests.get(ENDPOINT)
     else:
         food = " ".join(food)
         response = requests.post(ENDPOINT, data={"food": food})
+    if raw:
+        print(response.text)
     output = ul_li_to_nice(response.text)
     output = trim_line(output)
     if notification:
