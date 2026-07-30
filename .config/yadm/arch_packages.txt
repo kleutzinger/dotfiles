@@ -79,6 +79,7 @@ ruby-fusuma
 ruff
 scrot
 sdcv
+skim
 skippy-xd-git
 slock
 sqlitebrowser
