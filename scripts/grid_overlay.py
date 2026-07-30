@@ -35,6 +35,7 @@ must have these pre-installed
 
 import subprocess
 import os
+import time
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -122,6 +123,14 @@ def main() -> None:
     # display image in fullscreen
     if IS_MAC:
         subprocess.run(["open", "-a", "Preview", out_path])
+        # give Preview a moment to activate before driving it via System Events;
+        # requires Accessibility permission for this script/terminal
+        time.sleep(0.3)
+        subprocess.run([
+            "osascript",
+            "-e", 'tell application "Preview" to activate',
+            "-e", 'tell application "System Events" to keystroke "f" using {control down, command down}',
+        ])
     else:
         subprocess.run(["feh", "--fullscreen", out_path])
 
