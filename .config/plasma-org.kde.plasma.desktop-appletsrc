@@ -134,7 +134,7 @@ DialogWidth=810
 [Containments][80][Applets][83][Configuration][General]
 highlightWindows=true
 interactiveMute=false
-launchers=applications:steam.desktop,applications:firefox.desktop,applications:discord.desktop,applications:com.github.th-ch.youtube-music.desktop,preferred://filemanager,applications:kitty.desktop,applications:systemsettings.desktop,applications:keychron.desktop,applications:io.github.ilya_zlobintsev.LACT.desktop,applications:Patrick's Parabox.desktop,applications:blender.desktop
+launchers=applications:steam.desktop,applications:firefox.desktop,applications:discord.desktop,applications:com.github.th-ch.youtube-music.desktop,preferred://filemanager,applications:kitty.desktop,applications:systemsettings.desktop,applications:keychron.desktop,applications:io.github.ilya_zlobintsev.LACT.desktop,applications:Patrick's Parabox.desktop,applications:blender.desktop,applications:org.telegram.desktop.desktop
 showOnlyCurrentDesktop=false
 tooltipControls=false
 wheelEnabled=AdjustVolume
