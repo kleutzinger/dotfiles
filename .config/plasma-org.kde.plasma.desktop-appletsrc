@@ -61,7 +61,7 @@ DialogHeight=630
 DialogWidth=810
 
 [Containments][80][Applets][101][Configuration][General]
-graphs=[{"_v":3,"type":"memory","sizes":[-1,-1],"colors":["#0c8300","negativeTextColor"],"sensorsType":["physical-percent","none"],"thresholds":[70,90]},{"_v":3,"type":"cpu","sizes":[-1,-1],"colors":["highlightColor","textColor","textColor"],"sensorsType":["usage","classic",true],"clockAggregator":"average","eCoresCount":0,"thresholds":[85,105]},{"_v":3,"type":"gpu","sizes":[-1,-1],"colors":["#941b1b","#009e9e","textColor"],"sensorsType":["memory",true],"thresholds":[80,90],"device":"gpu0"},{"_v":3,"type":"network","sizes":[-1,-1],"colors":["#afc02b","positiveTextColor"],"sensorsType":[false,"kibibyte"],"uplimits":[100000,100000],"ignoredInterfaces":[],"icons":false}]
+graphs=[{"_v":3,"type":"memory","sizes":[-1,-1],"colors":["#0c8300","negativeTextColor"],"sensorsType":["physical-percent","swap-percent"],"thresholds":[70,90]},{"_v":3,"type":"cpu","sizes":[-1,-1],"colors":["highlightColor","textColor","textColor"],"sensorsType":["usage","classic",true],"clockAggregator":"average","eCoresCount":0,"thresholds":[85,105]},{"_v":3,"type":"gpu","sizes":[-1,-1],"colors":["#941b1b","#009e9e","textColor"],"sensorsType":["memory",true],"thresholds":[80,90],"device":"gpu0"},{"_v":3,"type":"network","sizes":[-1,-1],"colors":["#afc02b","positiveTextColor"],"sensorsType":[false,"kibibyte"],"uplimits":[100000,100000],"ignoredInterfaces":[],"icons":false}]
 updateInterval=2
 
 [Containments][80][Applets][107]
