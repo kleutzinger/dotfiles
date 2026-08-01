@@ -80,14 +80,6 @@ displayTimezoneFormat=UTCOffset
 DialogHeight=630
 DialogWidth=810
 
-[Containments][80][Applets][109]
-immutability=1
-plugin=org.kde.plasma.appmenu
-
-[Containments][80][Applets][109][Configuration][ConfigDialog]
-DialogHeight=630
-DialogWidth=810
-
 [Containments][80][Applets][81]
 immutability=1
 plugin=org.kde.plasma.kickoff
@@ -260,7 +252,7 @@ showWindowIcons=true
 wrapPage=true
 
 [Containments][80][General]
-AppletOrder=81;82;83;109;99;84;85;101;107
+AppletOrder=81;82;83;99;84;85;101;107
 
 [ScreenMapping]
 itemsOnDisabledScreens=
