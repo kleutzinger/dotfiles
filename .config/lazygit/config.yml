@@ -15,13 +15,12 @@ gui:
     selectedLineBgColor:
       - reverse
 git:
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --dark --paging=never
-
+      command: delta --dark --paging=never
 customCommands:
-    - key: "Y"
-      context: "files"
-      description: "Generate commit message with Claude Code"
-      command: "git diff --staged | claude -p 'Generate a git commit message for these staged changes. Output ONLY the raw commit message with no markdown, no code blocks, no backticks, no explanations. Format: first line in conventional commit format (type(scope): summary, max 72 chars). Only add a body if the first line genuinely cannot capture something important — in that case, add a blank line and up to 4 short plain-english bullet points. Write like a developer leaving a note for a teammate, not a resume. No inflated language, no restating the obvious.' --model haiku --output-format text > /tmp/commit_msg && GIT_EDITOR=nvim git  commit -e -F /tmp/commit_msg"
-      output: terminal
+  - key: "Y"
+    context: "files"
+    description: "Generate commit message with Claude Code"
+    command: "git diff --staged | claude -p 'Generate a git commit message for these staged changes. Output ONLY the raw commit message with no markdown, no code blocks, no backticks, no explanations. Format: first line in conventional commit format (type(scope): summary, max 72 chars). Only add a body if the first line genuinely cannot capture something important — in that case, add a blank line and up to 4 short plain-english bullet points. Write like a developer leaving a note for a teammate, not a resume. No inflated language, no restating the obvious.' --model haiku --output-format text > /tmp/commit_msg && GIT_EDITOR=nvim git  commit -e -F /tmp/commit_msg"
+    output: terminal
