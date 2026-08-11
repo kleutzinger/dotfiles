@@ -8,10 +8,33 @@ abbr :q exit
 abbr gll 'git log --graph --pretty=oneline --abbrev-commit'
 abbr hm 'history --merge'
 abbr yg 'lazygit -w ~ -g ~/.local/share/yadm/repo.git'
-abbr arst 'setxkbmap us -option ctrl:swap_lalt_lctl'
-abbr arstarst 'setxkbmap us -option ctrl:swap_lalt_lctl'
-abbr asdf 'setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl'
-abbr asdfasdf 'setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl'
+function _kb_set_layout
+    # On KDE (esp. Wayland), reorder kxkbrc via kb-layout.sh so games pick up
+    # the change - a plain setxkbmap doesn't affect KDE's compositor-owned
+    # keyboard state. Everywhere else (XFCE/X11) fall back to setxkbmap.
+    if string match -qi '*kde*' -- $XDG_CURRENT_DESKTOP; and type -q kb-layout.sh
+        kb-layout.sh $argv[1]
+    else
+        switch $argv[1]
+            case colemak
+                setxkbmap us -variant colemak -option ctrl:swap_lalt_lctl
+            case qwerty
+                setxkbmap us -option ctrl:swap_lalt_lctl
+        end
+    end
+end
+function arst
+    _kb_set_layout qwerty
+end
+function arstarst
+    _kb_set_layout qwerty
+end
+function asdf
+    _kb_set_layout colemak
+end
+function asdfasdf
+    _kb_set_layout colemak
+end
 abbr d deactivate
 abbr gs 'git switch -'
 abbr xt 'TERM=xterm'
