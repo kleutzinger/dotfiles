@@ -282,11 +282,17 @@ def is_kevbot_set(s):
 @click.option("--upload", is_flag=True, help="Upload a new bracket")
 @click.option("--execute", is_flag=True, help="execute Uploading a new bracket")
 @click.option("--nocleanup", is_flag=True, default=False, help="keep vid file around")
+@click.option(
+    "--local-video-file",
+    type=click.Path(exists=True, dir_okay=False),
+    help="Use a local video file instead of the bracket's VOD URL",
+)
 def bracket(
     latest: bool = False,
     upload: bool = False,
     execute: bool = False,
     nocleanup: bool = False,
+    local_video_file: str = None,
 ) -> Bracket:
     """List available brackets, choose one"""
     bracket = choose_bracket(latest=latest)
@@ -294,9 +300,13 @@ def bracket(
         title = bracket.get("title", "")
         title = title.replace("'", "")
         bracket_url = bracket.get("BracketUrl")
-        vod = bracket["VODs"][0]["url"]
         cleanup_arg = "" if nocleanup else "--cleanup"
-        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' '{vod}'"
+        if local_video_file:
+            video_arg = f"--local-video-file '{local_video_file}'"
+        else:
+            vod = bracket["VODs"][0]["url"]
+            video_arg = f"'{vod}'"
+        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' {video_arg}"
         if upload:
             click.echo(cmd)
         if execute:

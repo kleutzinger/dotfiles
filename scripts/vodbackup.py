@@ -27,7 +27,7 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 
 
 @click.command()
-@click.argument("url_or_path")
+@click.argument("url_or_path", required=False)
 @click.option(
     "--cleanup", "-c", is_flag=True, help="Delete the downloaded file after uploading"
 )
@@ -48,7 +48,24 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
     "--description",
     help="Additional text to append to the description",
 )
-def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: str = "", description: str = ""):
+@click.option(
+    "-l",
+    "--local-video-file",
+    type=click.Path(exists=True, dir_okay=False),
+    help="Path to a local video file to upload, instead of URL_OR_PATH",
+)
+def main(
+    url_or_path: str = None,
+    cleanup: bool = False,
+    bracket_url: str = "",
+    title: str = "",
+    description: str = "",
+    local_video_file: str = None,
+):
+    if not url_or_path and not local_video_file:
+        raise click.UsageError("Provide either URL_OR_PATH or --local-video-file")
+    if url_or_path and local_video_file:
+        raise click.UsageError("Provide only one of URL_OR_PATH or --local-video-file")
     # Copy secrets to current dir
     secrets = [
         (CLIENT_SECRETS_PATH, os.path.basename(CLIENT_SECRETS_PATH)),
@@ -70,7 +87,9 @@ def main(url_or_path: str, cleanup: bool = False, bracket_url: str = "", title: 
         shutil.copy(src, dest)
     try:
         # check if url is a local absolute path that exists
-        if os.path.exists(url_or_path):
+        if local_video_file:
+            video_files = [local_video_file]
+        elif os.path.exists(url_or_path):
             local_file = os.path.basename(url_or_path)
             video_files = [local_file]
         else:
