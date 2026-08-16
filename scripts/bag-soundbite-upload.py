@@ -49,6 +49,7 @@ def download(url: str, dest_dir: str) -> tuple[str, str]:
             "-f", "bestaudio",
             "-x", "--audio-format", "mp3",
             "--embed-thumbnail",
+            "--remote-components", "ejs:github",
             "--print", "TITLE:%(title)s",
             "--print", "after_move:FILEPATH:%(filepath)s",
             "-o", "%(title).200B [%(id)s].%(ext)s",
