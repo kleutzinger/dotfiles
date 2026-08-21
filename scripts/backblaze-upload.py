@@ -1,14 +1,19 @@
 #!/usr/bin/env -S uv run --script --with click,pillow,b2sdk
 
 """
-take an image as a path via click
-make it a large thumbnail size while keeping the aspect ratio
-upload it to a specific path in  backblaze, return the url
+upload a file to backblaze and return its public (unlisted) url.
+
+by default any file is uploaded as-is under files/, with a timestamp
+prefix to avoid collisions. pass --screenshot to instead resize an
+image to a large thumbnail, convert it to JPEG, and upload it under
+screenshots/.
 
 usage:
-    backblaze-upload.py image.jpg
+    backblaze-upload.py report.json
+    backblaze-upload.py image.jpg --screenshot
 """
 
+import mimetypes
 import re
 import time
 
@@ -32,9 +37,9 @@ def make_url_safe(filename):
 
 
 @click.command()
-@click.argument("image_path", type=click.Path(exists=True))
+@click.argument("file_path", type=click.Path(exists=True))
 @click.option("--screenshot", is_flag=True, help="Resize to 800x800, convert to JPEG, and upload under screenshots/")
-def upload(image_path, screenshot):
+def upload(file_path, screenshot):
     # Connect to B2
     info = InMemoryAccountInfo()
     b2_api = B2Api(info)
@@ -42,9 +47,9 @@ def upload(image_path, screenshot):
     bucket = b2_api.get_bucket_by_name(B2_BUCKET_NAME)
 
     if screenshot:
-        original_size = os.path.getsize(image_path)
+        original_size = os.path.getsize(file_path)
         click.echo(f"Original size: {original_size / 1024:.2f} KB")
-        with Image.open(image_path) as img:
+        with Image.open(file_path) as img:
             img.thumbnail((800, 800))
             if img.mode in ("RGBA", "P"):
                 img = img.convert("RGB")
@@ -53,7 +58,7 @@ def upload(image_path, screenshot):
             new_size = buffer.tell()
             buffer.seek(0)
 
-        filename = os.path.basename(image_path)
+        filename = os.path.basename(file_path)
         filename = os.path.splitext(filename)[0] + ".jpg"
         filename = f"{int(time.time())}_{filename}"
         b2_path = "screenshots/" + filename
@@ -61,14 +66,17 @@ def upload(image_path, screenshot):
         bucket.upload_bytes(buffer.read(), b2_path, file_info=file_info)
         click.echo(f"new size: {new_size / 1024:.2f} KB")
     else:
-        filename = make_url_safe(os.path.basename(image_path))
-        b2_path = filename
-        with open(image_path, "rb") as f:
+        filename = make_url_safe(os.path.basename(file_path))
+        filename = f"{int(time.time())}_{filename}"
+        b2_path = "files/" + filename
+        content_type, _ = mimetypes.guess_type(filename)
+        file_info = {"Content-Type": content_type} if content_type else {}
+        with open(file_path, "rb") as f:
             data = f.read()
-        bucket.upload_bytes(data, b2_path)
+        bucket.upload_bytes(data, b2_path, file_info=file_info)
 
     public_url = f"{CDN_PREFIX}{B2_BUCKET_NAME}/{b2_path}"
-    click.echo(f"Uploaded to:\n\t{public_url}")
+    click.echo(f"Uploaded to:\n\n{public_url}")
 
 
 if __name__ == "__main__":
