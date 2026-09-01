@@ -13,6 +13,9 @@ Rows=1
 [Effect-diminactive]
 Strength=55
 
+[Effect-mousemark]
+Freedrawmeta=false
+
 [Effect-overview]
 BorderActivate=3
 
@@ -20,9 +23,10 @@ BorderActivate=3
 Magnification=10
 
 [Effect-wobblywindows]
+AdvancedMode=true
 Drag=97
 MoveFactor=25
-Stiffness=1
+Stiffness=43
 WobblynessLevel=4
 
 [NightColor]
