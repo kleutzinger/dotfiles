@@ -235,7 +235,7 @@ def countdown_clear(seconds: int):
     run_command(["clear"], capture=False)
 
 
-def list_coconuts():
+def list_coconuts(no_exist_check = False):
     """List all coconut records"""
     # Authenticate with PocketBase
     pb.collection("users").auth_with_password(POCKETBASE_USERNAME, POCKETBASE_PASSWORD)
@@ -285,7 +285,10 @@ def list_coconuts():
         if hasattr(record, "_created_datetime"):
             delattr(record, "_created_datetime")
 
-    resolved_records = concurrent_path_finder(records_sorted)
+    if not no_exist_check:
+        resolved_records = concurrent_path_finder(records_sorted)
+    else:
+        resolved_records = records_sorted
     print(json.dumps(resolved_records, indent=2, default=str))
 
 
@@ -439,9 +442,10 @@ def cli(ctx, sec, note, path, first):
 
 
 @cli.command()
-def list():
+@click.option("--no-exist-check", help="skip checking for file existense", is_flag=True, default=False)
+def list(no_exist_check):
     """List all coconut records"""
-    list_coconuts()
+    list_coconuts(no_exist_check)
 
 
 if __name__ == "__main__":
