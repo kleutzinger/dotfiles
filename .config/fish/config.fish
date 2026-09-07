@@ -193,6 +193,10 @@ if type -q mise
     mise activate fish | source
 end
 
+# The following lines were added by Docker Desktop to add commands to your PATH.
+export PATH="$PATH:/Users/kevin/.docker/bin"
+# End of Docker Desktop section.
+
 # Added by LM Studio CLI (lms)
 set -gx PATH $PATH /Users/kevin/.lmstudio/bin
 # End of LM Studio CLI section
