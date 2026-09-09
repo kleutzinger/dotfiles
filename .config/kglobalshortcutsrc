@@ -10,7 +10,7 @@ Switch to Next Keyboard Layout=Meta+Alt+K,Meta+Alt+K,Switch to Next Keyboard Lay
 _k_friendly_name=Keyboard Layout Switcher
 
 [kaccess]
-Toggle Screen Reader On and Off=Meta+Alt+S,Meta+Alt+S,Toggle Screen Reader On and Off
+Toggle Screen Reader On and Off=none,Meta+Alt+S,Toggle Screen Reader On and Off
 _k_friendly_name=Accessibility
 
 [kmix]
