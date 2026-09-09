@@ -1,4 +1,4 @@
-#!/bin/fish
+#!/usr/bin/env fish
 
 # this script will read a .env file and output a dokku config:set
 # command
