@@ -97,7 +97,3 @@ FocusStealingPreventionLevel=0
 [Xwayland]
 Scale=1.3
 XwaylandEisNoPromptApps=steam
-
-[org.kde.kdecoration2]
-library=org.kde.kwin.aurorae
-theme=kwin4_decoration_qml_plastik

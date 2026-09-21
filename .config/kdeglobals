@@ -144,7 +144,7 @@ fixed=Hack,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
 font=Noto Sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
 
 [KDE]
-LookAndFeelPackage=intiial
+LookAndFeelPackage=org.kde.breezedark.desktop
 contrast=4
 frameContrast=0.2
 
