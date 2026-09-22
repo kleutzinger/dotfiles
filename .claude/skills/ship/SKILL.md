@@ -37,10 +37,7 @@ Dokku deploy without watching it happen.
    otherwise `git push -u origin <branch>`.
 
 5. **Deploy to Dokku — fire and forget.**
-   - Push to it. Dokku deploys from `master` on its remote by default, so if
-     the local branch isn't literally `master` push with a refspec:
-     `git push dokku <local-branch>:master` (adjust if this app's Dokku is
-     configured for a different deploy branch).
+   - `git push dokku` is sufficient — no refspec needed.
    - **Do not stream, tail, or wait on the output.** Launch it with
      `run_in_background: true` and move on immediately — don't `Monitor` it,
      don't poll it, don't read the log to summarize the build. Just tell the
