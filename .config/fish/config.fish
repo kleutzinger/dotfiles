@@ -152,6 +152,8 @@ end
 if status is-interactive
     if type -q atuin
         atuin init fish --disable-up-arrow | source
+        # atuin dropped shell env var export in v18.23.0; re-export legacy synced vars ourselves
+        atuin_load_dotfiles_vars
     end
 end
 
