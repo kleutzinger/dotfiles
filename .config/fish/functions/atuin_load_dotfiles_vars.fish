@@ -1,16 +1,12 @@
-function atuin_load_dotfiles_vars --description "Stopgap: re-export atuin's legacy dotfiles vars (removed from atuin init in v18.23.0)"
+function atuin_load_dotfiles_vars --description "Export vars stored in atuin kv namespace 'env' into the fish environment (atuin dropped dotfiles auto-export in v18.23.0)"
     if not type -q atuin
         return
     end
 
-    if not test -e $HOME/.config/fish/atuin_dotfiles_env.bash
-        return
-    end
-
-    for line in (bash $HOME/.config/fish/atuin_dotfiles_env.bash 2>/dev/null)
-        set -l parts (string split -m 1 \t -- $line)
-        if test (count $parts) -eq 2
-            set -gx $parts[1] $parts[2]
+    for key in (atuin kv list --namespace env 2>/dev/null)
+        if test -n "$key"
+            set -l value (atuin kv get --namespace env -- $key 2>/dev/null)
+            set -gx $key $value
         end
     end
 end
