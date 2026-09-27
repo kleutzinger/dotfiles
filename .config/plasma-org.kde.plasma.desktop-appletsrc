@@ -255,4 +255,4 @@ AppletOrder=81;82;83;99;84;85;101;107
 
 [ScreenMapping]
 itemsOnDisabledScreens=
-screenMapping=desktop:/pear-desktop-dev.desktop,0,560d77ef-5256-41aa-b276-efc46cf70eab
+screenMapping=desktop:/pear-desktop-dev.desktop,0,560d77ef-5256-41aa-b276-efc46cf70eab,desktop:/OnionPlus-v4.4.0-beta-20260926-4483b769,0,560d77ef-5256-41aa-b276-efc46cf70eab
