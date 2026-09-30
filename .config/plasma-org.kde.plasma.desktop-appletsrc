@@ -219,6 +219,9 @@ DialogWidth=810
 immutability=1
 plugin=org.kde.plasma.networkmanagement
 
+[Containments][80][Applets][85][Applets][96][Configuration][General]
+currentDetailsTab=details
+
 [Containments][80][Applets][85][Applets][97]
 immutability=1
 plugin=org.kde.plasma.volume
