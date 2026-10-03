@@ -126,7 +126,7 @@ DialogWidth=810
 [Containments][80][Applets][83][Configuration][General]
 highlightWindows=true
 interactiveMute=false
-launchers=applications:steam.desktop,applications:firefox.desktop,applications:discord.desktop,applications:com.github.th-ch.youtube-music.desktop,preferred://filemanager,applications:kitty.desktop,applications:systemsettings.desktop,applications:keychron.desktop,applications:io.github.ilya_zlobintsev.LACT.desktop,applications:Patrick's Parabox.desktop,applications:blender.desktop,applications:org.telegram.desktop.desktop,applications:eden-nightly.desktop
+launchers=applications:steam.desktop,applications:firefox.desktop,applications:discord.desktop,applications:com.github.th-ch.youtube-music.desktop,preferred://filemanager,applications:kitty.desktop,applications:systemsettings.desktop,applications:keychron.desktop,applications:io.github.ilya_zlobintsev.LACT.desktop,applications:Patrick's Parabox.desktop,applications:blender.desktop,applications:org.telegram.desktop.desktop,applications:eden-nightly.desktop,file:///tmp/.mount_SlippiwDwJVf/slippi-launcher
 showOnlyCurrentDesktop=false
 tooltipControls=false
 wheelEnabled=AdjustVolume
@@ -258,4 +258,4 @@ AppletOrder=81;82;83;99;84;85;101;107
 
 [ScreenMapping]
 itemsOnDisabledScreens=
-screenMapping=desktop:/pear-desktop-dev.desktop,0,560d77ef-5256-41aa-b276-efc46cf70eab,desktop:/OnionPlus-v4.4.0-beta-20260926-4483b769,0,560d77ef-5256-41aa-b276-efc46cf70eab
+screenMapping=desktop:/OnionPlus-v4.4.0-beta-20260926-4483b769,0,560d77ef-5256-41aa-b276-efc46cf70eab,desktop:/pear-desktop-dev.desktop,0,560d77ef-5256-41aa-b276-efc46cf70eab
