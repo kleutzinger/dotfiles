@@ -54,6 +54,12 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
     type=click.Path(exists=True, dir_okay=False),
     help="Path to a local video file to upload, instead of URL_OR_PATH",
 )
+@click.option(
+    "-s",
+    "--stream",
+    is_flag=True,
+    help="Pipe yt-dlp straight into youtubeuploader without saving to disk",
+)
 def main(
     url_or_path: str = None,
     cleanup: bool = False,
@@ -61,11 +67,15 @@ def main(
     title: str = "",
     description: str = "",
     local_video_file: str = None,
+    stream: bool = False,
 ):
     if not url_or_path and not local_video_file:
         raise click.UsageError("Provide either URL_OR_PATH or --local-video-file")
     if url_or_path and local_video_file:
         raise click.UsageError("Provide only one of URL_OR_PATH or --local-video-file")
+    if stream and (local_video_file or os.path.exists(url_or_path)):
+        raise click.UsageError("--stream only works with a URL")
+    download_proc = None
     # Copy secrets to current dir
     secrets = [
         (CLIENT_SECRETS_PATH, os.path.basename(CLIENT_SECRETS_PATH)),
@@ -92,6 +102,19 @@ def main(
         elif os.path.exists(url_or_path):
             local_file = os.path.basename(url_or_path)
             video_files = [local_file]
+        elif stream:
+            if not title:
+                title = subprocess.run(
+                    ["uvx", "--no-cache", "yt-dlp", "--print", "title", url_or_path],
+                    capture_output=True,
+                    text=True,
+                ).stdout.strip()
+            # Video goes yt-dlp stdout -> youtubeuploader stdin, never touching disk
+            download_proc = subprocess.Popen(
+                ["uvx", "--no-cache", "yt-dlp", "-o", "-", url_or_path],
+                stdout=subprocess.PIPE,
+            )
+            video_files = ["-"]
         else:
             # Use yt-dlp to download and print the output filename
             result = subprocess.run(
@@ -143,8 +166,14 @@ def main(
                     description_text,
                     "-title",
                     sanitized_title,
-                ]
+                ],
+                stdin=download_proc.stdout if download_proc else None,
             )
+        if download_proc:
+            download_proc.stdout.close()
+            if download_proc.wait() != 0:
+                print("Warning: yt-dlp exited with an error, the upload may be incomplete")
+            return
         if cleanup:
             for file in video_files:
                 try:
