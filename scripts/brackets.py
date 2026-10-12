@@ -287,12 +287,22 @@ def is_kevbot_set(s):
     type=click.Path(exists=True, dir_okay=False),
     help="Use a local video file instead of the bracket's VOD URL",
 )
+@click.option(
+    "--stream/--no-stream",
+    default=True,
+    help="Pipe the VOD straight to YouTube without saving it to disk (default: on)",
+)
+@click.option(
+    "--background", is_flag=True, help="Run vodbackup.py detached, logging to a file"
+)
 def bracket(
     latest: bool = False,
     upload: bool = False,
     execute: bool = False,
     nocleanup: bool = False,
     local_video_file: str = None,
+    stream: bool = True,
+    background: bool = False,
 ) -> Bracket:
     """List available brackets, choose one"""
     bracket = choose_bracket(latest=latest)
@@ -306,6 +316,10 @@ def bracket(
         else:
             vod = bracket["VODs"][0]["url"]
             video_arg = f"'{vod}'"
+            if stream:
+                video_arg = f"--stream {video_arg}"
+        if background:
+            video_arg = f"--background {video_arg}"
         cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' {video_arg}"
         if upload:
             click.echo(cmd)
