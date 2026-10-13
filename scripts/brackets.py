@@ -295,6 +295,12 @@ def is_kevbot_set(s):
 @click.option(
     "--background", is_flag=True, help="Run vodbackup.py detached, logging to a file"
 )
+@click.option(
+    "--skip",
+    multiple=True,
+    metavar="START-END",
+    help="Cut out a section, e.g. --skip 2:10:00-2:45:30. Can be given more than once",
+)
 def bracket(
     latest: bool = False,
     upload: bool = False,
@@ -303,6 +309,7 @@ def bracket(
     local_video_file: str = None,
     stream: bool = True,
     background: bool = False,
+    skip: tuple[str, ...] = (),
 ) -> Bracket:
     """List available brackets, choose one"""
     bracket = choose_bracket(latest=latest)
@@ -320,6 +327,8 @@ def bracket(
                 video_arg = f"--stream {video_arg}"
         if background:
             video_arg = f"--background {video_arg}"
+        for section in skip:
+            video_arg = f"--skip '{section}' {video_arg}"
         cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' {video_arg}"
         if upload:
             click.echo(cmd)

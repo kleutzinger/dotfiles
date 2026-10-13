@@ -10,7 +10,9 @@ where URL is the URL of the video to download, usually a twitch VOD.
 import subprocess
 import os
 import click
+import math
 import sys
+import tempfile
 from datetime import datetime
 
 
@@ -23,6 +25,91 @@ CLIENT_TOKEN_PATH = os.path.join(
 
 assert os.path.exists(CLIENT_SECRETS_PATH), f"File not found: {CLIENT_SECRETS_PATH}"
 assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
+
+# YouTube rejects videos over 12 hours; leave some slack for keyframe-aligned cuts
+MAX_PART_SECONDS = 11 * 3600 + 55 * 60
+YOUTUBE_MAX_TITLE = 100
+
+
+def parse_seconds(value: str) -> float | None:
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
+def probe_duration(path: str) -> float | None:
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path],
+        capture_output=True,
+        text=True,
+    )
+    return parse_seconds(result.stdout.strip())
+
+
+def format_seconds(seconds: float) -> str:
+    seconds = int(seconds)
+    return f"{seconds // 3600}h{seconds // 60 % 60:02d}m"
+
+
+def parse_time(value: str) -> float:
+    """Parse seconds, M:SS or H:MM:SS"""
+    seconds = 0.0
+    for piece in value.split(":"):
+        seconds = seconds * 60 + float(piece)
+    return seconds
+
+
+def parse_skips(ctx, param, values) -> list[tuple[float, float]]:
+    skips = []
+    for value in values:
+        try:
+            start, end = (parse_time(v) for v in value.split("-"))
+        except ValueError:
+            raise click.BadParameter(
+                f"{value!r} should look like START-END, e.g. 2:10:00-2:45:30"
+            )
+        if end <= start:
+            raise click.BadParameter(f"{value!r} ends before it starts")
+        skips.append((start, end))
+    return sorted(skips)
+
+
+def kept_segments(duration: float, skips) -> list[tuple[float, float]]:
+    """The ranges of the original video left after removing the skips"""
+    segments, pos = [], 0.0
+    for start, end in skips:
+        if start > pos:
+            segments.append((pos, min(start, duration)))
+        pos = max(pos, end)
+    if pos < duration:
+        segments.append((pos, duration))
+    return segments
+
+
+def slice_segments(segments, start: float, end: float) -> list[tuple[float, float]]:
+    """Original-time ranges covering [start, end) of the video once skips are removed"""
+    ranges, offset = [], 0.0
+    for seg_start, seg_end in segments:
+        seg_len = seg_end - seg_start
+        lo, hi = max(start - offset, 0), min(end - offset, seg_len)
+        if lo < hi:
+            ranges.append((seg_start + lo, seg_start + hi))
+        offset += seg_len
+    return ranges
+
+
+def concat_list(source: str, ranges) -> str:
+    """Write an ffconcat file that plays the given ranges of source back to back"""
+    quoted = "'" + source.replace("'", "'\\''") + "'"
+    lines = ["ffconcat version 1.0"]
+    for start, end in ranges:
+        lines += [f"file {quoted}", f"inpoint {start:.3f}", f"outpoint {end:.3f}"]
+    with tempfile.NamedTemporaryFile(
+        "w", suffix=".ffconcat", delete=False
+    ) as f:
+        f.write("\n".join(lines) + "\n")
+    return f.name
 
 
 @click.command()
@@ -60,6 +147,14 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
     help="Pipe yt-dlp straight into youtubeuploader without saving to disk",
 )
 @click.option(
+    "--skip",
+    "skips",
+    multiple=True,
+    callback=parse_skips,
+    metavar="START-END",
+    help="Cut out a section, e.g. --skip 2:10:00-2:45:30. Can be given more than once",
+)
+@click.option(
     "--background",
     is_flag=True,
     help="Detach and keep running after the terminal closes, logging to ~/.local/state/vodbackup/",
@@ -73,6 +168,7 @@ def main(
     local_video_file: str = None,
     stream: bool = False,
     background: bool = False,
+    skips: list[tuple[float, float]] = (),
 ):
     if not url_or_path and not local_video_file:
         raise click.UsageError("Provide either URL_OR_PATH or --local-video-file")
@@ -100,37 +196,17 @@ def main(
         print(f"Running in background (pid {proc.pid}). Follow output with:")
         print(f"  tail -f {log_path}")
         return
-    download_proc = None
+    yt_dlp = ["uvx", "--no-cache", "yt-dlp"]
+    video_file = None
     # check if url is a local absolute path that exists
     if local_video_file:
-        video_files = [local_video_file]
+        video_file = local_video_file
     elif os.path.exists(url_or_path):
-        local_file = os.path.basename(url_or_path)
-        video_files = [local_file]
-    elif stream:
-        if not title:
-            title = subprocess.run(
-                ["uvx", "--no-cache", "yt-dlp", "--print", "title", url_or_path],
-                capture_output=True,
-                text=True,
-            ).stdout.strip()
-        # Video goes yt-dlp stdout -> youtubeuploader stdin, never touching disk
-        download_proc = subprocess.Popen(
-            ["uvx", "--no-cache", "yt-dlp", "-o", "-", url_or_path],
-            stdout=subprocess.PIPE,
-        )
-        video_files = ["-"]
-    else:
+        video_file = os.path.basename(url_or_path)
+    elif not stream:
         # Use yt-dlp to download and print the output filename
         result = subprocess.run(
-            [
-                "uvx",
-                "--no-cache",
-                "yt-dlp",
-                "--print",
-                "after_move:filepath",
-                url_or_path,
-            ],
+            [*yt_dlp, "--print", "after_move:filepath", url_or_path],
             capture_output=True,
             text=True,
         )
@@ -142,25 +218,122 @@ def main(
         if not downloaded_file or not os.path.exists(downloaded_file):
             print("Error: No file was downloaded.")
             return
-        video_files = [downloaded_file]
-    for file in video_files:
-        print("Uploading to youtube", file)
-        description_text = "Find all my vods at https://vods.kevbot.xyz"
-        if bracket_url:
-            description_text += f"\nBracket URL: {bracket_url}"
-        if description:
-            description_text += description
-        if not title:
-            title = os.path.basename(file)
-        sanitized_title = "".join(
-            [
-                c
-                for c in title
-                if c.isalnum() or c in [" ", "-", "_", ".", "$", "@", "[", "]"]
+        video_file = downloaded_file
+
+    if video_file:
+        duration = probe_duration(video_file)
+        title = title or os.path.basename(video_file)
+    else:
+        info = subprocess.run(
+            [*yt_dlp, "--print", "duration", "--print", "title", url_or_path],
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+        duration = parse_seconds(info[0]) if info else None
+        title = title or (info[1] if len(info) > 1 else url_or_path)
+
+    if duration is None:
+        if skips:
+            raise click.ClickException("Couldn't determine the video length, so --skip can't be used")
+        print("Warning: couldn't determine the video length. YouTube rejects videos over 12 hours.")
+        segments = None
+        num_parts = 1
+    else:
+        segments = kept_segments(duration, skips)
+        kept = sum(end - start for start, end in segments)
+        if skips:
+            print(
+                f"Skipping {format_seconds(duration - kept)} of {format_seconds(duration)}, "
+                f"leaving {format_seconds(kept)}"
+            )
+        num_parts = math.ceil(kept / MAX_PART_SECONDS)
+        part_len = kept / num_parts
+        if num_parts > 1:
+            print(
+                f"{format_seconds(kept)} is over YouTube's 12 hour limit. "
+                f"Uploading in {num_parts} parts of about {format_seconds(part_len)}."
+            )
+
+    description_text = "Find all my vods at https://vods.kevbot.xyz"
+    if bracket_url:
+        description_text += f"\nBracket URL: {bracket_url}"
+    if description:
+        description_text += description
+    sanitized_title = "".join(
+        [
+            c
+            for c in title
+            if c.isalnum() or c in [" ", "-", "_", ".", "$", "@", "[", "]"]
+        ]
+    )
+
+    all_ok = True
+    for i in range(num_parts):
+        suffix = f" [Part {i + 1} of {num_parts}]" if num_parts > 1 else ""
+        part_title = sanitized_title[: YOUTUBE_MAX_TITLE - len(suffix)] + suffix
+        # Each part is piped from a producer process; a whole local file is uploaded directly
+        ranges = (
+            slice_segments(segments, i * part_len, (i + 1) * part_len)
+            if segments and (skips or num_parts > 1)
+            else None
+        )
+        concat_file = None
+        if not ranges:
+            # Video goes yt-dlp stdout -> youtubeuploader stdin, never touching disk
+            producer_cmd = None if video_file else [*yt_dlp, "-o", "-", url_or_path]
+        elif len(ranges) == 1 and video_file:
+            (start, end), = ranges
+            producer_cmd = [
+                "ffmpeg", "-v", "error",
+                "-ss", f"{start:.3f}", "-t", f"{end - start:.3f}",
+                "-i", video_file,
+                "-c", "copy", "-f", "mpegts", "-",
             ]
+        elif len(ranges) == 1:
+            (start, end), = ranges
+            section_end = "inf" if end >= duration else f"{end:.3f}"
+            producer_cmd = [
+                *yt_dlp,
+                "--download-sections", f"*{start:.3f}-{section_end}",
+                "-o", "-",
+                url_or_path,
+            ]
+        else:
+            # Join the ranges on either side of a skip with ffmpeg's concat demuxer
+            if video_file:
+                source = os.path.abspath(video_file)
+            else:
+                media_urls = subprocess.run(
+                    [*yt_dlp, "-f", "b", "-g", url_or_path],
+                    capture_output=True,
+                    text=True,
+                ).stdout.split()
+                if len(media_urls) != 1:
+                    raise click.ClickException(
+                        "--skip needs a single combined audio+video stream, which this site doesn't provide. Try --no-stream"
+                    )
+                source = media_urls[0]
+            concat_file = concat_list(source, ranges)
+            producer_cmd = [
+                "ffmpeg", "-v", "error",
+                "-f", "concat", "-safe", "0",
+                "-protocol_whitelist", "file,http,https,tcp,tls,crypto,hls",
+                "-i", concat_file,
+                "-c", "copy", "-f", "mpegts", "-",
+            ]
+        if ranges:
+            print(
+                "Sections:",
+                ", ".join(f"{format_seconds(a)}-{format_seconds(b)}" for a, b in ranges),
+            )
+        print("Uploading to youtube", part_title)
+        producer = (
+            subprocess.Popen(producer_cmd, stdout=subprocess.PIPE)
+            if producer_cmd
+            else None
         )
         # todo: install inline somehow
-        subprocess.run(
+        upload = subprocess.run(
             [
                 "youtubeuploader",
                 "-secrets",
@@ -168,29 +341,37 @@ def main(
                 "-cache",
                 CLIENT_TOKEN_PATH,
                 "-filename",
-                file,
+                "-" if producer else video_file,
                 "-privacy",
                 "unlisted",
                 "-description",
                 description_text,
                 "-title",
-                sanitized_title,
+                part_title,
             ],
-            stdin=download_proc.stdout if download_proc else None,
+            stdin=producer.stdout if producer else None,
         )
-    if download_proc:
-        download_proc.stdout.close()
-        if download_proc.wait() != 0:
-            print("Warning: yt-dlp exited with an error, the upload may be incomplete")
-        return
-    if cleanup:
-        for file in video_files:
-            try:
-                os.remove(file)
-            except Exception as e:
-                print(f"Warning: could not delete {file}: {e}")
-        print(f"Deleted all video files in current directory")
+        if producer:
+            producer.stdout.close()
+            if producer.wait() != 0:
+                name = "ffmpeg" if producer_cmd[0] == "ffmpeg" else "yt-dlp"
+                print(f"Warning: {name} exited with an error, {part_title} may be incomplete")
+                all_ok = False
+        if concat_file:
+            os.remove(concat_file)
+        if upload.returncode != 0:
+            print(f"Error: upload of {part_title} failed")
+            all_ok = False
 
+    if cleanup and video_file:
+        if not all_ok:
+            print(f"Keeping {video_file} because an upload failed")
+            return
+        try:
+            os.remove(video_file)
+            print(f"Deleted {video_file}")
+        except Exception as e:
+            print(f"Warning: could not delete {video_file}: {e}")
 
 if __name__ == "__main__":
     main()
