@@ -12,7 +12,6 @@ import os
 import click
 import math
 import sys
-import tempfile
 from datetime import datetime
 
 
@@ -100,16 +99,12 @@ def slice_segments(segments, start: float, end: float) -> list[tuple[float, floa
 
 
 def concat_list(source: str, ranges) -> str:
-    """Write an ffconcat file that plays the given ranges of source back to back"""
+    """An ffconcat script that plays the given ranges of source back to back"""
     quoted = "'" + source.replace("'", "'\\''") + "'"
     lines = ["ffconcat version 1.0"]
     for start, end in ranges:
         lines += [f"file {quoted}", f"inpoint {start:.3f}", f"outpoint {end:.3f}"]
-    with tempfile.NamedTemporaryFile(
-        "w", suffix=".ffconcat", delete=False
-    ) as f:
-        f.write("\n".join(lines) + "\n")
-    return f.name
+    return "\n".join(lines) + "\n"
 
 
 @click.command()
@@ -277,7 +272,7 @@ def main(
             if segments and (skips or num_parts > 1)
             else None
         )
-        concat_file = None
+        concat_script = None
         if not ranges:
             # Video goes yt-dlp stdout -> youtubeuploader stdin, never touching disk
             producer_cmd = None if video_file else [*yt_dlp, "-o", "-", url_or_path]
@@ -301,7 +296,8 @@ def main(
         else:
             # Join the ranges on either side of a skip with ffmpeg's concat demuxer
             if video_file:
-                source = os.path.abspath(video_file)
+                # Explicit protocol, or ffmpeg resolves it relative to the stdin pipe
+                source = "file:" + os.path.abspath(video_file)
             else:
                 media_urls = subprocess.run(
                     [*yt_dlp, "-f", "b", "-g", url_or_path],
@@ -313,12 +309,13 @@ def main(
                         "--skip needs a single combined audio+video stream, which this site doesn't provide. Try --no-stream"
                     )
                 source = media_urls[0]
-            concat_file = concat_list(source, ranges)
+            # Fed on stdin rather than a temp file, which a snap-confined ffmpeg can't read
+            concat_script = concat_list(source, ranges)
             producer_cmd = [
                 "ffmpeg", "-v", "error",
                 "-f", "concat", "-safe", "0",
-                "-protocol_whitelist", "file,http,https,tcp,tls,crypto,hls",
-                "-i", concat_file,
+                "-protocol_whitelist", "fd,pipe,file,http,https,tcp,tls,crypto,hls",
+                "-i", "-",
                 "-c", "copy", "-f", "mpegts", "-",
             ]
         if ranges:
@@ -328,10 +325,17 @@ def main(
             )
         print("Uploading to youtube", part_title)
         producer = (
-            subprocess.Popen(producer_cmd, stdout=subprocess.PIPE)
+            subprocess.Popen(
+                producer_cmd,
+                stdin=subprocess.PIPE if concat_script else None,
+                stdout=subprocess.PIPE,
+            )
             if producer_cmd
             else None
         )
+        if concat_script:
+            producer.stdin.write(concat_script.encode())
+            producer.stdin.close()
         # todo: install inline somehow
         upload = subprocess.run(
             [
@@ -357,8 +361,6 @@ def main(
                 name = "ffmpeg" if producer_cmd[0] == "ffmpeg" else "yt-dlp"
                 print(f"Warning: {name} exited with an error, {part_title} may be incomplete")
                 all_ok = False
-        if concat_file:
-            os.remove(concat_file)
         if upload.returncode != 0:
             print(f"Error: upload of {part_title} failed")
             all_ok = False
