@@ -37,13 +37,17 @@ def parse_seconds(value: str) -> float | None:
         return None
 
 
-def probe_duration(path: str) -> float | None:
+def probe_format(path: str, field: str) -> float | None:
     result = subprocess.run(
-        ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path],
+        ["ffprobe", "-v", "error", "-show_entries", f"format={field}", "-of", "csv=p=0", path],
         capture_output=True,
         text=True,
     )
     return parse_seconds(result.stdout.strip())
+
+
+def probe_duration(path: str) -> float | None:
+    return probe_format(path, "duration")
 
 
 def format_seconds(seconds: float) -> str:
@@ -98,12 +102,17 @@ def slice_segments(segments, start: float, end: float) -> list[tuple[float, floa
     return ranges
 
 
-def concat_list(source: str, ranges) -> str:
+def concat_list(source: str, ranges, start_time: float) -> str:
     """An ffconcat script that plays the given ranges of source back to back"""
     quoted = "'" + source.replace("'", "'\\''") + "'"
     lines = ["ffconcat version 1.0"]
     for start, end in ranges:
-        lines += [f"file {quoted}", f"inpoint {start:.3f}", f"outpoint {end:.3f}"]
+        # inpoint/outpoint are stream timestamps, which don't start at 0 (~62s on Twitch)
+        lines.append(f"file {quoted}")
+        if start > 0:
+            # Seeking to the very first timestamp fails, so only seek when needed
+            lines.append(f"inpoint {start + start_time:.3f}")
+        lines.append(f"outpoint {end + start_time:.3f}")
     return "\n".join(lines) + "\n"
 
 
@@ -310,7 +319,9 @@ def main(
                     )
                 source = media_urls[0]
             # Fed on stdin rather than a temp file, which a snap-confined ffmpeg can't read
-            concat_script = concat_list(source, ranges)
+            concat_script = concat_list(
+                source, ranges, probe_format(source, "start_time") or 0.0
+            )
             producer_cmd = [
                 "ffmpeg", "-v", "error",
                 "-f", "concat", "-safe", "0",
