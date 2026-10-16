@@ -486,7 +486,7 @@ def ffmpeg_concat(files: list, output: str) -> None:
 @click.option("--bracket", help="URL or slug of the bracket")
 @click.option("--latest", is_flag=True, help="Choose the most recent bracket")
 @click.option("--execute", is_flag=True, help="Execute the download, concat, and upload")
-@click.option("--concatenate", is_flag=True, help="Concatenate two VODs before uploading")
+@click.option("--concatenate", is_flag=True, help="Concatenate all of the bracket's VODs (2 or more) before uploading")
 @click.option("--nocleanup", is_flag=True, default=False, help="Keep video files around after upload")
 def sets(bracket, latest, execute, concatenate, nocleanup):
     """Show kevbot's sets with win/loss format"""
@@ -497,8 +497,8 @@ def sets(bracket, latest, execute, concatenate, nocleanup):
             full_bracket = choose_bracket(latest=latest)
 
         vods = full_bracket.get("VODs", [])
-        if len(vods) != 2:
-            raise click.ClickException(f"Expected exactly 2 VODs, found {len(vods)}")
+        if len(vods) < 2:
+            raise click.ClickException(f"Need at least 2 VODs to concatenate, found {len(vods)}")
 
         vod_urls = [v["url"] for v in vods]
         title = full_bracket.get("title", "").replace("'", "")
@@ -507,20 +507,36 @@ def sets(bracket, latest, execute, concatenate, nocleanup):
         click.echo("Fetching VOD metadata...", err=True)
         metas = [get_vod_metadata(url) for url in vod_urls]
 
-        # Auto-sort by upload date when dates differ
-        if metas[0]["date"] and metas[1]["date"] and metas[0]["date"] != metas[1]["date"]:
+        # Auto-sort by upload date when every VOD has a date and they aren't all the same
+        dates = [m["date"] for m in metas]
+        if all(dates) and len(set(dates)) > 1:
             paired = sorted(zip(metas, vod_urls), key=lambda x: x[0]["date"])
             metas, vod_urls = [p[0] for p in paired], [p[1] for p in paired]
 
-        click.echo("\nProposed concat order:")
-        for i, (meta, url) in enumerate(zip(metas, vod_urls)):
-            click.echo(f"  {i + 1}. {meta['date'] or 'unknown date'} - {meta['title']}")
-            click.echo(f"     {url}")
+        while True:
+            click.echo("\nProposed concat order:")
+            for i, (meta, url) in enumerate(zip(metas, vod_urls)):
+                click.echo(f"  {i + 1}. {meta['date'] or 'unknown date'} - {meta['title']}")
+                click.echo(f"     {url}")
 
-        if not click.confirm("\nUse this order?", default=True):
-            vod_urls.reverse()
-            metas.reverse()
-            click.echo("Swapped order.")
+            if click.confirm("\nUse this order?", default=True):
+                break
+
+            if len(vod_urls) == 2:
+                order = [2, 1]
+            else:
+                answer = click.prompt(
+                    f"Enter new order as space-separated numbers (e.g. {' '.join(str(n) for n in range(len(vod_urls), 0, -1))})"
+                )
+                try:
+                    order = [int(n) for n in answer.split()]
+                except ValueError:
+                    order = []
+                if sorted(order) != list(range(1, len(vod_urls) + 1)):
+                    click.echo("Invalid order, try again.")
+                    continue
+            metas = [metas[n - 1] for n in order]
+            vod_urls = [vod_urls[n - 1] for n in order]
 
         sanitized_title = "".join(
             c for c in title if c.isalnum() or c in " -_.$@[]"
@@ -532,20 +548,18 @@ def sets(bracket, latest, execute, concatenate, nocleanup):
             click.echo("Run with --execute to proceed.")
             return
 
-        click.echo("\nDownloading VOD 1...")
-        file1 = download_vod(vod_urls[0])
-        click.echo(f"Downloaded: {file1}")
-
-        click.echo("Downloading VOD 2...")
-        file2 = download_vod(vod_urls[1])
-        click.echo(f"Downloaded: {file2}")
+        files = []
+        for i, url in enumerate(vod_urls):
+            click.echo(f"\nDownloading VOD {i + 1}/{len(vod_urls)}...")
+            files.append(download_vod(url))
+            click.echo(f"Downloaded: {files[-1]}")
 
         click.echo(f"\nConcatenating to {concat_filename}...")
-        ffmpeg_concat([file1, file2], concat_filename)
+        ffmpeg_concat(files, concat_filename)
         click.echo(f"Concatenated: {concat_filename}")
 
         if not nocleanup:
-            for f in [file1, file2]:
+            for f in files:
                 try:
                     os.remove(f)
                 except Exception as e:
