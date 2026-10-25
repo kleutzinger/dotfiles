@@ -18,6 +18,7 @@ from typing import TypedDict, List
 from common import fzf_choose
 from datetime import datetime
 from urllib.parse import urlparse
+import shlex
 import subprocess
 import sys
 from bs4 import BeautifulSoup
@@ -499,6 +500,11 @@ def is_kevbot_set(s):
     metavar="START-END",
     help="Cut out a section, e.g. --skip 2:10:00-2:45:30. Can be given more than once",
 )
+@click.option(
+    "--multi-vod",
+    type=click.Choice(["separate", "concatenate"]),
+    help="How to upload a bracket with several VODs, instead of being asked",
+)
 def bracket(
     bracket_url_or_slug: str = None,
     latest: bool = False,
@@ -509,10 +515,12 @@ def bracket(
     stream: bool = True,
     background: bool = False,
     skip: tuple[str, ...] = (),
+    multi_vod: str = None,
 ) -> Bracket:
     """List available brackets, choose one
 
-    If the bracket has more than one VOD, they are concatenated before uploading.
+    If the bracket has more than one VOD, you choose between uploading them as
+    separate videos or concatenating them first.
     """
     if bracket_url_or_slug:
         bracket = find_bracket_by_url(bracket_url_or_slug)
@@ -523,11 +531,33 @@ def bracket(
         title = title.replace("'", "")
         bracket_url = bracket.get("BracketUrl")
         cleanup_arg = "" if nocleanup else "--cleanup"
+        description_arg = ""
         if not local_video_file and len(bracket.get("VODs", [])) > 1:
-            # Multiple VODs can't be streamed; download and join them first
+            metas, vod_urls = order_bracket_vods(bracket)
+            mode = multi_vod or choose_multi_vod_mode(metas, vod_urls)
+            if mode == "separate":
+                if skip:
+                    raise click.ClickException("--skip can't be used when uploading VODs separately")
+                for i, url in enumerate(vod_urls):
+                    suffix = f" [VOD {i + 1} of {len(vod_urls)}]"
+                    vod_title = title[: 100 - len(suffix)] + suffix
+                    stream_arg = "--stream " if stream else ""
+                    bg_arg = "--background " if background else ""
+                    cmd = (
+                        f"vodbackup.py {cleanup_arg} --title {shlex.quote(vod_title)} "
+                        f"--bracket-url {shlex.quote(bracket_url)} {bg_arg}{stream_arg}{shlex.quote(url)}"
+                    )
+                    if upload:
+                        click.echo(cmd)
+                    if execute:
+                        click.echo(f"executing: {cmd}")
+                        subprocess.run(cmd, shell=True, check=True)
+                return Bracket
+            # Concatenating can't be streamed; download and join first
             local_video_file = concat_bracket_vods(
-                bracket, execute=execute, nocleanup=nocleanup, dry_run=not execute
+                bracket, metas, vod_urls, execute=execute, nocleanup=nocleanup, dry_run=not execute
             )
+            description_arg = f" --description {shlex.quote(vod_description(metas, vod_urls))}"
         if local_video_file:
             video_arg = f"--local-video-file '{local_video_file}'"
         else:
@@ -539,7 +569,7 @@ def bracket(
             video_arg = f"--background {video_arg}"
         for section in skip:
             video_arg = f"--skip '{section}' {video_arg}"
-        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' {video_arg}"
+        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}'{description_arg} {video_arg}"
         if upload:
             click.echo(cmd)
         if execute:
@@ -698,28 +728,12 @@ def is_twitch_url(url: str) -> bool:
     return host == "twitch.tv" or host.endswith(".twitch.tv")
 
 
-def concat_bracket_vods(
-    full_bracket: Bracket, execute: bool, nocleanup: bool, dry_run: bool = False
-) -> str | None:
-    """Order, download, and concatenate a bracket's VODs; return the output path.
+def order_bracket_vods(full_bracket: Bracket) -> tuple[list[dict], list[str]]:
+    """Fetch metadata for a bracket's VODs and let the user confirm their order.
 
-    Without execute, nothing is downloaded: with dry_run the commands are printed
-    and the would-be output path is returned, otherwise None is returned.
+    Returns (metas, urls), both in the confirmed order. Each meta has date and title.
     """
-    vods = full_bracket.get("VODs", [])
-    if len(vods) < 2:
-        raise click.ClickException(f"Need at least 2 VODs to concatenate, found {len(vods)}")
-
-    vod_urls = [v["url"] for v in vods]
-    title = full_bracket.get("title", "").replace("'", "")
-
-    if execute:
-        non_twitch = [url for url in vod_urls if not is_twitch_url(url)]
-        if non_twitch:
-            raise click.ClickException(
-                "All VODs must be Twitch VODs to concatenate, but these are not:\n  "
-                + "\n  ".join(non_twitch)
-            )
+    vod_urls = [v["url"] for v in full_bracket.get("VODs", [])]
 
     click.echo("Fetching VOD metadata...", err=True)
     metas = [get_vod_metadata(url) for url in vod_urls]
@@ -731,7 +745,7 @@ def concat_bracket_vods(
         metas, vod_urls = [p[0] for p in paired], [p[1] for p in paired]
 
     while True:
-        click.echo("\nProposed concat order:")
+        click.echo("\nProposed VOD order:")
         for i, (meta, url) in enumerate(zip(metas, vod_urls)):
             click.echo(f"  {i + 1}. {meta['date'] or 'unknown date'} - {meta['title']}")
             click.echo(f"     {url}")
@@ -754,6 +768,56 @@ def concat_bracket_vods(
                 continue
         metas = [metas[n - 1] for n in order]
         vod_urls = [vod_urls[n - 1] for n in order]
+    return metas, vod_urls
+
+
+def vod_description(metas: list[dict], vod_urls: list[str]) -> str:
+    """Description text crediting the original VOD titles and links"""
+    lines = ["Original videos:"]
+    for i, (meta, url) in enumerate(zip(metas, vod_urls)):
+        lines.append(f"{i + 1}. {meta['title']}")
+        lines.append(f"   {url}")
+    return "\n".join(lines)
+
+
+def choose_multi_vod_mode(metas: list[dict], vod_urls: list[str]) -> str:
+    """Ask whether to upload a bracket's several VODs separately or joined"""
+    click.echo(f"\nThis bracket has {len(vod_urls)} VODs:")
+    for i, (meta, url) in enumerate(zip(metas, vod_urls)):
+        click.echo(f"  {i + 1}. {meta['title']}")
+        click.echo(f"     {url}")
+    return click.prompt(
+        "Upload as separate videos or concatenate into one?",
+        type=click.Choice(["separate", "concatenate"]),
+        default="concatenate",
+    )
+
+
+def concat_bracket_vods(
+    full_bracket: Bracket,
+    metas: list[dict],
+    vod_urls: list[str],
+    execute: bool,
+    nocleanup: bool,
+    dry_run: bool = False,
+) -> str | None:
+    """Download and concatenate an ordered list of a bracket's VODs; return the output path.
+
+    Without execute, nothing is downloaded: with dry_run the commands are printed
+    and the would-be output path is returned, otherwise None is returned.
+    """
+    if len(vod_urls) < 2:
+        raise click.ClickException(f"Need at least 2 VODs to concatenate, found {len(vod_urls)}")
+
+    title = full_bracket.get("title", "").replace("'", "")
+
+    if execute:
+        non_twitch = [url for url in vod_urls if not is_twitch_url(url)]
+        if non_twitch:
+            raise click.ClickException(
+                "All VODs must be Twitch VODs to concatenate, but these are not:\n  "
+                + "\n  ".join(non_twitch)
+            )
 
     sanitized_title = "".join(
         c for c in title if c.isalnum() or c in " -_.$@[]"
@@ -812,8 +876,11 @@ def sets(bracket, latest, execute, concatenate, nocleanup, dry_run):
 
         title = full_bracket.get("title", "").replace("'", "")
         bracket_url = full_bracket.get("BracketUrl", "")
+        metas, vod_urls = order_bracket_vods(full_bracket)
         concat_path = concat_bracket_vods(
             full_bracket,
+            metas,
+            vod_urls,
             execute=execute and not dry_run,
             nocleanup=nocleanup,
             dry_run=dry_run,
@@ -822,7 +889,7 @@ def sets(bracket, latest, execute, concatenate, nocleanup, dry_run):
             return
 
         cleanup_arg = "" if nocleanup else "--cleanup"
-        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' '{concat_path}'"
+        cmd = f"vodbackup.py {cleanup_arg} --title '{title}' --bracket-url '{bracket_url}' --description {shlex.quote(vod_description(metas, vod_urls))} '{concat_path}'"
         if dry_run:
             click.echo(f"\nWould upload: {cmd}")
             return

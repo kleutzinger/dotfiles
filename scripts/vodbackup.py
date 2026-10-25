@@ -202,6 +202,8 @@ def main(
         return
     yt_dlp = ["uvx", "--no-cache", "yt-dlp"]
     video_file = None
+    original_title = None
+    is_url = bool(url_or_path) and not os.path.exists(url_or_path)
     # check if url is a local absolute path that exists
     if local_video_file:
         video_file = local_video_file
@@ -210,15 +212,13 @@ def main(
     elif not stream:
         # Use yt-dlp to download and print the output filename
         result = subprocess.run(
-            [*yt_dlp, "--print", "after_move:filepath", url_or_path],
+            [*yt_dlp, "--print", "title", "--print", "after_move:filepath", url_or_path],
             capture_output=True,
             text=True,
         )
-        downloaded_file = (
-            result.stdout.strip().splitlines()[-1]
-            if result.stdout.strip()
-            else None
-        )
+        lines = result.stdout.strip().splitlines()
+        downloaded_file = lines[-1] if lines else None
+        original_title = lines[0] if len(lines) > 1 else None
         if not downloaded_file or not os.path.exists(downloaded_file):
             print("Error: No file was downloaded.")
             return
@@ -234,7 +234,8 @@ def main(
             text=True,
         ).stdout.splitlines()
         duration = parse_seconds(info[0]) if info else None
-        title = title or (info[1] if len(info) > 1 else url_or_path)
+        original_title = info[1] if len(info) > 1 else None
+        title = title or original_title or url_or_path
 
     if duration is None:
         if skips:
@@ -261,8 +262,10 @@ def main(
     description_text = "Find all my vods at https://vods.kevbot.xyz"
     if bracket_url:
         description_text += f"\nBracket URL: {bracket_url}"
+    if is_url:
+        description_text += f"\nOriginal video: {original_title or url_or_path}\n{url_or_path}"
     if description:
-        description_text += description
+        description_text += "\n" + description
     sanitized_title = "".join(
         [
             c
