@@ -23,10 +23,13 @@ import sys
 from bs4 import BeautifulSoup
 
 KEVBOT_SGG_ID = "658c6a49"
+KEVBOT_PARRY_ID = "019d9489-f8ac-7025-ada5-948de9c7511d"
 
 API_KEY = os.getenv("START_GG_API_KEY")
 if not API_KEY:
     raise ValueError("START_GG_API_KEY environment variable is required")
+
+PARRY_API_KEY = os.getenv("PARRY_GG_API_KEY")
 
 
 class Bracket(TypedDict):
@@ -53,7 +56,19 @@ https://tril.kevbot.xyz/custom/brackets
 """
 
 
+def is_parry_url(url: str) -> bool:
+    """Check if a URL points at parry.gg"""
+    host = (urlparse(url).hostname or "").lower()
+    return host == "parry.gg" or host.endswith(".parry.gg")
+
+
 def url2slug(url: str) -> str:
+    if is_parry_url(url):
+        # https://parry.gg/<tournament-slug>/<event-slug>/...
+        path_segments = [segment for segment in urlparse(url).path.split("/") if segment]
+        if len(path_segments) < 2:
+            raise ValueError(f"Not a parry.gg event URL: {url}")
+        return "/".join(path_segments[:2])
     path_segments = [segment for segment in url.split("/") if segment]
     i = path_segments.index("tournament")
     return "/".join(path_segments[i : i + 4])
@@ -209,6 +224,187 @@ def get_entrants(slug: str, num: int = 512):
         raise click.Abort()
 
     return data["data"]["event"]
+
+
+def parry_request(service: str, method: str, body: dict) -> dict:
+    """Call the parry.gg JSON-over-HTTP API"""
+    if not PARRY_API_KEY:
+        raise click.ClickException("PARRY_GG_API_KEY environment variable is required")
+    response = requests.post(
+        f"https://grpcweb.parry.gg/parrygg.services.{service}/{method}",
+        json=body,
+        headers={"X-API-KEY": PARRY_API_KEY, "Content-Type": "application/json"},
+    )
+    if response.status_code != 200:
+        click.echo(f"Error: {response.status_code}", err=True)
+        click.echo(response.text, err=True)
+        raise click.Abort()
+    return response.json()
+
+
+def get_parry_kevbot_sets(url: str, char_lookup: dict[str, str]) -> list[dict]:
+    """Fetch kevbot's sets for a parry.gg event, in the same shape `sets` prints"""
+    tournament_slug, event_slug = url2slug(url).split("/")
+    click.echo(f"Fetching kevbot's matches from parry.gg {tournament_slug}/{event_slug}...", err=True)
+    data = parry_request(
+        "MatchService",
+        "GetMatches",
+        {
+            "filter": {
+                "userId": KEVBOT_PARRY_ID,
+                "event": {
+                    "eventSlugPath": {
+                        "tournamentSlug": tournament_slug,
+                        "eventSlug": event_slug,
+                    }
+                },
+            }
+        },
+    )
+
+    kevbot_sets = []
+    for context in data.get("matches", []):
+        match = context["match"]
+        slots = match.get("slots", [])
+        if len(slots) != 2:
+            continue
+        seeds = {seed["id"]: seed for seed in context.get("seeds", [])}
+
+        def slot_users(slot):
+            seed = seeds.get(slot.get("seedId"), {})
+            return seed.get("eventEntrant", {}).get("entrant", {}).get("users", [])
+
+        kevbot_slot = next(
+            (
+                i
+                for i, slot in enumerate(slots)
+                if any(u.get("id") == KEVBOT_PARRY_ID for u in slot_users(slot))
+            ),
+            None,
+        )
+        if kevbot_slot is None:
+            continue
+        opponent = slots[1 - kevbot_slot]
+        opponent_users = slot_users(opponent)
+        if not opponent_users:
+            # Bye or opponent not decided yet
+            continue
+
+        opponent_name = " / ".join(u.get("gamerTag", "") for u in opponent_users)
+        char = char_lookup.get(opponent_name.lower())
+        if char:
+            opponent_name = f"{opponent_name} {char}"
+
+        round_label = context.get("round", {}).get("label") or f"Round {match.get('round', 0)}"
+
+        if match.get("state") == "MATCH_STATE_COMPLETED":
+            kevbot = slots[kevbot_slot]
+            if "SLOT_STATE_DQ" in (kevbot.get("state"), opponent.get("state")):
+                formatted_score = "DQ"
+            else:
+                # proto3 JSON leaves out zero values, so a missing score is 0
+                formatted_score = f"{kevbot.get('score', 0):g}-{opponent.get('score', 0):g}"
+        else:
+            formatted_score = "?-?"
+
+        kevbot_sets.append(
+            {
+                "opponent": opponent_name,
+                "status": "",
+                "score": formatted_score,
+                "round": abbreviate_round(round_label),
+                "round_num": match.get("round", 0),
+                "completedAt": match.get("endedAt", ""),
+            }
+        )
+    return kevbot_sets
+
+
+def abbreviate_round(round_text: str) -> str:
+    """Abbreviate round names, e.g. "Winners Semi-Final" -> "WS" """
+    round_lower = round_text.lower().replace("-", "")
+
+    # Start with bracket type
+    if "winners" in round_lower:
+        abbrev = "W"
+    elif "losers" in round_lower:
+        abbrev = "L"
+    elif "grand" in round_lower:
+        abbrev = "GF"
+    else:
+        abbrev = ""
+
+    # Add round type
+    if "quarter" in round_lower:
+        abbrev += "Q"
+    elif "semi" in round_lower:
+        abbrev += "S"
+    elif "final" in round_lower:
+        if abbrev != "GF":  # Don't add F to GF
+            abbrev += "F"
+
+    return abbrev if abbrev else round_text
+
+
+def load_char_lookup() -> dict[str, str]:
+    """Get character lookup from historical data (force refresh cache each run)"""
+    click.echo("Fetching character data...", err=True)
+    html = fetch_character_html(force=True)
+    char_lookup = get_character_lookup(html)
+    click.echo(f"Loaded {len(char_lookup)} opponent-character mappings", err=True)
+    return char_lookup
+
+
+def print_and_copy_sets(kevbot_sets: list[dict]) -> None:
+    """Print the sets and copy them to the clipboard as an HTML table"""
+    click.echo(f"Kevbot sets found: {len(kevbot_sets)}", err=True)
+
+    if not kevbot_sets:
+        click.echo("No sets found for kevbot in this tournament.")
+        return
+
+    # Sort by completion time (most recent first)
+    kevbot_sets.sort(key=lambda x: x["completedAt"], reverse=True)
+
+    # Print console summary
+    click.echo("Tournament Results:")
+    for set_info in kevbot_sets:
+        click.echo(f"{set_info['opponent']} {set_info['score']} {set_info['round']}")
+    click.echo()
+
+    # Generate HTML table
+    html_rows = []
+    for set_info in kevbot_sets:
+        html_rows.append(
+            f"<tr><td>{set_info['opponent']}</td><td>{set_info['status']}</td><td>{set_info['score']} {set_info['round']}</td></tr>"
+        )
+
+    html_table = f"<table><tbody>{''.join(html_rows)}</tbody></table>"
+
+    # Copy HTML to clipboard
+    try:
+        if sys.platform == "darwin":
+            # macOS: use clippy
+            subprocess.run(
+                ["clippy", "--mime", "text/html"],
+                input=html_table,
+                text=True,
+                check=True,
+            )
+        else:
+            # Linux: use xclip
+            subprocess.run(
+                ["xclip", "-selection", "clipboard", "-i", "-t", "text/html"],
+                input=html_table,
+                text=True,
+                check=True,
+            )
+        click.echo("HTML table copied to clipboard!")
+    except subprocess.CalledProcessError as e:
+        click.echo(f"Error copying to clipboard: {e}", err=True)
+    except FileNotFoundError:
+        tool = "clippy" if sys.platform == "darwin" else "xclip"
+        click.echo(f"{tool} not found.")
 
 
 @click.group()
@@ -635,14 +831,16 @@ def sets(bracket, latest, execute, concatenate, nocleanup, dry_run):
         return
 
     if bracket:
-        # If it's a URL, convert to slug
-        if bracket.startswith("http"):
-            slug = url2slug(bracket)
-        else:
-            slug = bracket
+        bracket_url = bracket
     else:
-        chosen = choose_bracket(latest=latest)
-        slug = url2slug(chosen["BracketUrl"])
+        bracket_url = choose_bracket(latest=latest)["BracketUrl"]
+
+    if is_parry_url(bracket_url):
+        print_and_copy_sets(get_parry_kevbot_sets(bracket_url, load_char_lookup()))
+        return
+
+    # If it's a URL, convert to slug
+    slug = url2slug(bracket_url) if bracket_url.startswith("http") else bracket_url
 
     # First get phase and phase group IDs
     structure_query = """
@@ -855,11 +1053,7 @@ def sets(bracket, latest, execute, concatenate, nocleanup, dry_run):
     all_sets = list(all_sets_dict.values())
     click.echo(f"Total sets processed: {len(all_sets)}", err=True)
 
-    # Get character lookup from historical data (force refresh cache each run)
-    click.echo("Fetching character data...", err=True)
-    html = fetch_character_html(force=True)
-    char_lookup = get_character_lookup(html)
-    click.echo(f"Loaded {len(char_lookup)} opponent-character mappings", err=True)
+    char_lookup = load_char_lookup()
 
     # Filter for kevbot sets
     kevbot_sets = []
@@ -895,31 +1089,7 @@ def sets(bracket, latest, execute, concatenate, nocleanup, dry_run):
                 if char:
                     opponent_name = f"{opponent_name} {char}"
 
-                round_text = s["fullRoundText"] or f"Round {s['round']}"
-
-                # Abbreviate round names
-                round_lower = round_text.lower().replace("-", "")
-
-                # Start with bracket type
-                if "winners" in round_lower:
-                    abbrev = "W"
-                elif "losers" in round_lower:
-                    abbrev = "L"
-                elif "grand" in round_lower:
-                    abbrev = "GF"
-                else:
-                    abbrev = ""
-
-                # Add round type
-                if "quarter" in round_lower:
-                    abbrev += "Q"
-                elif "semi" in round_lower:
-                    abbrev += "S"
-                elif "final" in round_lower:
-                    if abbrev != "GF":  # Don't add F to GF
-                        abbrev += "F"
-
-                round_text = abbrev if abbrev else round_text
+                round_text = abbreviate_round(s["fullRoundText"] or f"Round {s['round']}")
 
                 # Determine win/loss and format score
                 if s["winnerId"] and s["displayScore"]:
@@ -971,57 +1141,7 @@ def sets(bracket, latest, execute, concatenate, nocleanup, dry_run):
                     }
                 )
 
-    click.echo(f"Kevbot sets found: {len(kevbot_sets)}", err=True)
-
-    if not kevbot_sets:
-        click.echo("No sets found for kevbot in this tournament.")
-        return
-
-    # Sort by completion time (most recent first)
-    kevbot_sets.sort(key=lambda x: x["completedAt"], reverse=True)
-
-    # Print console summary
-    if kevbot_sets:
-        click.echo("Tournament Results:")
-        for set_info in kevbot_sets:
-            click.echo(
-                f"{set_info['opponent']} {set_info['score']} {set_info['round']}"
-            )
-        click.echo()
-
-    # Generate HTML table
-    html_rows = []
-    for set_info in kevbot_sets:
-        html_rows.append(
-            f"<tr><td>{set_info['opponent']}</td><td>{set_info['status']}</td><td>{set_info['score']} {set_info['round']}</td></tr>"
-        )
-
-    html_table = f"<table><tbody>{''.join(html_rows)}</tbody></table>"
-
-    # Copy HTML to clipboard
-    try:
-        if sys.platform == "darwin":
-            # macOS: use clippy
-            result = subprocess.run(
-                ["clippy", "--mime", "text/html"],
-                input=html_table,
-                text=True,
-                check=True,
-            )
-        else:
-            # Linux: use xclip
-            result = subprocess.run(
-                ["xclip", "-selection", "clipboard", "-i", "-t", "text/html"],
-                input=html_table,
-                text=True,
-                check=True,
-            )
-        click.echo("HTML table copied to clipboard!")
-    except subprocess.CalledProcessError as e:
-        click.echo(f"Error copying to clipboard: {e}", err=True)
-    except FileNotFoundError:
-        tool = "clippy" if sys.platform == "darwin" else "xclip"
-        click.echo(f"{tool} not found.")
+    print_and_copy_sets(kevbot_sets)
 
 
 @cli.command()
