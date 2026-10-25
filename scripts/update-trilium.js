@@ -44,7 +44,9 @@ const response = await fetch(
   `https://api.github.com/repos/TriliumNext/Trilium/releases`
 );
 
-const data = (await response.json()).slice(0, 5);
+const data = (await response.json())
+  .filter((r) => !/web-clipper/i.test(`${r.name} ${r.tag_name}`))
+  .slice(0, 5);
 const release = iterPicker(data, (r) => `${r.tag_name} \t\t ${r.published_at}`);
 const tagName = release.tag_name;
 console.dir(release.name);
