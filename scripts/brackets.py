@@ -541,7 +541,7 @@ def bracket(
                 for i, url in enumerate(vod_urls):
                     suffix = f" [VOD {i + 1} of {len(vod_urls)}]"
                     vod_title = title[: 100 - len(suffix)] + suffix
-                    stream_arg = "--stream " if stream else ""
+                    stream_arg = "--stream " if stream else "--no-stream "
                     bg_arg = "--background " if background else ""
                     cmd = (
                         f"vodbackup.py {cleanup_arg} --title {shlex.quote(vod_title)} "
@@ -563,8 +563,7 @@ def bracket(
         else:
             vod = bracket["VODs"][0]["url"]
             video_arg = f"'{vod}'"
-            if stream:
-                video_arg = f"--stream {video_arg}"
+            video_arg = f"--{'stream' if stream else 'no-stream'} {video_arg}"
         if background:
             video_arg = f"--background {video_arg}"
         for section in skip:

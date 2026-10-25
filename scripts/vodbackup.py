@@ -146,9 +146,9 @@ def concat_list(source: str, ranges, start_time: float) -> str:
 )
 @click.option(
     "-s",
-    "--stream",
-    is_flag=True,
-    help="Pipe yt-dlp straight into youtubeuploader without saving to disk",
+    "--stream/--no-stream",
+    default=True,
+    help="Pipe yt-dlp straight into youtubeuploader without saving to disk (default: on for URLs; local files are always uploaded directly)",
 )
 @click.option(
     "--skip",
@@ -178,8 +178,8 @@ def main(
         raise click.UsageError("Provide either URL_OR_PATH or --local-video-file")
     if url_or_path and local_video_file:
         raise click.UsageError("Provide only one of URL_OR_PATH or --local-video-file")
-    if stream and (local_video_file or os.path.exists(url_or_path)):
-        raise click.UsageError("--stream only works with a URL")
+    if local_video_file or os.path.exists(url_or_path):
+        stream = False
     if background:
         # Re-run this script detached in its own session so it survives SSH hangups
         log_dir = os.path.expanduser("~/.local/state/vodbackup")
