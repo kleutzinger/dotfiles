@@ -28,6 +28,9 @@ assert os.path.exists(CLIENT_TOKEN_PATH), f"File not found: {CLIENT_TOKEN_PATH}"
 # YouTube rejects videos over 12 hours; leave some slack for keyframe-aligned cuts
 MAX_PART_SECONDS = 11 * 3600 + 55 * 60
 YOUTUBE_MAX_TITLE = 100
+# yt-dlp's native HLS downloader writes fragment files named after the output, which
+# breaks with `-o -` ("Unable to rename file --Frag3.part"). ffmpeg pipes mpegts instead.
+STDOUT_DOWNLOADER = ["--downloader", "m3u8:ffmpeg"]
 
 
 def parse_seconds(value: str) -> float | None:
@@ -287,7 +290,7 @@ def main(
         concat_script = None
         if not ranges:
             # Video goes yt-dlp stdout -> youtubeuploader stdin, never touching disk
-            producer_cmd = None if video_file else [*yt_dlp, "-o", "-", url_or_path]
+            producer_cmd = None if video_file else [*yt_dlp, *STDOUT_DOWNLOADER, "-o", "-", url_or_path]
         elif len(ranges) == 1 and video_file:
             (start, end), = ranges
             producer_cmd = [
@@ -301,6 +304,7 @@ def main(
             section_end = "inf" if end >= duration else f"{end:.3f}"
             producer_cmd = [
                 *yt_dlp,
+                *STDOUT_DOWNLOADER,
                 "--download-sections", f"*{start:.3f}-{section_end}",
                 "-o", "-",
                 url_or_path,
