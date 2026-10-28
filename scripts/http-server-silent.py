@@ -1,4 +1,10 @@
-#!/usr/bin/env -S uv run --script --with click
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "click",
+# ]
+# ///
 import http.server
 import socketserver
 import click

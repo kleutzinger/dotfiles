@@ -1,4 +1,10 @@
-#!/usr/bin/env -S uv run --script --with zyte-api
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "zyte-api",
+# ]
+# ///
 """
     Usage:
     ./zyte-get.py <url>

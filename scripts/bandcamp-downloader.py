@@ -1,4 +1,12 @@
-#!/usr/bin/env -S uvrun
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "requests",
+#     "beautifulsoup4",
+#     "pocketbase-async",
+# ]
+# ///
 import os
 import platform
 import shlex

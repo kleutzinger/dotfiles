@@ -1,4 +1,13 @@
-#!/usr/bin/env -S uv run --script --with click --with numpy --with opencv-python --with pyyaml
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "click",
+#     "numpy",
+#     "opencv-python",
+#     "pyyaml",
+# ]
+# ///
 """
 #__RUN0__# pushd ~/scripts/vods; vodhelper.py; popd
 #__RUN1__# pushd ~/scripts/vods/vods2; vodhelper.py; popd

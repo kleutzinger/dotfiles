@@ -1,4 +1,10 @@
-#!/usr/bin/env -S uv run --script --with pyperclip
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pyperclip",
+# ]
+# ///
 """
 Get bracket table from clipboard and convert it to timestamps for youtube description.
 """

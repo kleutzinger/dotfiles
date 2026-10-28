@@ -1,4 +1,10 @@
-#!/usr/bin/env -S uv run --script --with click
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "click",
+# ]
+# ///
 """
 this is basically a port of the following fish statement
 vlc (fd -a -e mkv -e webm -e mp4 -e m4v -e webm -e gif -e m4a -e wmv --follow | sort) --quiet

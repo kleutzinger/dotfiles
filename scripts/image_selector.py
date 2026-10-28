@@ -1,4 +1,12 @@
-#!/usr/bin/env -S uv run --script --with pygame
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pygame",
+#     "requests",
+#     "pillow",
+# ]
+# ///
 import os
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"

@@ -1,4 +1,10 @@
-#!/usr/bin/env -S uv run --script --with openai
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "openai",
+# ]
+# ///
 import os
 
 from openai import OpenAI

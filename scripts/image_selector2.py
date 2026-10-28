@@ -1,4 +1,11 @@
-#!/usr/bin/env -S uv run --with pywebview,PyGObject
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "pywebview",
+#     "PyGObject",
+# ]
+# ///
 
 # get arguments from the command line
 import sys

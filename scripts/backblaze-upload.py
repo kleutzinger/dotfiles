@@ -1,4 +1,12 @@
-#!/usr/bin/env -S uv run --script --with click,pillow,b2sdk
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "click",
+#     "pillow",
+#     "b2sdk",
+# ]
+# ///
 
 """
 upload a file to backblaze and return its public (unlisted) url.
