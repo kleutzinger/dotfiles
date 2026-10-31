@@ -59,14 +59,15 @@ https://tril.kevbot.xyz/custom/brackets
 
 def is_parry_url(url: str) -> bool:
     """Check if a URL points at parry.gg"""
-    host = (urlparse(url).hostname or "").lower()
+    host = (urlparse(url if "//" in url else f"//{url}").hostname or "").lower()
     return host == "parry.gg" or host.endswith(".parry.gg")
 
 
 def url2slug(url: str) -> str:
     if is_parry_url(url):
         # https://parry.gg/<tournament-slug>/<event-slug>/...
-        path_segments = [segment for segment in urlparse(url).path.split("/") if segment]
+        path = urlparse(url if "//" in url else f"//{url}").path
+        path_segments = [segment for segment in path.split("/") if segment]
         if len(path_segments) < 2:
             raise ValueError(f"Not a parry.gg event URL: {url}")
         return "/".join(path_segments[:2])
@@ -241,6 +242,28 @@ def parry_request(service: str, method: str, body: dict) -> dict:
         click.echo(response.text, err=True)
         raise click.Abort()
     return response.json()
+
+
+def get_parry_entrants(url: str) -> tuple[str, list[dict]]:
+    """Fetch an event's name and seeded entrants from parry.gg"""
+    tournament_slug, event_slug = url2slug(url).split("/")
+    slug_path = {"tournamentSlug": tournament_slug, "eventSlug": event_slug}
+    event = parry_request(
+        "EventService", "GetEvent", {"identifier": {"eventSlugPath": slug_path}}
+    ).get("event", {})
+    data = parry_request(
+        "EventService",
+        "GetEventEntrants",
+        {"eventIdentifier": {"eventSlugPath": slug_path}},
+    )
+    entrants = []
+    for event_entrant in data.get("eventEntrants", []):
+        name = event_entrant.get("name") or " / ".join(
+            u.get("gamerTag", "") for u in event_entrant.get("entrant", {}).get("users", [])
+        )
+        # proto3 JSON leaves out zero values, so a missing seed is 0 (unseeded)
+        entrants.append({"seed": event_entrant.get("seed", 0), "name": name})
+    return event.get("name", event_slug), entrants
 
 
 def get_parry_kevbot_sets(url: str, char_lookup: dict[str, str]) -> list[dict]:
@@ -1221,6 +1244,15 @@ def entrants(bracket, latest, num):
         click.echo("Error: --num cannot exceed 512", err=True)
         raise click.Abort()
     """Get entrants for a bracket"""
+    if bracket and is_parry_url(bracket):
+        name, parry_entrants = get_parry_entrants(bracket)
+        click.echo(f"\nEvent: {name}")
+        click.echo(f"Tournament: {bracket}")
+        click.echo(f"Total Entrants: {len(parry_entrants)}")
+        click.echo("\nSeeds (ordered by seed number):")
+        for e in sorted(parry_entrants, key=lambda e: (e["seed"] == 0, e["seed"])):
+            click.echo(f"{e['seed']:03d} - {e['name']}")
+        return
     if bracket:
         # If it's a URL, convert to slug
         if bracket.startswith("http"):
