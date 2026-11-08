@@ -525,8 +525,9 @@ def is_kevbot_set(s):
 )
 @click.option(
     "--multi-vod",
-    type=click.Choice(["separate", "concatenate"]),
-    help="How to upload a bracket with several VODs, instead of being asked",
+    type=click.Choice(["separate", "serial", "concatenate"]),
+    help="How to upload a bracket with several VODs, instead of being asked. "
+    "serial is separate, but with --background the uploads run one at a time instead of all at once",
 )
 def bracket(
     bracket_url_or_slug: str = None,
@@ -558,23 +559,34 @@ def bracket(
         if not local_video_file and len(bracket.get("VODs", [])) > 1:
             metas, vod_urls = order_bracket_vods(bracket)
             mode = multi_vod or choose_multi_vod_mode(metas, vod_urls)
-            if mode == "separate":
+            if mode in ("separate", "serial"):
                 if skip:
                     raise click.ClickException("--skip can't be used when uploading VODs separately")
+                # serial + --background: one detached job uploads the VODs one at a time,
+                # instead of each vodbackup.py detaching and all of them running at once
+                serial_bg = mode == "serial" and background
+                cmds = []
                 for i, url in enumerate(vod_urls):
                     suffix = f" [VOD {i + 1} of {len(vod_urls)}]"
                     vod_title = title[: 100 - len(suffix)] + suffix
                     stream_arg = "--stream " if stream else "--no-stream "
-                    bg_arg = "--background " if background else ""
-                    cmd = (
+                    bg_arg = "--background " if background and not serial_bg else ""
+                    cmds.append(
                         f"vodbackup.py {cleanup_arg} --title {shlex.quote(vod_title)} "
                         f"--bracket-url {shlex.quote(bracket_url)} {bg_arg}{stream_arg}{shlex.quote(url)}"
                     )
-                    if upload:
+                if upload:
+                    for cmd in cmds:
                         click.echo(cmd)
-                    if execute:
-                        click.echo(f"executing: {cmd}")
-                        subprocess.run(cmd, shell=True, check=True)
+                    if serial_bg:
+                        click.echo("(run one after another in a single background job)")
+                if execute:
+                    if serial_bg:
+                        run_serial_in_background(cmds)
+                    else:
+                        for cmd in cmds:
+                            click.echo(f"executing: {cmd}")
+                            subprocess.run(cmd, shell=True, check=True)
                 return Bracket
             # Concatenating can't be streamed; download and join first
             local_video_file = concat_bracket_vods(
@@ -810,9 +822,34 @@ def choose_multi_vod_mode(metas: list[dict], vod_urls: list[str]) -> str:
         click.echo(f"     {url}")
     return click.prompt(
         "Upload as separate videos or concatenate into one?",
-        type=click.Choice(["separate", "concatenate"]),
+        type=click.Choice(["separate", "serial", "concatenate"]),
         default="concatenate",
     )
+
+
+def run_serial_in_background(cmds: list[str]) -> None:
+    """Run shell commands one after another in a detached job, logging to a file.
+
+    A failed command doesn't stop the ones after it.
+    """
+    log_dir = os.path.expanduser("~/.local/state/vodbackup")
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, f"{datetime.now():%Y%m%d-%H%M%S}-serial.log")
+    script = "\n".join(
+        f"echo {shlex.quote(f'executing: {cmd}')}\n{cmd} || echo 'FAILED (exit '$?')'"
+        for cmd in cmds
+    )
+    with open(log_path, "w") as log:
+        proc = subprocess.Popen(
+            ["sh", "-c", script],
+            stdin=subprocess.DEVNULL,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+            env={**os.environ, "PYTHONUNBUFFERED": "1"},
+        )
+    click.echo(f"Uploading {len(cmds)} VODs one at a time in the background (pid {proc.pid}). Follow with:")
+    click.echo(f"  tail -f {log_path}")
 
 
 def concat_bracket_vods(
