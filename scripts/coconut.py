@@ -14,6 +14,7 @@ import os
 import sys
 import subprocess
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 import time
@@ -108,6 +109,12 @@ EQUIV_EXT_ARR = [
 ]
 
 
+@lru_cache(maxsize=None)
+def cached_exists(path: str) -> bool:
+    """os.path.exists, memoized for the lifetime of the process."""
+    return os.path.exists(path)
+
+
 def concurrent_path_finder(records: List[Any]) -> List[Dict]:
     """Find existing paths for records concurrently"""
     path_map = {}
@@ -117,7 +124,7 @@ def concurrent_path_finder(records: List[Any]) -> List[Dict]:
         if original_path in path_map:
             return path_map[original_path]
 
-        if os.path.exists(original_path):
+        if cached_exists(original_path):
             result = {"path": original_path, "exists": True}
             path_map[original_path] = result
             return result
@@ -160,7 +167,7 @@ def concurrent_path_finder(records: List[Any]) -> List[Dict]:
 
         # Check all generated paths
         for path_to_check in paths_to_try:
-            if os.path.exists(path_to_check):
+            if cached_exists(path_to_check):
                 result = {"path": path_to_check, "exists": True}
                 path_map[original_path] = result
                 return result
