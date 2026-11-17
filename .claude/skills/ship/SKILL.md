@@ -3,22 +3,23 @@ name: ship
 description: >-
   Commit the current changes, push to GitHub, then deploy by pushing to the
   `dokku` git remote. Use when the user says "ship this", "ship it", "commit
-  and push and deploy", "deploy this", or "push to dokku". The dokku push is
-  fully detached and its build/deploy output is discarded, to avoid burning
-  tokens on verbose deploy logs or a completion-notification turn.
+  and push and deploy", "deploy this", or "push to dokku". Repos without a
+  `dokku` remote just get commit + push to GitHub. The dokku push is fully
+  detached, with its build output written to a log file (not read by Claude)
+  and a `tail -f` command handed to the user.
 ---
 
 # Ship: commit, push to GitHub, deploy to Dokku
 
-One flow: commit local changes, push to `origin` (GitHub), then trigger a
-Dokku deploy without watching it happen.
+One flow: commit local changes, push to `origin` (GitHub), then, only if the
+repo has a `dokku` remote, trigger a Dokku deploy without watching it happen.
 
 ## Steps
 
-1. **Require a `dokku` remote.** `git remote -v | grep dokku` first, before
-   touching anything else. If there's no remote literally named `dokku`,
-   this skill doesn't apply to this repo — stop here, say so, and suggest a
-   plain commit+push instead. Don't fall back to doing just the GitHub half.
+1. **Detect Dokku.** `git remote -v | grep dokku` first. Note whether a
+   remote literally named `dokku` exists. If not, this is a plain GitHub
+   repo: do steps 2–4 only, skip step 5, and just say it was committed and
+   pushed.
 
 2. **Check status — cheaply.** `git status --short` and `git diff --stat`
    (plus `--cached --stat` if anything is staged). Don't dump the full diff:
@@ -40,20 +41,22 @@ Dokku deploy without watching it happen.
 4. **Push to GitHub.** `git push` if the branch already tracks `origin`,
    otherwise `git push -u origin <branch>`.
 
-5. **Deploy to Dokku — fire and forget, fully detached.**
-   - Run it as a normal foreground Bash call, detached from the harness:
+5. **Deploy to Dokku (only if a `dokku` remote exists) — detached, output to a log.**
+   - Derive host and app from the remote URL
+     (`git remote get-url dokku` -> `dokku@<host>:<app>`), then:
      ```
-     setsid git push dokku >/dev/null 2>&1 < /dev/null &
+     mkdir -p ~/.cache/ship && nohup git push dokku > ~/.cache/ship/<app>.log 2>&1 < /dev/null &
      ```
-     No refspec needed. Do **not** use `run_in_background: true` — the
-     harness tracks those and re-invokes you when the command exits, which
-     costs a whole extra turn. Don't `Monitor` or poll either. Just tell the
-     user the deploy was kicked off.
-   - The output is discarded on purpose: Dokku's build/deploy log is long and
-     reading it burns tokens for no benefit in the common case.
-   - Only check on it if the user later asks whether the deploy succeeded —
-     e.g. `ssh dokku@<host> ps:report <app>` or `logs <app> --num 50` (look
-     up the host from the `dokku` remote URL). Never do this proactively.
+     Do **not** use `run_in_background: true` (it re-invokes you on exit and
+     costs an extra turn). Don't `Monitor` or poll, and never read the log
+     yourself unless asked.
+   - Finish by printing these for the user to copy:
+     - Build output (stdout of the push):
+       `tail -f ~/.cache/ship/<app>.log`
+     - Over ssh, once the build is done, live app logs:
+       `ssh dokku@<host> logs <app> -t`
+   - If the user later asks whether the deploy succeeded, check the end of
+     the log (`tail -n 30`) or `ssh dokku@<host> ps:report <app>`.
 
 ## Notes
 
