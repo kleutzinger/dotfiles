@@ -1,3 +1,7 @@
+# The following lines were added by Docker Desktop to add commands to your PATH.
+export PATH="$PATH:/Users/kevin/.docker/bin"
+# End of Docker Desktop section.
+
 set -gx GEM_HOME $HOME/.local/share/gem/ruby/3.0.0
 set -gx SCRIPTS_DIR $HOME/scripts/
 #xmodmap $HOME/.Xmodmap
@@ -195,9 +199,6 @@ if type -q mise
     mise activate fish | source
 end
 
-# The following lines were added by Docker Desktop to add commands to your PATH.
-export PATH="$PATH:/Users/kevin/.docker/bin"
-# End of Docker Desktop section.
 
 # Added by LM Studio CLI (lms)
 set -gx PATH $PATH /Users/kevin/.lmstudio/bin
