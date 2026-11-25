@@ -1,15 +1,15 @@
 ---
-name: ship
+name: send
 description: >-
   Commit the current changes, push to GitHub, then deploy by pushing to the
-  `dokku` git remote. Use when the user says "ship this", "ship it", "commit
-  and push and deploy", "deploy this", or "push to dokku". Repos without a
+  `dokku` git remote. Use when the user says "send it", "send this", "commit
+  and push", "commit and push and deploy", "deploy this", or "push to dokku". Repos without a
   `dokku` remote just get commit + push to GitHub. The dokku push is fully
   detached, with its build output written to a log file (not read by Claude)
   and a `tail -f` command handed to the user.
 ---
 
-# Ship: commit, push to GitHub, deploy to Dokku
+# Send: commit, push to GitHub, deploy to Dokku
 
 One flow: commit local changes, push to `origin` (GitHub), then, only if the
 repo has a `dokku` remote, trigger a Dokku deploy without watching it happen.
@@ -45,14 +45,14 @@ repo has a `dokku` remote, trigger a Dokku deploy without watching it happen.
    - Derive host and app from the remote URL
      (`git remote get-url dokku` -> `dokku@<host>:<app>`), then:
      ```
-     mkdir -p ~/.cache/ship && nohup git push dokku > ~/.cache/ship/<app>.log 2>&1 < /dev/null &
+     mkdir -p ~/.cache/send && nohup git push dokku > ~/.cache/send/<app>.log 2>&1 < /dev/null &
      ```
      Do **not** use `run_in_background: true` (it re-invokes you on exit and
      costs an extra turn). Don't `Monitor` or poll, and never read the log
      yourself unless asked.
    - Finish by printing these for the user to copy:
      - Build output (stdout of the push):
-       `tail -f ~/.cache/ship/<app>.log`
+       `tail -f ~/.cache/send/<app>.log`
      - Over ssh, once the build is done, live app logs:
        `ssh dokku@<host> logs <app> -t`
    - If the user later asks whether the deploy succeeded, check the end of
