@@ -5,6 +5,7 @@
 #     "click",
 #     "pillow",
 #     "b2sdk",
+#     "tqdm",
 # ]
 # ///
 
@@ -23,7 +24,8 @@ usage:
 
 --private uploads to the bucket named by B2_PRIVATE_BUCKET_NAME (which must
 be a private bucket) and prints a signed URL that expires after --expires
-hours (default 24, max 168).
+hours (default 24, max 168). Add --no-link to skip the signed URL and just
+print the uploaded file's bucket path.
 """
 
 import mimetypes
@@ -33,7 +35,7 @@ import time
 import click
 from PIL import Image
 from io import BytesIO
-from b2sdk.v2 import InMemoryAccountInfo, B2Api
+from b2sdk.v2 import InMemoryAccountInfo, B2Api, TqdmProgressListener
 import os
 
 # Configuration (replace these with your real credentials or load from env)
@@ -54,7 +56,8 @@ def make_url_safe(filename):
 @click.option("--screenshot", is_flag=True, help="Resize to 800x800, convert to JPEG, and upload under screenshots/")
 @click.option("--private", is_flag=True, help="Upload to the private bucket (B2_PRIVATE_BUCKET_NAME) and print a time-limited signed URL")
 @click.option("--expires", default=24, show_default=True, type=click.IntRange(1, 168), help="Signed URL lifetime in hours (max 168 = 7 days). Only used with --private")
-def upload(file_path, screenshot, private, expires):
+@click.option("--no-link", is_flag=True, help="With --private, don't create a signed URL; just print the uploaded path")
+def upload(file_path, screenshot, private, expires, no_link):
     bucket_name = B2_BUCKET_NAME
     if private:
         bucket_name = os.getenv("B2_PRIVATE_BUCKET_NAME")
@@ -91,10 +94,19 @@ def upload(file_path, screenshot, private, expires):
         filename = f"{int(time.time())}_{filename}"
         b2_path = "files/" + filename
         content_type, _ = mimetypes.guess_type(filename)
-        file_info = {"Content-Type": content_type} if content_type else {}
-        with open(file_path, "rb") as f:
-            data = f.read()
-        bucket.upload_bytes(data, b2_path, file_info=file_info)
+        # streams from disk and switches to multipart for large files
+        size = os.path.getsize(file_path)
+        click.echo(f"Uploading {size / 1024 / 1024:.1f} MB to {bucket_name}/{b2_path}", err=True)
+        bucket.upload_local_file(
+            local_file=file_path,
+            file_name=b2_path,
+            content_type=content_type,
+            progress_listener=TqdmProgressListener(filename),
+        )
+
+    if private and no_link:
+        click.echo(f"Uploaded privately to {bucket_name}/{b2_path}")
+        return
 
     if private:
         # Signed URL via B2's native download host (the public CDN doesn't
