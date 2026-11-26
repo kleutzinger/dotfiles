@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Game;
 Comment=Super Smash Bros. Melee, natively
-Exec=/home/kevin/.local/share/melee-unlocked/launch.sh
+Exec=sh -c "\\$HOME/.local/share/melee-unlocked/launch.sh"
 Icon=assistant
 Name=Melee Unlocked
 NoDisplay=false
