@@ -1,0 +1,14 @@
+[Desktop Entry]
+Categories=Game;
+Comment=Super Smash Bros. Melee, natively
+Exec=/home/kevin/.local/share/melee-unlocked/launch.sh
+Icon=assistant
+Name=Melee Unlocked
+NoDisplay=false
+PrefersNonDefaultGPU=false
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=false
+X-KDE-Username=
